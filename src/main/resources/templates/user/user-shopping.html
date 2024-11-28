@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <!-- SEO Meta -->
-<title>UTEBookStore - Giỏ Hàng</title>
+<title>UTEBookStore - Mua Sắm</title>
 <meta name="keywords" content="IT services, technology, responsive">
 <meta name="description" content="Professional IT services with modern, responsive designs.">
 <meta name="author" content="It.Next">
@@ -57,6 +57,30 @@
             background-color: #007bff;
             border-color: #007bff;
         }
+          .book-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .book-section {
+            margin-bottom: 40px;
+        }
+
+        .lazy-load-trigger {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn-view-more {
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .discount-code {
+            margin-top: 30px;
+        }
     </style>
 <!-- IE Compatibility -->
 <!--[if lt IE 9]>
@@ -72,50 +96,62 @@
     <div th:replace="~{user/layout/header :: header}"></div>
 	  <!-- Main Content -->
     <main class="container py-5">
-        <h1 class="text-center mb-4">Giỏ Hàng Của Bạn</h1>
-        
-        <!-- Bảng hiển thị các sản phẩm trong giỏ hàng -->
-        <div class="table-responsive">
-            <table class="table table-bordered text-center align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Hình ảnh</th>
-                        <th>Tên sách</th>
-                        <th>Số lượng</th>
-                        <th>Đơn giá</th>
-                        <th>Tổng cộng</th>
-                        <th>Xóa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Mẫu thông tin sản phẩm -->
-                    <tr>
-                        <td><img src="/images/books/book1.jpg" alt="Book Image" class="cart-item-image"></td>
-                        <td>Thế Giới Thợ - Cuộc Sống Thợ Mộc</td>
-                        <td>
-                            <input type="number" class="form-control quantity-input mx-auto" value="1" min="1" max="99">
-                        </td>
-                        <td>100.000₫</td>
-                        <td>100.000₫</td>
-                        <td><button class="btn btn-danger btn-sm">Xóa</button></td>
-                    </tr>
-                    <!-- Thêm sản phẩm khác -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Tổng tiền và tiếp tục thanh toán -->
-        <div class="cart-summary">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="fs-5">Tổng tiền: <span class="text-primary fw-bold">100.000₫</span></p>
+     <!-- Mục sách -->
+        <div class="book-section">
+            <h2 class="mb-4 text-primary">Sách Mới Nhất</h2>
+            <div class="row g-4">
+                <!-- Sách 1 -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card book-card">
+                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới nhất">
+                        <div class="card-body">
+                            <h5 class="card-title">Tên Sách</h5>
+                            <p class="card-text">120.000₫</p>
+                            <button class="btn btn-sm btn-primary w-100">Thêm vào giỏ</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="/shop" class="btn btn-secondary me-2">Tiếp tục mua sắm</a>
-                    <a href="/checkout" class="btn btn-primary">Thanh toán</a>
-                </div>
+                <!-- Lặp lại cho các sách khác -->
+            </div>
+            <div class="lazy-load-trigger">
+                <button class="btn btn-view-more">Xem Thêm</button>
             </div>
         </div>
+
+        <!-- Sách bán chạy -->
+        <div class="book-section">
+            <h2 class="mb-4 text-success">Sách Bán Chạy Nhất</h2>
+            <div class="row g-4">
+                <!-- Sách 1 -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card book-card">
+                        <img src="/images/books/bestseller1.jpg" class="card-img-top" alt="Sách bán chạy">
+                        <div class="card-body">
+                            <h5 class="card-title">Tên Sách</h5>
+                            <p class="card-text">150.000₫</p>
+                            <button class="btn btn-sm btn-primary w-100">Thêm vào giỏ</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Lặp lại cho các sách khác -->
+            </div>
+        </div>
+
+        <!-- Phân trang / Lazy Loading -->
+        <div class="lazy-load-trigger">
+            <button class="btn btn-view-more">Tải Thêm</button>
+        </div>
+
+        <!-- Áp dụng mã giảm giá -->
+        <div class="discount-code">
+            <h4 class="text-warning">Áp Dụng Mã Giảm Giá</h4>
+            <form class="d-flex">
+                <input type="text" class="form-control me-2" placeholder="Nhập mã giảm giá">
+                <button class="btn btn-primary">Áp dụng</button>
+            </form>
+        </div>
+
+        
     </main>
 	
 	
