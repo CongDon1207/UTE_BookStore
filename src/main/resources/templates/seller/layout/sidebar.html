@@ -1,0 +1,40 @@
+<div th:fragment="sidebar">
+	<nav class="sidebar bg-white min-vh-100" th:fragment="sidebar">
+		<div class="position-sticky pt-3">
+			<div class="mb-4">
+				<img th:src="@{/images/logos/bookstore3.png}" class="img-fluid mb-3" style="width: 80%; height: auto; object-position: left;" alt="Logo"/>
+			</div>
+
+			<ul class="nav flex-column">
+				<li class="nav-item">
+					<a href="#" class="nav-link active hover-effect">
+						<i class="fas fa-home me-2"></i> Trang Chủ
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="#" class="nav-link text-dark hover-effect">
+						<i class="fas fa-shopping-cart me-2"></i> Quản lý Đơn hàng
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="admin/shop-management" class="nav-link text-dark hover-effect">
+						<i class="fas fa-store me-2"></i> Quản lý Shop
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="admin/product-management" class="nav-link text-dark hover-effect">
+						<i class="fas fa-box me-2"></i> Quản lý Sản phẩm
+					</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<style>
+		.hover-effect:hover {
+			background-color: #f8f9fa;
+			transform: translateX(10px);
+			transition: all 0.3s ease;
+		}
+	</style>
+</div>
