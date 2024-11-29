@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <rect width="300" height="200" fill="white"/>
+  
+  <!-- Open Book Design -->
+  <path d="M75 60 L125 60 L150 100 L125 140 L75 140 Z" fill="#2C3E50" stroke="#34495E" stroke-width="3"/>
+  <path d="M125 60 L175 60 L200 100 L175 140 L125 140 Z" fill="#3498DB" stroke="#2980B9" stroke-width="3"/>
+  
+  <!-- Pages Effect -->
+  <line x1="85" y1="80" x2="115" y2="80" stroke="#ECF0F1" stroke-width="2"/>
+  <line x1="135" y1="80" x2="165" y2="80" stroke="#ECF0F1" stroke-width="2"/>
+  
+  <!-- Typography -->
+  <text x="50" y="180" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#3498DB">
+    UTE
+  </text>
+  <text x="150" y="180" font-family="Arial, sans-serif" font-size="30" fill="#2C3E50">
+    BookStore
+  </text>
+</svg>

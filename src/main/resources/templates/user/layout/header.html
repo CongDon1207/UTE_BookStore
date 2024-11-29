@@ -1,127 +1,236 @@
+<body id="default_theme" class="book_store">
+
+    <!-- loader -->
+    <div class="bg_load"> <img class="loader_animation" src="images/loaders/loader_1.png" alt="Đang tải..." /> </div>
+    <!-- end loader -->
+
+    <!-- header -->
+<header id="default_header" class="header_style_1">
+    <!-- header top -->
+    <div class="header_top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="full">
+                        <div class="topbar-left">
+                            <ul class="list-inline">
+                                <li><span class="topbar-label"><i class="fa fa-home"></i></span><span class="topbar-hightlight">Số 1 Võ Văn Ngân, Thủ Đức, TP.HCM</span></li>
+                                <li><span class="topbar-label"><i class="fa fa-envelope-o"></i></span><span class="topbar-hightlight"><a href="mailto:hotro@utebookstore.com">utebookstore@hcmute.edu.vn</a></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 right_section_header_top">
+                    <div class="float-left">
+                       
+
+                    </div>
+                    <div class="float-right">
+                        <div class="make_appo"><a class="btn white_btn" href="it_cart.html">Liên hệ</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end header top -->
+
+    <!-- header bottom -->
+    <div class="header_bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                    <!-- logo start -->
+                    <div class="logo"><a href="/user/home"><img th:src="@{/images/logos/bookstore3.png}" alt="logo" /></a></div>
+                    
+                    <!-- logo end -->
+                </div>
+                <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                    <!-- menu start -->
+                    <div class="menu_side">
+                        <div id="navbar_menu">
+                            <ul class="first-ul">
+                            <li><a ><i class="fa fa-book"></i> _________________________</a></li>
+                                <li><a class="active" href="/user/home"><i class="fa fa-home"></i> Trang chủ</a></li>
+                               
+                                <li><a  href="/user/shopping"><i class="fa fa-shopping-bag"></i> Mua sắm</a></li>
+                           <li class="notification-container">
+                        <a href="thong_bao.html" id="notification-trigger">
+                            <i class="fa fa-bell"></i> Thông báo
+                            <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
+                        </a>
+                        <div id="notification-dropdown" class="notification-dropdown">
+                            <!-- Notifications will be dynamically inserted here -->
+                        </div>
+                    </li>
 
 
-<body id="default_theme" class="it_service">
+                                <li><a href="/user/cart"><i class="fa fa-shopping-cart"></i> Giỏ hàng</a></li>
+                                <li>
+                                    <a ><i class="fa fa-user"></i> Tài khoản</a>
+                                    <ul>
+                                        <li><a href="/user/updateInfo"><i class="fa fa-pencil"></i> Cập nhật thông tin</a></li>
+                                        <li><a href="/user/manageDeliveryAddresses"><i class="fa fa-map-marker"></i> Quản lý địa chỉ</a></li>
+                                        <li><a href="/user/updatePassword"><i class="fa fa-key"></i> Đổi mật khẩu</a></li>
+                                        <li><a href="/user/purchaseHistory"><i class="fa fa-history"></i> Lịch sử mua hàng</a></li>
+                              
+                                        <li><a href="theo_doi_don_hang.html"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="search_icon">
+    <div class="search-bar">
+    <!-- Biểu tượng danh mục -->
+    <div class="category-dropdown">
+        <a href="#" class="category-icon">
+            <i class="fa fa-list"></i> <!-- Icon danh mục -->
+        </a>
 
-	<!-- loader -->
-	<div class="bg_load"> <img class="loader_animation" src="images/loaders/loader_1.png" alt="#" /> </div>
-	<!-- end loader -->
-	<!-- header -->
-	<header id="default_header" class="header_style_1">
-		<!-- header top -->
-		<div class="header_top">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-8">
-						<div class="full">
-							<div class="topbar-left">
-								<ul class="list-inline">
-									<li> <span class="topbar-label"><i class="fa  fa-home"></i></span> <span
-											class="topbar-hightlight">540 Lorem Ipsum New York, AB 90218</span> </li>
-									<li> <span class="topbar-label"><i class="fa fa-envelope-o"></i></span> <span
-											class="topbar-hightlight"><a
-												href="mailto:info@yourdomain.com">info@yourdomain.com</a></span> </li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-4 right_section_header_top">
-						<div class="float-left">
-							<div class="social_icon">
-								<ul class="list-inline">
-									<li><a class="fa fa-facebook" href="https://www.facebook.com/" title="Facebook"
-											target="_blank"></a></li>
-									<li><a class="fa fa-google-plus" href="https://plus.google.com/" title="Google+"
-											target="_blank"></a></li>
-									<li><a class="fa fa-twitter" href="https://twitter.com" title="Twitter"
-											target="_blank"></a></li>
-									<li><a class="fa fa-linkedin" href="https://www.linkedin.com" title="LinkedIn"
-											target="_blank"></a></li>
-									<li><a class="fa fa-instagram" href="https://www.instagram.com" title="Instagram"
-											target="_blank"></a></li>
-								</ul>
-							</div>
-						</div>
-						<div class="float-right">
-							<div class="make_appo"> <a class="btn white_btn" href="make_appointment.html">Make
-									Appointment</a> </div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- end header top -->
-		<!-- header bottom -->
-		<div class="header_bottom">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-						<!-- logo start -->
-						<div class="logo"> <a href="it_home.html"><img src="images/logos/it_logo.png" alt="logo" /></a>
-						</div>
-						<!-- logo end -->
-					</div>
-					<div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
-						<!-- menu start -->
-						<div class="menu_side">
-							<div id="navbar_menu">
-								<ul class="first-ul">
-									<li> <a class="active" href="/user">Home</a>
-										<ul>
-											<li><a href="it_home.html">It Home Page</a></li>
-											<li><a href="it_home_dark.html">It Dark Home Page</a></li>
-										</ul>
-									</li>
-									<li><a href="it_about.html">About Us</a></li>
-									<li> <a href="it_service.html">Service</a>
-										<ul>
-											<li><a href="it_service_list.html">Services list</a></li>
-											<li><a href="it_service_detail.html">Services Detail</a></li>
-										</ul>
-									</li>
-									<li> <a href="it_blog.html">Blog</a>
-										<ul>
-											<li><a href="it_blog.html">Blog List</a></li>
-											<li><a href="it_blog_grid.html">Blog Grid</a></li>
-											<li><a href="it_blog_detail.html">Blog Detail</a></li>
-										</ul>
-									</li>
-									<li> <a href="#">Pages</a>
-										<ul>
-											<li><a href="it_career.html">Career</a></li>
-											<li><a href="it_price.html">Pricing</a></li>
-											<li><a href="it_faq.html">Faq</a></li>
-											<li><a href="it_privacy_policy.html">Privacy Policy</a></li>
-											<li><a href="it_error.html">Error 404</a></li>
-										</ul>
-									</li>
-									<li> <a href="it_shop.html">Shop</a>
-										<ul>
-											<li><a href="it_shop.html">Shop List</a></li>
-											<li><a href="it_shop_detail.html">Shop Detail</a></li>
-											<li><a href="/cart">Shopping Cart</a></li>
-											<li><a href="it_checkout.html">Checkout</a></li>
-										</ul>
-									</li>
-									<li> <a href="it_contact.html">Contact</a>
-										<ul>
-											<li><a href="it_contact.html">Contact Page 1</a></li>
-											<li><a href="it_contact_2.html">Contact Page 2</a></li>
-										</ul>
-									</li>
-								</ul>
-							</div>
-							<div class="search_icon">
-								<ul>
-									<li><a href="#" data-toggle="modal" data-target="#search_bar"><i
-												class="fa fa-search" aria-hidden="true"></i></a></li>
-								</ul>
-							</div>
-						</div>
-						<!-- menu end -->
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- header bottom end -->
-	</header>
-	<!-- end header -->
+        <!-- Trang mini chứa danh mục -->
+        <div class="dropdown-content">
+            <!-- Danh mục có thể bỏ hoặc giữ nếu bạn muốn -->
+                                    <ul>
+                                        <li><a href="sach_moi.html"><i class="fa fa-book"></i> Sách mới</a></li>
+                                        <li><a href="sach_ban_chay.html"><i class="fa fa-fire"></i> Sách bán chạy</a></li>
+                                        <li><a href="sach_danh_gia_cao.html"><i class="fa fa-star"></i> Sách đánh giá cao</a></li>
+                                        <li><a href="sach_yeu_thich.html"><i class="fa fa-heart"></i> Sách yêu thích</a></li>
+                                    </ul>
+        </div>
+    </div>
+
+  <!-- Thanh tìm kiếm -->
+<form action="/search" method="get" class="search-form" id="searchForm">
+    <div class="input-with-icon">
+        <input type="text" name="search_query" placeholder="Tìm kiếm sách..." class="form-control" id="searchQuery">
+        <!-- Đặt ID cho icon tìm kiếm để JavaScript nhận diện -->
+        <i class="fa fa-search search-icon" id="searchIcon"></i> <!-- Biểu tượng tìm kiếm -->
+    </div>
+</form>
+</div>
+
+</div>
+                    </div>
+                    <!-- menu end -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- header bottom end -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notificationTrigger = document.getElementById('notification-trigger');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const notificationBadge = document.getElementById('notification-badge');
+
+        // Sample notification data (replace with your actual data source)
+        const notifications = [
+            {
+                icon: 'fa-shopping-cart',
+                message: 'Đơn hàng #12345 đã được xác nhận',
+                time: '10 phút trước'
+            },
+            {
+                icon: 'fa-truck',
+                message: 'Đơn hàng của bạn đang được giao',
+                time: '2 giờ trước'
+            },
+            {
+                icon: 'fa-tag',
+                message: 'Bạn có khuyến mãi mới!',
+                time: 'Hôm qua'
+            }
+        ];
+
+        // Update notification badge
+        function updateNotificationBadge() {
+            notificationBadge.textContent = notifications.length;
+            notificationBadge.style.display = notifications.length > 0 ? 'block' : 'none';
+        }
+
+        // Toggle dropdown visibility
+        notificationTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('show');
+            renderNotifications();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!notificationDropdown.contains(e.target) && 
+                e.target !== notificationTrigger) {
+                notificationDropdown.classList.remove('show');
+            }
+        });
+
+        // Render notifications
+        function renderNotifications() {
+            if (notifications.length === 0) {
+                notificationDropdown.innerHTML = `
+                    <div class="no-notifications">
+                        Không có thông báo mới
+                    </div>
+                `;
+                return;
+            }
+
+            const notificationsHTML = notifications.map(notification => `
+                <div class="notification-item">
+                    <i class="notification-icon fa ${notification.icon}"></i>
+                    <div class="notification-content">
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-time">${notification.time}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            notificationDropdown.innerHTML = notificationsHTML;
+            updateNotificationBadge();
+        }
+
+        // Initial render to set up badge
+        updateNotificationBadge();
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+        // Kiểm tra xem liệu phần tử tìm kiếm có tồn tại không
+        const searchIcon = document.getElementById('searchIcon');
+        const searchForm = document.getElementById('searchForm');
+        const searchQuery = document.getElementById('searchQuery');
+        
+        if (searchIcon && searchForm && searchQuery) {
+            // Lắng nghe sự kiện click trên biểu tượng tìm kiếm
+            searchIcon.addEventListener('click', function(event) {
+                event.preventDefault(); // Ngừng hành động mặc định của biểu tượng tìm kiếm
+                var query = searchQuery.value;
+                console.log('Tìm kiếm với từ khóa: ', query); // In giá trị của từ khóa tìm kiếm ra console
+
+                // Nếu có giá trị trong ô input, thực hiện gửi form
+                if (query) {
+                    searchForm.submit(); // Gửi form
+                } else {
+                    alert('Vui lòng nhập từ khóa tìm kiếm!');
+                }
+            });
+        } else {
+            console.error('Không tìm thấy các phần tử tìm kiếm.');
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentPath = window.location.pathname; // Đường dẫn hiện tại
+        const menuItems = document.querySelectorAll("#navbar_menu .first-ul li a");
+
+        menuItems.forEach(item => {
+            if (item.getAttribute("href") === currentPath) {
+                item.classList.add("active"); // Thêm lớp active
+            } else {
+                item.classList.remove("active"); // Loại bỏ lớp active
+            }
+        });
+    });
+</script>
+    
+</header>
+
+    <!-- end header -->
+</body>
