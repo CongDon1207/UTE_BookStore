@@ -39,48 +39,72 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
  <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .cart-item-image {
-            max-width: 80px;
-            max-height: 100px;
+    :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .book-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .book-card .card-img-top {
+            height: 350px;
             object-fit: cover;
         }
-        .quantity-input {
-            width: 60px;
-        }
-        .cart-summary {
-            border-top: 2px solid #ddd;
-            padding-top: 20px;
-            margin-top: 20px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-          .book-card img {
-            height: 200px;
-            object-fit: cover;
+
+        .badge-custom {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 3px;
         }
 
-        .book-section {
-            margin-bottom: 40px;
+        .book-detail-badge {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .lazy-load-trigger {
-            text-align: center;
-            margin-top: 20px;
+        .book-detail-badge i {
+            margin-right: 5px;
         }
 
-        .btn-view-more {
-            background-color: #007bff;
-            color: white;
-            text-transform: uppercase;
-            font-weight: bold;
+        .star-rating {
+            color: #ffc107;
         }
 
-        .discount-code {
-            margin-top: 30px;
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
+
+        .section-header h2 {
+            margin-bottom: 0;
+        }
+       
     </style>
 <!-- IE Compatibility -->
 <!--[if lt IE 9]>
@@ -94,73 +118,226 @@
 	
 	<!-- Sử dụng fragment header -->
     <div th:replace="~{user/layout/header :: header}"></div>
-	  <!-- Main Content -->
-    <main class="container py-5">
-     <!-- Mục sách -->
-        <div class="book-section">
-            <h2 class="mb-4 text-primary">Sách Mới Nhất</h2>
-            <div class="row g-4">
-                <!-- Sách 1 -->
-                <div class="col-lg-3 col-md-4 col-sm-6">
+	<main class="container py-5">
+        <!-- Sách Mới Nhất -->
+        <section class="mb-5 danh-muc-section" id="sachmoi">
+            <div class="section-header">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-clock text-primary me-3" style="font-size: 1.5rem;"></i>
+                    <h2 class="text-primary">Sách Mới Nhất</h2>
+                </div>
+                <a href="#" class="btn btn-outline-primary">Xem Tất Cả</a>
+            </div>
+            <div class="row" id="new-books">
+                <div class="col-md-4 mb-4">
                     <div class="card book-card">
-                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới nhất">
+                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới">
                         <div class="card-body">
-                            <h5 class="card-title">Tên Sách</h5>
-                            <p class="card-text">120.000₫</p>
-                            <button class="btn btn-sm btn-primary w-100">Thêm vào giỏ</button>
+                            <div class="book-detail-badge">
+                                <i class="bi bi-calendar-check text-primary"></i>
+                                <small>Thêm mới: 2 ngày trước</small>
+                            </div>
+                            <h5 class="card-title">Nhà Giả Kim</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-primary mb-0">120.000₫</span>
+                                <button class="btn btn-sm btn-primary">Thêm giỏ</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- Lặp lại cho các sách khác -->
-            </div>
-            <div class="lazy-load-trigger">
-                <button class="btn btn-view-more">Xem Thêm</button>
-            </div>
-        </div>
-
-        <!-- Sách bán chạy -->
-        <div class="book-section">
-            <h2 class="mb-4 text-success">Sách Bán Chạy Nhất</h2>
-            <div class="row g-4">
-                <!-- Sách 1 -->
-                <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="col-md-4 mb-4">
                     <div class="card book-card">
+                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới">
+                        <div class="card-body">
+                            <div class="book-detail-badge">
+                                <i class="bi bi-calendar-check text-primary"></i>
+                                <small>Thêm mới: 2 ngày trước</small>
+                            </div>
+                            <h5 class="card-title">Nhà Giả Kim</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-primary mb-0">120.000₫</span>
+                                <button class="btn btn-sm btn-primary">Thêm giỏ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card book-card">
+                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới">
+                        <div class="card-body">
+                            <div class="book-detail-badge">
+                                <i class="bi bi-calendar-check text-primary"></i>
+                                <small>Thêm mới: 2 ngày trước</small>
+                            </div>
+                            <h5 class="card-title">Nhà Giả Kim</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-primary mb-0">120.000₫</span>
+                                <button class="btn btn-sm btn-primary">Thêm giỏ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Thêm 2 sách mới khác tương tự -->
+            </div>
+            <div class="text-center mt-3">
+                <button id="load-more-new-books" class="btn btn-primary">Xem Thêm</button>
+            </div>
+        </section>
+
+        <!-- Sách Bán Chạy Nhất -->
+        <section class="mb-5 danh-muc-section" id="sachbanchay">
+            <div class="section-header">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-graph-up text-success me-3" style="font-size: 1.5rem;"></i>
+                    <h2 class="text-success">Sách Bán Chạy Nhất</h2>
+                </div>
+                <a href="#" class="btn btn-outline-success">Xem Tất Cả</a>
+            </div>
+            <div class="row" id="bestseller-books">
+                <div class="col-md-4 mb-4">
+                    <div class="card book-card">
+                        <span class="badge bg-success badge-custom">Bán: 5,420 cuốn</span>
                         <img src="/images/books/bestseller1.jpg" class="card-img-top" alt="Sách bán chạy">
                         <div class="card-body">
-                            <h5 class="card-title">Tên Sách</h5>
-                            <p class="card-text">150.000₫</p>
-                            <button class="btn btn-sm btn-primary w-100">Thêm vào giỏ</button>
+                            <h5 class="card-title">Hạt Giống Tâm Hồn</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-success mb-0">150.000₫</span>
+                                <button class="btn btn-sm btn-success">Thêm giỏ</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- Lặp lại cho các sách khác -->
+                <!-- Thêm 2 sách bán chạy khác tương tự -->
             </div>
-        </div>
+            <div class="text-center mt-3">
+                <button id="load-more-bestseller-books" class="btn btn-success">Xem Thêm</button>
+            </div>
+        </section>
 
-        <!-- Phân trang / Lazy Loading -->
-        <div class="lazy-load-trigger">
-            <button class="btn btn-view-more">Tải Thêm</button>
-        </div>
+        <!-- Sách Đánh Giá Cao -->
+        <section class="mb-5 danh-muc-section" id="sachdanhgiacao">
+            <div class="section-header">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-star text-warning me-3" style="font-size: 1.5rem;"></i>
+                    <h2 class="text-warning">Sách Đánh Giá Cao</h2>
+                </div>
+                <a href="#" class="btn btn-outline-warning">Xem Tất Cả</a>
+            </div>
+            <div class="row" id="highly-rated-books">
+                <div class="col-md-4 mb-4">
+                    <div class="card book-card">
+                        <span class="badge bg-warning text-dark badge-custom">
+                            <i class="bi bi-star-fill"></i> 4.8/5 
+                            (1,200 đánh giá)
+                        </span>
+                        <img src="/images/books/highlyrated1.jpg" class="card-img-top" alt="Sách đánh giá cao">
+                        <div class="card-body">
+                            <div class="star-rating mb-2">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                            </div>
+                            <h5 class="card-title">Nghệ Thuật Sống Đẹp</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-warning mb-0">130.000₫</span>
+                                <button class="btn btn-sm btn-warning">Thêm giỏ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Thêm 2 sách đánh giá cao khác tương tự -->
+            </div>
+            <div class="text-center mt-3">
+                <button id="load-more-highly-rated-books" class="btn btn-warning">Xem Thêm</button>
+            </div>
+        </section>
 
-        <!-- Áp dụng mã giảm giá -->
-        <div class="discount-code">
-            <h4 class="text-warning">Áp Dụng Mã Giảm Giá</h4>
-            <form class="d-flex">
-                <input type="text" class="form-control me-2" placeholder="Nhập mã giảm giá">
-                <button class="btn btn-primary">Áp dụng</button>
-            </form>
-        </div>
-
-        
+        <!-- Sách Yêu Thích Nhất -->
+        <section class="mb-5 danh-muc-section"  id="sachyeuthich">
+            <div class="section-header">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-heart text-danger me-3" style="font-size: 1.5rem;"></i>
+                    <h2 class="text-danger">Sách Yêu Thích Nhất</h2>
+                </div>
+                <a href="#" class="btn btn-outline-danger">Xem Tất Cả</a>
+            </div>
+            <div class="row" id="favorite-books">
+                <div class="col-md-4 mb-4">
+                    <div class="card book-card">
+                        <span class="badge bg-danger badge-custom">
+                            <i class="bi bi-heart-fill"></i> 12,500 Lượt Yêu Thích
+                        </span>
+                        <img src="/images/books/favorite1.jpg" class="card-img-top" alt="Sách yêu thích">
+                        <div class="card-body">
+                            <h5 class="card-title">Đắc Nhân Tâm</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-danger mb-0">140.000₫</span>
+                                <button class="btn btn-sm btn-danger">Thêm giỏ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Thêm 2 sách yêu thích khác tương tự -->
+            </div>
+            <div class="text-center mt-3">
+                <button id="load-more-favorite-books" class="btn btn-danger">Xem Thêm</button>
+            </div>
+        </section>
     </main>
-	
-	
-	
-	
+
+   
 	
 	<!-- Sử dụng fragment footer -->
     <div th:replace="~{user/layout/footer :: footer}"></div>
+	 <script>
 	
+        
+     // Lấy tham số danh mục từ URL
+        function getQueryParameter(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy giá trị tham số "danhmuc" từ URL
+            const danhMuc = getQueryParameter("danhmuc");
+
+            // Ẩn tất cả các danh mục sách
+            const danhMucSections = document.querySelectorAll(".danh-muc-section");
+            danhMucSections.forEach(section => section.style.display = "none");
+console.log(danhMuc);
+            // Hiển thị danh mục sách tương ứng
+            if (danhMuc) {
+                const activeSection = document.getElementById(danhMuc);
+                if (activeSection) {
+                    activeSection.style.display = "block";
+                }
+            } else {
+                // Mặc định hiển thị tất cả nếu không có danh mục nào được chọn
+                danhMucSections.forEach(section => section.style.display = "block");
+            }
+        });
+        if (danhMuc) {
+            const activeSection = document.getElementById(danhMuc);
+            if (activeSection) {
+                activeSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+     // Xử lý load more cho từng mục sách
+        document.querySelectorAll('[id^="load-more-"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const sectionId = this.id.replace('load-more-', '');
+                const section = document.getElementById(sectionId + '-books');
+                
+                // Logic để load thêm sách - tạm thời ẩn nút
+                this.style.display = 'none';
+            });
+        });
+
+    </script>
 	
 <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>

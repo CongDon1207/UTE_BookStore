@@ -10,7 +10,7 @@ public class UserHomeController {
 	
 	@GetMapping({"","/home"})
 	public String home() {
-		return "user/home.html";
+		return "user/user-home";
 	}
 	@GetMapping("/cart")
 	public String getCartPage() {
@@ -36,5 +36,9 @@ public class UserHomeController {
 	@GetMapping("/purchaseHistory")
 	public String getPurchaseHistoryPage() {
 		return "user/user-purchase-history";
+	}
+	@GetMapping("/bookdetail")
+	public String getBookDetailPage() {
+		return "user/product-detail";
 	}
 }
