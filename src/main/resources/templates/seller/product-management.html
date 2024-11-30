@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Shop - UTE Book Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+	<div th:replace="seller/layout/header :: header"></div>
+
+	<div class="container-fluid">
+	    <div class="row">
+	        <div class="col-md-2 bg-light">
+	            <div th:replace="seller/layout/sidebar :: sidebar"></div>
+	        </div>
+
+	        <main class="col-md-10 ms-sm-auto px-4">
+	            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	                <h1 class="h2">Quản lý Sản phẩm</h1>
+					<div class="btn-toolbar mb-2 mb-md-0">
+					    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#promotionModal">
+					        <i class="bi bi-tag"></i> Quản lý khuyến mãi
+					    </button>
+					    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+					        <i class="bi bi-plus"></i> Thêm sách mới
+					    </button>
+					</div>
+	            </div>
+
+	            <!-- Search & Filter -->
+	            <div class="row mb-4">
+	                <div class="col-md-6">
+	                    <div class="input-group">
+	                        <input type="text" class="form-control" placeholder="Tìm kiếm sách...">
+	                        <button class="btn btn-outline-secondary" type="button">Tìm</button>
+	                    </div>
+	                </div>
+	                <div class="col-md-3">
+	                    <select class="form-select">
+	                        <option value="">-- Thể loại --</option>
+	                        <option th:each="category : ${categories}" 
+	                                th:value="${category.id}" 
+	                                th:text="${category.name}">Thể loại</option>
+	                    </select>
+	                </div>
+	                <div class="col-md-3">
+	                    <select class="form-select">
+	                        <option value="">-- Trạng thái --</option>
+	                        <option value="true">Còn hàng</option>
+	                        <option value="false">Hết hàng</option>
+	                    </select>
+	                </div>
+	            </div>
+
+	            <!-- Products Table -->
+	            <div class="table-responsive">
+	                <table class="table table-striped">
+	                    <thead>
+	                        <tr>
+	                            <th>Ảnh</th>
+	                            <th>Tên sách</th>
+	                            <th>Thể loại</th>
+	                            <th>Giá</th>
+	                            <th>Số lượng</th>
+	                            <th>Trạng thái</th>
+	                            <th>Thao tác</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                        <tr th:each="book : ${books}">
+	                            <td>
+	                                <img th:if="${book.images}" th:src="${book.images[0]}" class="img-thumbnail" width="50">
+	                            </td>
+	                            <td th:text="${book.title}">Tên sách</td>
+	                            <td th:text="${book.category.name}">Thể loại</td>
+	                            <td th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">Giá</td>
+	                            <td th:text="${book.quantity}">Số lượng</td>
+	                            <td>
+	                                <span th:if="${book.isAvailable}" class="badge bg-success">Còn hàng</span>
+	                                <span th:unless="${book.isAvailable}" class="badge bg-danger">Hết hàng</span>
+	                            </td>
+	                            <td>
+	                                <button class="btn btn-sm btn-outline-primary" 
+	                                        data-bs-toggle="modal" 
+	                                        data-bs-target="#editProductModal"
+	                                        th:data-book-id="${book.id}">
+	                                    <i class="bi bi-pencil"></i>
+	                                </button>
+	                            </td>
+	                        </tr>
+	                    </tbody>
+	                </table>
+	            </div>
+
+	            <!-- Pagination -->
+	            <nav aria-label="Page navigation" class="mt-4">
+	                <ul class="pagination justify-content-center">
+	                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+	                        <a class="page-link" th:href="@{/seller/products(page=${currentPage - 1})}">Trước</a>
+	                    </li>
+	                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+	                        th:classappend="${pageNumber == currentPage} ? 'active'">
+	                        <a class="page-link" th:href="@{/seller/products(page=${pageNumber})}" 
+	                           th:text="${pageNumber}">1</a>
+	                    </li>
+	                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+	                        <a class="page-link" th:href="@{/seller/products(page=${currentPage + 1})}">Sau</a>
+	                    </li>
+	                </ul>
+	            </nav>
+	        </main>
+	    </div>
+	</div>
+
+	<!-- Add/Edit Product Modal here -->
+
+	<div th:replace="seller/layout/footer :: footer"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
