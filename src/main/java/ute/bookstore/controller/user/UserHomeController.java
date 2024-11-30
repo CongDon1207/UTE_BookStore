@@ -14,19 +14,19 @@ public class UserHomeController {
 	}
 	@GetMapping("/cart")
 	public String getCartPage() {
-		return "user/cart/show";
+		return "user/cart/show.html";
 	}
 	@GetMapping("/shopping")
 	public String getShoppingPage() {
-		return "user/user-shopping";
+		return "user/user-shopping.html";
 	}
 	@GetMapping("/updateInfo")
 	public String getUpdateInfoPage() {
-		return "user/user-edit";
+		return "user/user-edit.html";
 	}
 	@GetMapping("/manageDeliveryAddresses")
 	public String getDeliveryAddressesPage() {
-		return "user/user-manage-address";
+		return "user/user-manage-address.html";
 	}
 	
 	@GetMapping("/updatePassword")

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Shop - UTE Book Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="seller/layout/header :: header"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 bg-light">
+                <div th:replace="seller/layout/sidebar :: sidebar"></div>
+            </div>
+
+            <main class="col-md-10 ms-sm-auto px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Thông tin Shop</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <form th:object="${shop}" method="post" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label class="form-label">Logo Shop</label>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <img th:if="${shop.logo}" th:src="${shop.logo}" class="img-thumbnail me-3" style="width: 100px;">
+                                            <div>
+                                                <input type="file" class="form-control" name="logoFile" accept="image/*">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Tên Shop</label>
+                                        <input type="text" class="form-control" th:field="*{name}" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Số điện thoại</label>
+                                        <input type="tel" class="form-control" th:field="*{phone}" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Mô tả Shop</label>
+                                        <textarea class="form-control" th:field="*{description}" rows="4"></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Địa chỉ</label>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <input type="text" class="form-control" th:field="*{address.street}" placeholder="Số nhà, Đường" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" class="form-control" th:field="*{address.district}" placeholder="Quận/Huyện" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" class="form-control" th:field="*{address.city}" placeholder="Tỉnh/Thành phố" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Thống kê Shop</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">Đánh giá trung bình</label>
+                                    <div class="h4" th:text="${shop.rating + ' ⭐'}">4.5 ⭐</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">Số sản phẩm</label>
+                                    <div class="h4" th:text="${shop.books.size()}">45</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">Đơn hàng đã bán</label>
+                                    <div class="h4" th:text="${shop.orders.size()}">120</div>
+                                </div>
+                                <div>
+                                    <label class="form-label text-muted">Trạng thái</label>
+                                    <div class="h4">
+                                        <span class="badge bg-success" th:if="${shop.isActive}">Hoạt động</span>
+                                        <span class="badge bg-danger" th:unless="${shop.isActive}">Tạm ngưng</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div th:replace="seller/layout/footer :: footer"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -33,6 +33,9 @@ public class Shop {
     
     private String phone;
     
+    @Column
+    private String logo;
+    
     @OneToOne
     @JoinColumn(name = "address_id")
     private Address address;
