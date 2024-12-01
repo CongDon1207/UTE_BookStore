@@ -76,25 +76,7 @@ public class SellerHomeController {
 	    return "seller/shop-management";
 	}
 	
-	@GetMapping("/products")
-	public String products(Model model) {
-	    Shop shop = new Shop();
-	    shop.setLogo("/images/logos/bookstore3.png");
-	    shop.setBooks(new ArrayList<>()); // Thêm empty list
-	    shop.setOrders(new ArrayList<>()); // Thêm empty list
-	    model.addAttribute("shop", shop);
-
-	    // Mock data
-	    List<Book> books = new ArrayList<>();
-	    List<Category> categories = new ArrayList<>();
-	    
-	    model.addAttribute("books", books);
-	    model.addAttribute("categories", categories);
-	    model.addAttribute("currentPage", 1);
-	    model.addAttribute("totalPages", 1);
-	    
-	    return "seller/product-management";
-	}
+	
 	
 	
 }
