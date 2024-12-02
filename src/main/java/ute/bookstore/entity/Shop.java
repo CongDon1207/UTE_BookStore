@@ -25,6 +25,10 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @OneToOne
+    @JoinColumn(name = "user_id") 
+    private User user;
+    
     @Column(nullable = false)
     private String name;
     
