@@ -15,12 +15,8 @@ import ute.bookstore.entity.Shop;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
 	Page<Book> findByShopsInAndTitleContainingAndCategoryAndIsAvailable(
-		    Collection<Shop> shops,
-		    String title, 
-		    Category category,
-		    Boolean isAvailable,
-		    Pageable pageable
-		);
+	        List<Shop> shops, String searchTerm, Category category, Boolean availability, Pageable pageable
+	    );
     
 	List<Book> findByShopsIn(Collection<Shop> shops);
 }

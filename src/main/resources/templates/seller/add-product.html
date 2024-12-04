@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Thêm Sách Mới - UTE Book Store</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+	<div th:replace="seller/layout/header :: header"></div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2 bg-light">
+				<div th:replace="seller/layout/sidebar :: sidebar"></div>
+			</div>
+
+			<main class="col-md-10 ms-sm-auto px-4">
+				<div
+					class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1 class="h2">Thêm Sách Mới</h1>
+				</div>
+
+				<div class="card">
+					<div class="card-body">
+						<form th:action="@{/seller/products/add}" method="post" enctype="multipart/form-data">
+							<div class="row mb-3">
+								<div class="col-md-6">
+									<label class="form-label">Tên sách</label>
+									<input type="text" class="form-control" name="title" required>
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Thể loại</label>
+									<select class="form-select" name="category.id" required>
+										<option value="">-- Chọn thể loại --</option>
+										<option th:each="category : ${categories}" th:value="${category.id}"
+											th:text="${category.name}"></option>
+									</select>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<div class="col-md-6">
+									<label class="form-label">Giá bán (VNĐ)</label>
+									<input type="number" class="form-control" name="price" required>
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Số lượng</label>
+									<input type="number" class="form-control" name="quantity" required>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label class="form-label">Mô tả</label>
+								<textarea class="form-control" name="description"></textarea>
+							</div>
+
+							<div class="mb-3">
+								<label class="form-label">Hình ảnh sản phẩm (Tối đa 5 ảnh)</label>
+								<input type="file" class="form-control" name="imageFiles" multiple accept="image/*">
+							</div>
+
+							<div class="text-end">
+								<a href="/seller/products" class="btn btn-secondary me-2">Hủy</a>
+								<button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+
+	<div th:replace="seller/layout/footer :: footer"></div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+	<script>
+		function previewImages(event) {
+			const preview = document.getElementById('imagePreview');
+			preview.innerHTML = '';
+			const files = event.target.files;
+
+			if (files.length > 5) {
+				alert('Chỉ được chọn tối đa 5 ảnh');
+				event.target.value = '';
+				return;
+			}
+
+			for (const file of files) {
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					const img = document.createElement('img');
+					img.src = e.target.result;
+					img.className = 'img-thumbnail';
+					img.style.width = '100px';
+					preview.appendChild(img);
+				}
+				reader.readAsDataURL(file);
+			}
+		}
+	</script>
+</body>
+
+</html>

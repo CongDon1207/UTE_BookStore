@@ -1,28 +1,33 @@
 <div th:fragment="sidebar">
-	<nav class="sidebar bg-white min-vh-100" th:fragment="sidebar">
+	<nav class="sidebar bg-white min-vh-100">
 		<div class="position-sticky pt-3">
 			<div class="mb-4">
-				<img th:src="@{/images/logos/bookstore3.png}" class="img-fluid mb-3" style="width: 80%; height: auto; object-position: left;" alt="Logo"/>
+				<img th:src="@{/images/logos/bookstore3.png}" class="img-fluid mb-3"
+					style="width: 80%; height: auto; object-position: left;" alt="Logo" />
 			</div>
 
 			<ul class="nav flex-column">
 				<li class="nav-item">
-					<a href="#" class="nav-link active hover-effect">
+					<a th:href="@{/seller/dashboard}" class="nav-link"
+						th:classappend="${#strings.contains(#vars.requestURI ?: '', 'dashboard')} ? 'active' : 'text-dark'">
 						<i class="fas fa-home me-2"></i> Trang Chủ
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="nav-link text-dark hover-effect">
+					<a th:href="@{/seller/orders}" class="nav-link"
+						th:classappend="${#strings.contains(#vars.requestURI ?: '', 'orders')} ? 'active' : 'text-dark'">
 						<i class="fas fa-shopping-cart me-2"></i> Quản lý Đơn hàng
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="admin/shop-management" class="nav-link text-dark hover-effect">
+					<a th:href="@{/seller/shop}" class="nav-link"
+						th:classappend="${#strings.contains(#vars.requestURI ?: '', 'shop')} ? 'active' : 'text-dark'">
 						<i class="fas fa-store me-2"></i> Quản lý Shop
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="admin/product-management" class="nav-link text-dark hover-effect">
+					<a th:href="@{/seller/products}" class="nav-link"
+						th:classappend="${#strings.contains(#vars.requestURI ?: '', 'products')} ? 'active' : 'text-dark'">
 						<i class="fas fa-box me-2"></i> Quản lý Sản phẩm
 					</a>
 				</li>
@@ -31,10 +36,24 @@
 	</nav>
 
 	<style>
-		.hover-effect:hover {
-			background-color: #f8f9fa;
-			transform: translateX(10px);
+		.nav-link {
+			padding: 0.5rem 1rem;
+			border-radius: 0.25rem;
 			transition: all 0.3s ease;
+		}
+
+		.nav-link:hover {
+			background-color: #e9ecef;
+			transform: translateX(10px);
+		}
+
+		.nav-link.active {
+			background-color: #00A6E6 !important;
+			color: white !important;
+		}
+
+		.nav-link.active i {
+			color: white;
 		}
 	</style>
 </div>
