@@ -131,10 +131,30 @@ public class SellerProductController {
 	    return "seller/edit-product";
 	}
 	
+	@PostMapping("/{id}/edit")
+	public String updateProduct(@PathVariable Long id,
+	                          @ModelAttribute Book book,
+	                          @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles) throws IOException {
+	    Book existingBook = bookService.getBookById(id);
+	    book.setId(id); // Đảm bảo ID được set
+	    
+	    // Nếu không có ảnh mới, dùng ảnh cũ
+	    if (imageFiles == null || imageFiles.length == 0 || imageFiles[0].isEmpty()) {
+	        book.setImages(existingBook.getImages());
+	        imageFiles = null; // Set null để BookService không xử lý ảnh
+	    }
+	    
+	    book.setShops(existingBook.getShops()); // Giữ nguyên shop relationships
+	    book.setAuthors(existingBook.getAuthors()); // Giữ nguyên author relationships
+	    book.setReviews(existingBook.getReviews()); // Giữ nguyên review relationships
+	    
+	    bookService.updateBook(id, book, imageFiles);
+	    return "redirect:/seller/products";
+	}
 	
-	@DeleteMapping("/{id}")
+	@PostMapping("/{id}/delete")
 	public String deleteProduct(@PathVariable Long id) {
-		bookService.deleteBook(id);
-		return "redirect:/seller/products?success=deleted";
+	   bookService.deleteBook(id);
+	   return "redirect:/seller/products";
 	}
 }

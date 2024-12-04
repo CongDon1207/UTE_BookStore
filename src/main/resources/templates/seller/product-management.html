@@ -89,9 +89,12 @@
 								</td>
 								<td>
 									<a th:href="@{/seller/products/{id}/edit(id=${book.id})}" class="btn btn-primary btn-sm">Sửa</a>
-									<button class="btn btn-sm btn-danger" th:onclick="'deleteBook(' + ${book.id} + ')'">
-										<i class="fas fa-trash"></i> Xóa
-									</button>
+									<form th:action="@{/seller/products/{id}/delete(id=${book.id})}" method="post" style="display: inline;">
+									    <button type="submit" class="btn btn-danger btn-sm" 
+									            onclick="return confirm('Bạn có chắc chắn muốn xóa sách này?')">
+									        Xóa
+									    </button>
+									</form>
 								</td>
 							</tr>
 						</tbody>
