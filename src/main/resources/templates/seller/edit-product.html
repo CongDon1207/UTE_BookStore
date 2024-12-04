@@ -1,45 +1,149 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Chỉnh sửa sản phẩm</title>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa sản phẩm - UTE Book Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <h2>Chỉnh sửa sản phẩm</h2>
-    <form th:action="@{/seller/products/{id}(id=${book.id})}" th:object="${book}" method="post">
-        <input type="hidden" th:field="*{id}" />
-        
-        <div>
-            <label for="title">Tên sách:</label>
-            <input type="text" id="title" th:field="*{title}" />
+    <div th:replace="seller/layout/header :: header"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 bg-light">
+                <div th:replace="seller/layout/sidebar :: sidebar"></div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Chỉnh sửa sản phẩm</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <form th:object="${book}" method="post" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tên sách</label>
+                                        <input type="text" class="form-control" th:field="*{title}" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Thể loại</label>
+                                        <select class="form-select" th:field="*{category.id}" required>
+                                            <option value="">Chọn thể loại</option>
+                                            <option th:each="category : ${categories}" 
+                                                    th:value="${category.id}" 
+                                                    th:text="${category.name}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Giá</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" th:field="*{price}" required>
+                                                <span class="input-group-text">VNĐ</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Số lượng</label>
+                                            <input type="number" class="form-control" th:field="*{quantity}" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Mô tả</label>
+                                        <textarea class="form-control" th:field="*{description}" rows="5"></textarea>
+                                    </div>
+
+                                    <!-- Current Images -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Hình ảnh hiện tại</label>
+                                        <div class="row g-2">
+                                            <div th:each="image : ${book.images}" class="col-auto position-relative">
+                                                <img th:src="${image}" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                                                <button type="button" class="btn-close position-absolute top-0 end-0 m-1" 
+                                                        style="background-color: white;" 
+                                                        th:data-image="${image}"
+                                                        onclick="removeImage(this)">
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Upload New Images -->
+                                    <div class="mb-4">
+                                        <label class="form-label">Thêm hình ảnh mới</label>
+                                        <input type="file" class="form-control" name="imageFiles" multiple accept="image/*">
+                                        <div class="form-text">Có thể chọn nhiều hình ảnh. Định dạng: JPG, PNG</div>
+                                    </div>
+
+                                    <div class="text-end">
+                                        <a href="/seller/products" class="btn btn-secondary me-2">Hủy</a>
+                                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Panel -->
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Xem trước</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="preview" class="text-center">
+                                    <img th:if="${book.images != null and !book.images.empty}" 
+                                         th:src="${book.images[0]}" 
+                                         class="img-fluid mb-3" 
+                                         style="max-height: 300px;">
+                                    <h5 th:text="${book.title}">Tên sách</h5>
+                                    <p class="text-primary" th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-        
-        <div>
-            <label for="category">Thể loại:</label>
-            <select id="category" th:field="*{category.id}">
-                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
-            </select>
-        </div>
-        
-        <div>
-            <label for="price">Giá:</label>
-            <input type="number" id="price" th:field="*{price}" />
-        </div>
-        
-        <div>
-            <label for="quantity">Số lượng:</label>
-            <input type="number" id="quantity" th:field="*{quantity}" />
-        </div>
-        
-        <div>
-            <label for="description">Mô tả:</label>
-            <textarea id="description" th:field="*{description}"></textarea>
-        </div>
-        
-        <div>
-            <label for="images">Hình ảnh:</label>
-            <input type="file" id="images" name="imageFiles" multiple />
-        </div>
-        
-        <button type="submit">Lưu</button>
-    </form>
+    </div>
+
+    <div th:replace="seller/layout/footer :: footer"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function removeImage(button) {
+            const imageUrl = button.getAttribute('data-image');
+            // Add logic to remove image
+            button.parentElement.remove();
+        }
+
+        // Preview image when new files are selected
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.querySelector('#preview img').src = event.target.result;
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Update preview when title or price changes
+        document.querySelector('input[name="title"]').addEventListener('input', function(e) {
+            document.querySelector('#preview h5').textContent = e.target.value;
+        });
+
+        document.querySelector('input[name="price"]').addEventListener('input', function(e) {
+            document.querySelector('#preview p').textContent = new Intl.NumberFormat('vi-VN').format(e.target.value) + ' VNĐ';
+        });
+    </script>
 </body>
 </html>
