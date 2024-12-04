@@ -32,25 +32,7 @@ public class BookServiceImpl implements IBookService{
     @Autowired
     private ICloudinaryService cloudinaryService;
     
-    public Page<Book> getShopBooks(
-    		   Long shopId,
-    		   String searchTerm, 
-    		   Category category,
-    		   Boolean availability,
-    		   int page,
-    		   int size
-    		) {
-    		   Shop shop = shopService.getShopById(shopId);
-    		   List<Shop> shops = Collections.singletonList(shop);
-    		   return bookRepository.findByShopsInAndTitleContainingAndCategoryAndIsAvailable(
-    		       shops,
-    		       searchTerm,
-    		       category, 
-    		       availability,
-    		       PageRequest.of(page, size)
-    		   );
-    		}
-    
+    @Override
     public Book createBook(Book book, MultipartFile[] images) throws IOException {
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile image : images) {
@@ -59,8 +41,15 @@ public class BookServiceImpl implements IBookService{
         }
         book.setImages(imageUrls);
         book.setIsAvailable(book.getQuantity() > 0);
-        
         return bookRepository.save(book);
+    }
+    
+    @Override
+    public Page<Book> getShopBooks(Long shopId, String searchTerm, Category category, Boolean availability, int page, int size) {
+        Shop shop = shopService.getShopById(shopId);
+        return bookRepository.findByShopsInAndTitleContainingAndCategoryAndIsAvailable(
+            List.of(shop), searchTerm, category, availability, PageRequest.of(page, size)
+        );
     }
     
     public Book updateBook(Long id, Book updatedBook, MultipartFile[] newImages) throws IOException {
@@ -100,4 +89,18 @@ public class BookServiceImpl implements IBookService{
         
         bookRepository.delete(book);
     }
+    
+    @Override
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    @Override
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+    }
+
+    
+    
 }

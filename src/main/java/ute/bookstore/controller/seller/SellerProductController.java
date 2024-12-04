@@ -14,133 +14,127 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 import ute.bookstore.entity.Book;
-import ute.bookstore.entity.Category; 
+import ute.bookstore.entity.Category;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.service.ICategoryService;
 import ute.bookstore.service.IBookService;
 import ute.bookstore.service.IShopService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Controller
 @RequestMapping("/seller/products")
 public class SellerProductController {
-   @Autowired 
-   private IBookService bookService;
-   
-   @Autowired
-   private IShopService shopService;
-   
-   @Autowired
-   private ICategoryService categoryService;
-   
-   @ModelAttribute
-   public void addAttributes(Model model, HttpServletRequest request) {
-       model.addAttribute("requestURI", request.getRequestURI());
-   }
-   
-   @GetMapping
-   public String getProductManagement(
-		    @RequestParam(defaultValue = "") String search,
-		    @RequestParam(required = false) Category category, 
-		    @RequestParam(required = false) Boolean availability,
-		    @RequestParam(defaultValue = "0") int page,
-		    Model model,
-		    @AuthenticationPrincipal UserDetails userDetails
-		) {
-		    // Test shop data
-		    Shop shop = new Shop();
-		    shop.setId(1L);
-		    shop.setName("Test Book Shop");
-		    
-		    // Test book data
-		    List<Book> bookList = Arrays.asList(
-		        createTestBook(1L, "Clean Code", "Programming", 299000.0, true),
-		        createTestBook(2L, "Design Patterns", "Programming", 359000.0, true),
-		        createTestBook(3L, "Doraemon Tập 1", "Manga", 25000.0, true),
-		        createTestBook(4L, "Sách Giáo Khoa Toán 12", "Textbook", 15000.0, false)
-		    );
-		    
-		    // Create pageable test data
-		    int size = 10;
-		    Pageable pageable = PageRequest.of(page, size);
-		    Page<Book> books = new PageImpl<>(bookList, pageable, bookList.size());
+	@Autowired
+	private IBookService bookService;
 
-		    // Test categories 
-		    List<Category> categories = Arrays.asList(
-		        createTestCategory(1L, "Programming", null),
-		        createTestCategory(2L, "Manga", null),
-		        createTestCategory(3L, "Textbook", null)
-		    );
+	@Autowired
+	private IShopService shopService;
 
-		    model.addAttribute("books", books);
-		    model.addAttribute("categories", categories);
-		    model.addAttribute("currentPage", page);
-		    model.addAttribute("totalPages", books.getTotalPages());
-		    model.addAttribute("hasNext", page < books.getTotalPages() - 1);
-		    model.addAttribute("hasPrevious", page > 0);
+	@Autowired
+	private ICategoryService categoryService;
 
-		    return "seller/product-management";
-		}
+	@ModelAttribute
+	public void addAttributes(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
+	}
 
-		private Book createTestBook(Long id, String title, String categoryName, Double price, Boolean available) {
-		    Book book = new Book();
-		    book.setId(id);
-		    book.setTitle(title);
-		    book.setPrice(price);
-		    book.setIsAvailable(available);
-		    book.setQuantity(100);
-		    
-		    Category category = new Category();
-		    category.setName(categoryName);
-		    book.setCategory(category);
-		    
-		    return book;
-		}
+	@GetMapping
+	public String getProductManagement(@RequestParam(defaultValue = "") String search,
+			@RequestParam(required = false) Category category, @RequestParam(required = false) Boolean availability,
+			@RequestParam(defaultValue = "0") int page, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+		// Test shop data
+		Shop shop = new Shop();
+		shop.setId(1L);
+		shop.setName("Test Book Shop");
 
-		private Category createTestCategory(Long id, String name, Category parent) {
-		    Category category = new Category();
-		    category.setId(id);
-		    category.setName(name);
-		    category.setParent(parent);
-		    return category;
-		}
+		// Test book data
+		List<Book> bookList = bookService.getAllBooks();
 
-   @PostMapping
-   public String createProduct(
-       @ModelAttribute Book book,
-       @RequestParam("images") MultipartFile[] images,
-       @AuthenticationPrincipal UserDetails userDetails
-   ) {
-       try {
-           Shop shop = shopService.getShopByUser(userDetails.getUsername());
-           book.setShops(List.of(shop)); // Thay vì add trực tiếp 
-           bookService.createBook(book, images);
-           return "redirect:/seller/products?success=created";
-       } catch (IOException e) {
-           return "redirect:/seller/products?error=image-upload";
-       }
-   }
+		// Create pageable test data
+		int size = 10;
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Book> books = new PageImpl<>(bookList, pageable, bookList.size());
 
-   @PutMapping("/{id}") 
-   public String updateProduct(
-       @PathVariable Long id,
-       @ModelAttribute Book book,
-       @RequestParam(required = false) MultipartFile[] images
-   ) {
-       try {
-           bookService.updateBook(id, book, images);
-           return "redirect:/seller/products?success=updated";
-       } catch (IOException e) {
-           return "redirect:/seller/products?error=image-upload";
-       }
-   }
+		// Test categories
+		List<Category> categories = categoryService.getAllCategories();
 
-   @DeleteMapping("/{id}")
-   public String deleteProduct(@PathVariable Long id) {
-       bookService.deleteBook(id);
-       return "redirect:/seller/products?success=deleted";
-   }
+		model.addAttribute("books", books);
+		model.addAttribute("categories", categories);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", books.getTotalPages());
+		model.addAttribute("hasNext", page < books.getTotalPages() - 1);
+		model.addAttribute("hasPrevious", page > 0);
+
+		return "seller/product-management";
+	}
+
+	private Book createTestBook(Long id, String title, String categoryName, Double price, Boolean available) {
+		Book book = new Book();
+		book.setId(id);
+		book.setTitle(title);
+		book.setPrice(price);
+		book.setIsAvailable(available);
+		book.setQuantity(100);
+
+		Category category = new Category();
+		category.setName(categoryName);
+		book.setCategory(category);
+
+		return book;
+	}
+
+	private Category createTestCategory(Long id, String name, Category parent) {
+		Category category = new Category();
+		category.setId(id);
+		category.setName(name);
+		category.setParent(parent);
+		return category;
+	}
+
+	@GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "seller/add-product";
+    }
+    
+	@PostMapping("/add")
+	public String createProduct(
+	    @RequestParam("title") String title,
+	    @RequestParam("category.id") Long categoryId,
+	    @RequestParam("price") Double price,
+	    @RequestParam("quantity") Integer quantity,
+	    @RequestParam("description") String description, 
+	    @RequestParam("imageFiles") MultipartFile[] imageFiles
+	) throws IOException {
+	    Book book = new Book();
+	    book.setTitle(title);
+	    book.setDescription(description);
+	    book.setPrice(price);
+	    book.setQuantity(quantity);
+	    
+	    Category category = categoryService.getCategoryById(categoryId);
+	    book.setCategory(category);
+	    
+	    bookService.createBook(book, imageFiles);
+	    return "redirect:/seller/products";
+	}
+	
+	@GetMapping("/{id}/edit")
+	public String editProduct(@PathVariable Long id, Model model) {
+	    Book book = bookService.getBookById(id);
+	    model.addAttribute("book", book);
+	    model.addAttribute("categories", categoryService.getAllCategories());
+	    return "seller/edit-product";
+	}
+	
+	
+	@DeleteMapping("/{id}")
+	public String deleteProduct(@PathVariable Long id) {
+		bookService.deleteBook(id);
+		return "redirect:/seller/products?success=deleted";
+	}
 }
