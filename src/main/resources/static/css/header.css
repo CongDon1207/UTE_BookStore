@@ -149,7 +149,7 @@
     display: flex;
     align-items: center;
     margin-top: -60px; /* Đẩy toàn bộ thanh lên trên (giảm giá trị nếu cần đẩy lên cao hơn) */
-    margin-left: -70px; /* Đẩy toàn bộ thanh lên trên (giảm giá trị nếu cần đẩy lên cao hơn) */
+    margin-left: -135px; /* Đẩy toàn bộ thanh lên trên (giảm giá trị nếu cần đẩy lên cao hơn) */
     gap: 5px; /* Khoảng cách giữa các phần tử */
     background-color: #f8f9fa; /* Màu nền thanh tìm kiếm */
     padding: 10px 20px;

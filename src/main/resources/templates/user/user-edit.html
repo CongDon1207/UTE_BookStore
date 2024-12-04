@@ -63,29 +63,48 @@
     </h3>
 </div>
                 <div class="card-body">
-    <form action="/user/update-info" method="post">
+        <!-- Hiển thị thông báo thành công -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Hiển thị thông báo lỗi -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <form th:object="${user}" action="/user/update-info" method="post">
+    <!-- Hidden field for ID -->
+        <input type="hidden" th:field="*{id}" />
         <!-- Email -->
-        <div class="form-group mb-3">
-            <label for="email" class="form-label">
+        <div class="form-group mb-3 row">
+            <label for="email" class="col-sm-2 col-form-label">
                 <i class="fas fa-envelope"></i> Email
             </label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Nhập email của bạn" required>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="email" name="email" th:field="*{email}" required>
+            </div>
         </div>
 
         <!-- Fullname -->
-        <div class="form-group mb-3">
-            <label for="fullname" class="form-label">
+        <div class="form-group mb-3 row">
+            <label for="fullname" class="col-sm-2 col-form-label">
                 <i class="fas fa-user"></i> Họ và Tên
             </label>
-            <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Nhập họ và tên" required>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="fullname" name="fullname" th:field="*{fullName}" required>
+            </div>
         </div>
 
         <!-- Phone -->
-        <div class="form-group mb-3">
-            <label for="phone" class="form-label">
+        <div class="form-group mb-3 row">
+            <label for="phone" class="col-sm-2 col-form-label">
                 <i class="fas fa-phone"></i> Số điện thoại
             </label>
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Nhập số điện thoại" required>
+            <div class="col-sm-10">
+                <input type="tel" class="form-control" id="phone" name="phone" th:field="*{phone}" required>
+            </div>
         </div>
 
         <!-- Submit Button -->
@@ -99,6 +118,7 @@
         </div>
     </form>
 </div>
+
 
 
             </div>
