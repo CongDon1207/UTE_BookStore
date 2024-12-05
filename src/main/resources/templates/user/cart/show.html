@@ -57,6 +57,39 @@
             background-color: #007bff;
             border-color: #007bff;
         }
+        i.fa-trash, i.bi-trash {
+    font-size: 1.2rem; /* Kích thước biểu tượng */
+    padding: 5px;     /* Khoảng cách xung quanh */
+}
+        .confirm-dialog {
+    display: none; /* Ẩn mặc định */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Nền tối mờ */
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 80%;
+}
+
+.confirm-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
     </style>
 <!-- IE Compatibility -->
 <!--[if lt IE 9]>
@@ -72,19 +105,22 @@
     <div th:replace="~{user/layout/header :: header}"></div>
 	  <!-- Main Content -->
     <main class="container py-5">
-        <h1 class="text-center mb-4">Giỏ Hàng Của Bạn</h1>
+     <h1 class="mb-2" style="font-size: 20px;color:purple">Giỏ Hàng(1 sản phẩm)</h1>
+             <input type="checkbox" id="selectAll" onclick="toggleAll(this)" style="width: 20px; height: 20px;"> Chọn tất cả
+                        
+
         
         <!-- Bảng hiển thị các sản phẩm trong giỏ hàng -->
-        <div class="table-responsive">
-            <table class="table table-bordered text-center align-middle">
-                <thead class="table-dark">
+        <div class="table-responsive"  >
+            <table class="table table-bordered text-center ">
+                <thead class="table-dark" >
                     <tr>
-                        <th>Hình ảnh</th>
-                        <th>Tên sách</th>
-                        <th>Số lượng</th>
-                        <th>Đơn giá</th>
-                        <th>Tổng cộng</th>
-                        <th>Xóa</th>
+                        <th style="color: white;">Hình ảnh</th>
+                        <th style="color: white;">Tên sách</th>
+                        <th style="color: white;">Số lượng</th>
+                        <th style="color: white;">Đơn giá</th>
+                        <th style="color: white;">Thành tiền</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,7 +133,12 @@
                         </td>
                         <td>100.000₫</td>
                         <td>100.000₫</td>
-                        <td><button class="btn btn-danger btn-sm">Xóa</button></td>
+                    <td>
+    <i class="fa fa-trash text-danger" style="cursor: pointer;" title="Xóa" onclick="deleteItem(this)"></i>
+    <input type="checkbox" name="selectedItems">
+</td>
+
+
                     </tr>
                     <!-- Thêm sản phẩm khác -->
                 </tbody>
@@ -111,13 +152,21 @@
                     <p class="fs-5">Tổng tiền: <span class="text-primary fw-bold">100.000₫</span></p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <a href="/shop" class="btn btn-secondary me-2">Tiếp tục mua sắm</a>
+                    <a href="/user/shopping" class="btn btn-secondary me-2">Tiếp tục mua sắm</a>
                     <a href="/checkout" class="btn btn-primary">Thanh toán</a>
                 </div>
             </div>
         </div>
     </main>
-	
+	<div id="confirmDialog" class="confirm-dialog">
+    <div class="confirm-content">
+        <p>Bạn có chắc chắn muốn xóa không?</p>
+        <div class="confirm-buttons">
+            <button id="confirmYes" class="btn btn-danger">Có</button>
+            <button id="confirmNo" class="btn btn-secondary">Không</button>
+        </div>
+    </div>
+</div>
 	
 	
 	
@@ -125,7 +174,46 @@
 	<!-- Sử dụng fragment footer -->
     <div th:replace="~{user/layout/footer :: footer}"></div>
 	
-	
+	<script>
+	function deleteItem(element) {
+	    const row = element.closest('tr'); // Tìm hàng (row) chứa biểu tượng
+
+	    showConfirmDialog(function (isConfirmed) {
+	        if (isConfirmed) {
+	            row.remove(); // Xóa hàng khỏi bảng
+	            alert("Hàng đã bị xóa!");
+	        }
+	    });
+	}
+
+	function showConfirmDialog(callback) {
+	    const dialog = document.getElementById('confirmDialog');
+	    const yesButton = document.getElementById('confirmYes');
+	    const noButton = document.getElementById('confirmNo');
+
+	    // Hiển thị hộp thoại
+	    dialog.style.display = 'flex';
+
+	    // Xử lý khi nhấn "Có"
+	    yesButton.onclick = function () {
+	        dialog.style.display = 'none'; // Ẩn hộp thoại
+	        callback(true); // Gọi lại hàm xác nhận
+	    };
+
+	    // Xử lý khi nhấn "Không"
+	    noButton.onclick = function () {
+	        dialog.style.display = 'none'; // Ẩn hộp thoại
+	        callback(false); // Hủy hành động
+	    };
+	}
+	 // Chọn/Bỏ chọn tất cả
+    function toggleAll(source) {
+        const checkboxes = document.querySelectorAll('input[name="selectedItems"]');
+        checkboxes.forEach(checkbox => checkbox.checked = source.checked);
+    }
+
+
+	</script>
 <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 	

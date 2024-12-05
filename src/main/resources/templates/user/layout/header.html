@@ -27,7 +27,7 @@
                     </div>
                     <div class="float-right">
                         <div class="make_appo"><a class="btn white_btn" href="it_cart.html">Liên hệ</a></div>
-                    </div>
+                    </div>																		
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
                     <div class="menu_side">
                         <div id="navbar_menu">
                             <ul class="first-ul">
-                            <li><a ><i class="fa fa-book"></i> _________________________</a></li>
+                            <li><a ><i class="fa fa-book"></i> __________________________________________</a></li>
                                 <li><a class="active" href="/user/home"><i class="fa fa-home"></i> Trang chủ</a></li>
                                
                                 <li><a  href="/user/shopping"><i class="fa fa-shopping-bag"></i> Mua sắm</a></li>
@@ -80,7 +80,10 @@
                         </div>
                         <div class="search_icon">
     <div class="search-bar">
-    <!-- Biểu tượng danh mục -->
+   
+
+  <div class="search-container">
+   <!-- Biểu tượng danh mục -->
     <div class="category-dropdown">
         <a href="#" class="category-icon">
             <i class="fa fa-list"></i> <!-- Icon danh mục -->
@@ -90,25 +93,32 @@
         <div class="dropdown-content">
             <!-- Danh mục có thể bỏ hoặc giữ nếu bạn muốn -->
                                     <ul>
-                                        <li><a href="sach_moi.html"><i class="fa fa-book"></i> Sách mới</a></li>
-                                        <li><a href="sach_ban_chay.html"><i class="fa fa-fire"></i> Sách bán chạy</a></li>
-                                        <li><a href="sach_danh_gia_cao.html"><i class="fa fa-star"></i> Sách đánh giá cao</a></li>
-                                        <li><a href="sach_yeu_thich.html"><i class="fa fa-heart"></i> Sách yêu thích</a></li>
+                                         <li><a href="shopping?danhmuc=sachmoi"><i class="fa fa-book"></i> Sách mới</a></li>
+        <li><a href="shopping?danhmuc=sachbanchay"><i class="fa fa-fire"></i> Sách bán chạy</a></li>
+        <li><a href="shopping?danhmuc=sachdanhgiacao"><i class="fa fa-star"></i> Sách đánh giá cao</a></li>
+        <li><a href="shopping?danhmuc=sachyeuthich"><i class="fa fa-heart"></i> Sách yêu thích</a></li>
                                     </ul>
         </div>
     </div>
+        <!-- Form tìm kiếm -->
+        <form action="/search" method="get" class="search-form" id="searchForm">
+            <div class="input-with-icon">
+                <input type="text" name="search_query" placeholder="Tìm kiếm sách..." class="form-control" id="searchQuery">
+                <i class="fa fa-search search-icon" id="searchIcon"></i>
+            </div>
+        </form>
 
-  <!-- Thanh tìm kiếm -->
-<form action="/search" method="get" class="search-form" id="searchForm">
-    <div class="input-with-icon">
-        <input type="text" name="search_query" placeholder="Tìm kiếm sách..." class="form-control" id="searchQuery">
-        <!-- Đặt ID cho icon tìm kiếm để JavaScript nhận diện -->
-        <i class="fa fa-search search-icon" id="searchIcon"></i> <!-- Biểu tượng tìm kiếm -->
+        <!-- Nút Xem sách đã yêu thích -->
+      <button class="favorite-button" onclick="window.location.href='/user/favoriteBooks';">
+    <i class="fa fa-book"></i> <i class="fa fa-heart"></i>
+    <span class="tooltip-text">Xem sách đã yêu thích</span>
+</button>
+
+
+
     </div>
-</form>
-</div>
-
-</div>
+    </div>
+    </div>
                     </div>
                     <!-- menu end -->
                 </div>

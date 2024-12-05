@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Đơn hàng - UTE Book Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+	<div th:replace="seller/layout/header :: header"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 bg-light">
+                <div th:replace="seller/layout/sidebar :: sidebar"></div>
+            </div>
+
+            <main class="col-md-10 ms-sm-auto px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Quản lý Đơn hàng</h1>
+                </div>
+
+                <!-- Filter Tabs -->
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" th:attr="data-status='ALL'">Tất cả</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" th:attr="data-status='NEW'">Đơn mới</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" th:attr="data-status='CONFIRMED'">Đã xác nhận</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" th:attr="data-status='SHIPPING'">Đang giao</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" th:attr="data-status='DELIVERED'">Đã giao</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" th:attr="data-status='CANCELLED'">Đã hủy</a>
+                    </li>
+                </ul>
+
+                <!-- Orders Table -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày đặt</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td th:text="${order.id}">#12345</td>
+                                <td th:text="${order.user.fullName}">Nguyễn Văn A</td>
+                                <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">500,000 đ</td>
+                                <td>
+                                    <span th:class="${'badge ' + {
+                                        'NEW': 'bg-primary',
+                                        'CONFIRMED': 'bg-info',
+                                        'SHIPPING': 'bg-warning',
+                                        'DELIVERED': 'bg-success',
+                                        'CANCELLED': 'bg-danger'
+                                    }[order.status]}" th:text="${order.status.status}">
+                                        Trạng thái
+                                    </span>
+                                </td>
+                                <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}">20-11-2023 15:30</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                data-bs-toggle="modal" data-bs-target="#orderDetailModal"
+                                                th:attr="data-order-id=${order.id}">
+                                            Chi tiết
+                                        </button>
+                                        <button th:if="${order.status.name() == 'NEW'}" type="button" 
+                                                class="btn btn-sm btn-success"
+                                                th:onclick="'confirmOrder(' + ${order.id} + ')'">
+                                            Xác nhận
+                                        </button>
+                                        <button th:if="${order.status.name() == 'NEW'}" type="button" 
+                                                class="btn btn-sm btn-danger"
+                                                th:onclick="'cancelOrder(' + ${order.id} + ')'">
+                                            Hủy đơn
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/vendor/orders(page=${currentPage - 1})}">Trước</a>
+                        </li>
+                        <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${pageNumber == currentPage} ? 'active'">
+                            <a class="page-link" th:href="@{/vendor/orders(page=${pageNumber})}" 
+                               th:text="${pageNumber}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                            <a class="page-link" th:href="@{/vendor/orders(page=${currentPage + 1})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </main>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div class="modal fade" id="orderDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết đơn hàng #<span id="orderIdSpan"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Thông tin khách hàng</h6>
+                            <p class="mb-1">Tên: <span id="customerName"></span></p>
+                            <p class="mb-1">SĐT: <span id="customerPhone"></span></p>
+                            <p>Email: <span id="customerEmail"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Địa chỉ giao hàng</h6>
+                            <p id="shippingAddress"></p>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderItems">
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Tổng tiền:</strong></td>
+                                    <td id="totalAmount"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="seller/layout/footer :: footer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function loadOrderDetail(orderId) {
+            fetch(`/api/vendor/orders/${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('orderIdSpan').textContent = data.id;
+                    document.getElementById('customerName').textContent = data.user.fullName;
+                    document.getElementById('customerPhone').textContent = data.user.phone;
+                    document.getElementById('customerEmail').textContent = data.user.email;
+                    document.getElementById('shippingAddress').textContent = data.deliveryAddress;
+                    document.getElementById('totalAmount').textContent = new Intl.NumberFormat('vi-VN', 
+                        { style: 'currency', currency: 'VND' }).format(data.totalAmount);
+                    
+                    const itemsHtml = data.items.map(item => `
+                        <tr>
+                            <td>${item.book.title}</td>
+                            <td>${new Intl.NumberFormat('vi-VN', 
+                                { style: 'currency', currency: 'VND' }).format(item.price)}</td>
+                            <td>${item.quantity}</td>
+                            <td>${new Intl.NumberFormat('vi-VN', 
+                                { style: 'currency', currency: 'VND' }).format(item.price * item.quantity)}</td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('orderItems').innerHTML = itemsHtml;
+                });
+        }
+
+        // Event listener for order detail modal
+        document.getElementById('orderDetailModal').addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const orderId = button.getAttribute('data-order-id');
+            loadOrderDetail(orderId);
+        });
+
+        function confirmOrder(orderId) {
+            if (confirm('Xác nhận đơn hàng này?')) {
+                fetch(`/api/vendor/orders/${orderId}/confirm`, {
+                    method: 'POST'
+                }).then(() => window.location.reload());
+            }
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
+                fetch(`/api/vendor/orders/${orderId}/cancel`, {
+                    method: 'POST'
+                }).then(() => window.location.reload());
+            }
+        }
+    </script>
+</body>
+</html>
