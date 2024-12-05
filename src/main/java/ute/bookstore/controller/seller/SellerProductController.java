@@ -32,9 +32,6 @@ public class SellerProductController {
 	private IBookService bookService;
 
 	@Autowired
-	private IShopService shopService;
-
-	@Autowired
 	private ICategoryService categoryService;
 
 	@ModelAttribute
@@ -72,28 +69,7 @@ public class SellerProductController {
 		return "seller/product-management";
 	}
 
-	private Book createTestBook(Long id, String title, String categoryName, Double price, Boolean available) {
-		Book book = new Book();
-		book.setId(id);
-		book.setTitle(title);
-		book.setPrice(price);
-		book.setIsAvailable(available);
-		book.setQuantity(100);
-
-		Category category = new Category();
-		category.setName(categoryName);
-		book.setCategory(category);
-
-		return book;
-	}
-
-	private Category createTestCategory(Long id, String name, Category parent) {
-		Category category = new Category();
-		category.setId(id);
-		category.setName(name);
-		category.setParent(parent);
-		return category;
-	}
+	
 
 	@GetMapping("/add")
     public String showAddForm(Model model) {
