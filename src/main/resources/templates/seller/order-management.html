@@ -6,7 +6,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-	<div th:replace="seller/layout/header :: header"></div>
+    <div th:replace="seller/layout/header :: header"></div>
 
     <div class="container-fluid">
         <div class="row">
@@ -19,31 +19,36 @@
                     <h1 class="h2">Quản lý Đơn hàng</h1>
                 </div>
 
-                <!-- Filter Tabs -->
-                <ul class="nav nav-tabs mb-4">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" th:attr="data-status='ALL'">Tất cả</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" th:attr="data-status='NEW'">Đơn mới</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" th:attr="data-status='CONFIRMED'">Đã xác nhận</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" th:attr="data-status='SHIPPING'">Đang giao</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" th:attr="data-status='DELIVERED'">Đã giao</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" th:attr="data-status='CANCELLED'">Đã hủy</a>
-                    </li>
-                </ul>
+				<ul class="nav nav-tabs mb-4">
+				   <li class="nav-item">
+				       <a class="nav-link" th:classappend="${selectedStatus == null || selectedStatus == 'ALL'} ? 'active'"
+				          th:href="@{/seller/orders}">Tất cả</a>
+				   </li>
+				   <li class="nav-item">
+				       <a class="nav-link" th:classappend="${selectedStatus == 'NEW'} ? 'active'"
+				          th:href="@{/seller/orders(status='NEW')}">Đơn mới</a>
+				   </li>
+				   <li class="nav-item">
+				       <a class="nav-link" th:classappend="${selectedStatus == 'CONFIRMED'} ? 'active'"
+				          th:href="@{/seller/orders(status='CONFIRMED')}">Đã xác nhận</a>
+				   </li>
+				   <li class="nav-item">
+				       <a class="nav-link" th:classappend="${selectedStatus == 'SHIPPING'} ? 'active'"
+				          th:href="@{/seller/orders(status='SHIPPING')}">Đang giao</a>
+				   </li>
+				   <li class="nav-item">
+				       <a class="nav-link" th:classappend="${selectedStatus == 'DELIVERED'} ? 'active'"
+				          th:href="@{/seller/orders(status='DELIVERED')}">Đã giao</a>
+				   </li>
+				   <li class="nav-item">
+				       <a class="nav-link" th:classappend="${selectedStatus == 'CANCELLED'} ? 'active'"
+				          th:href="@{/seller/orders(status='CANCELLED')}">Đã hủy</a>
+				   </li>
+				</ul>
 
                 <!-- Orders Table -->
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>Mã đơn</th>
@@ -55,40 +60,56 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="order : ${orders}">
-                                <td th:text="${order.id}">#12345</td>
-                                <td th:text="${order.user.fullName}">Nguyễn Văn A</td>
-                                <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">500,000 đ</td>
+                            <tr th:each="order : ${orders.content}">
+                                <td th:text="${'#' + order.id}"></td>
+                                <td th:text="${order.user.fullName}"></td>
+                                <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
                                 <td>
-                                    <span th:class="${'badge ' + {
-                                        'NEW': 'bg-primary',
-                                        'CONFIRMED': 'bg-info',
-                                        'SHIPPING': 'bg-warning',
-                                        'DELIVERED': 'bg-success',
-                                        'CANCELLED': 'bg-danger'
-                                    }[order.status]}" th:text="${order.status.status}">
-                                        Trạng thái
-                                    </span>
+									<span th:class="${'badge ' + {
+									   'NEW': 'bg-primary', 
+									   'CONFIRMED': 'bg-info',
+									   'SHIPPING': 'bg-warning',  
+									   'DELIVERED': 'bg-success',
+									   'CANCELLED': 'bg-danger'
+									}[order.status.name()]}" 
+									th:text="${{
+									   'NEW': 'Đơn mới',
+									   'CONFIRMED': 'Đã xác nhận', 
+									   'SHIPPING': 'Đang giao hàng',
+									   'DELIVERED': 'Đã giao hàng',
+									   'CANCELLED': 'Đã hủy'
+									}[order.status.name()]}"></span>
                                 </td>
-                                <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}">20-11-2023 15:30</td>
+                                <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
                                 <td>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                data-bs-toggle="modal" data-bs-target="#orderDetailModal"
-                                                th:attr="data-order-id=${order.id}">
-                                            Chi tiết
-                                        </button>
-                                        <button th:if="${order.status.name() == 'NEW'}" type="button" 
-                                                class="btn btn-sm btn-success"
-                                                th:onclick="'confirmOrder(' + ${order.id} + ')'">
-                                            Xác nhận
-                                        </button>
-                                        <button th:if="${order.status.name() == 'NEW'}" type="button" 
-                                                class="btn btn-sm btn-danger"
-                                                th:onclick="'cancelOrder(' + ${order.id} + ')'">
-                                            Hủy đơn
-                                        </button>
-                                    </div>
+									<div class="btn-group">
+									    <button class="btn btn-sm btn-outline-primary" 
+									            onclick="showOrderDetail(this)"
+									            th:data-order-id="${order.id}">
+									        Chi tiết
+									    </button>
+									    
+									    <!-- Nút xác nhận cho đơn mới -->
+									    <button th:if="${order.status.name() == 'NEW'}" 
+									            class="btn btn-sm btn-success"
+									            th:onclick="'updateOrderStatus(' + ${order.id} + ', \'CONFIRMED\')'" >
+									        Xác nhận
+									    </button>
+									    
+									    <!-- Thêm nút cập nhật đang giao cho đơn đã xác nhận -->
+									    <button th:if="${order.status.name() == 'CONFIRMED'}" 
+									            class="btn btn-sm btn-info"
+									            th:onclick="'updateOrderStatus(' + ${order.id} + ', \'SHIPPING\')'">
+									        Giao hàng
+									    </button>
+									    
+									    <!-- Nút hủy chỉ cho đơn mới -->
+									    <button th:if="${order.status.name() == 'NEW'}" 
+									            class="btn btn-sm btn-danger"
+									            th:onclick="'updateOrderStatus(' + ${order.id} + ', \'CANCELLED\')'">
+									        Hủy
+									    </button>
+									</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -96,18 +117,27 @@
                 </div>
 
                 <!-- Pagination -->
-                <nav aria-label="Page navigation" class="mt-4">
+                <nav th:if="${orders.totalPages > 1}" class="mt-4">
                     <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{/vendor/orders(page=${currentPage - 1})}">Trước</a>
+                        <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/seller/orders(page=${orders.number - 1}, status=${selectedStatus})}">
+                                Trước
+                            </a>
                         </li>
-                        <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
-                            th:classappend="${pageNumber == currentPage} ? 'active'">
-                            <a class="page-link" th:href="@{/vendor/orders(page=${pageNumber})}" 
-                               th:text="${pageNumber}">1</a>
+                        
+                        <li class="page-item" 
+                            th:each="i : ${#numbers.sequence(1, orders.totalPages)}"
+                            th:classappend="${i == orders.number + 1} ? 'active'">
+                            <a class="page-link" 
+                               th:href="@{/seller/orders(page=${i - 1}, status=${selectedStatus})}" 
+                               th:text="${i}">
+                            </a>
                         </li>
-                        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                            <a class="page-link" th:href="@{/vendor/orders(page=${currentPage + 1})}">Sau</a>
+                        
+                        <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/seller/orders(page=${orders.number + 1}, status=${selectedStatus})}">
+                                Sau
+                            </a>
                         </li>
                     </ul>
                 </nav>
@@ -120,20 +150,18 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Chi tiết đơn hàng #<span id="orderIdSpan"></span></h5>
+                    <h5 class="modal-title">Chi tiết đơn hàng #<span id="modalOrderId"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <h6>Thông tin khách hàng</h6>
-                            <p class="mb-1">Tên: <span id="customerName"></span></p>
-                            <p class="mb-1">SĐT: <span id="customerPhone"></span></p>
-                            <p>Email: <span id="customerEmail"></span></p>
+                            <div id="customerInfo"></div>
                         </div>
                         <div class="col-md-6">
                             <h6>Địa chỉ giao hàng</h6>
-                            <p id="shippingAddress"></p>
+                            <div id="shippingAddress"></div>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -143,15 +171,14 @@
                                     <th>Sản phẩm</th>
                                     <th>Giá</th>
                                     <th>Số lượng</th>
-                                    <th>Tổng</th>
+                                    <th>Thành tiền</th>
                                 </tr>
                             </thead>
-                            <tbody id="orderItems">
-                            </tbody>
+                            <tbody id="orderItems"></tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="3" class="text-end"><strong>Tổng tiền:</strong></td>
-                                    <td id="totalAmount"></td>
+                                    <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                                    <td id="modalTotalAmount"></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -165,53 +192,55 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        function loadOrderDetail(orderId) {
-            fetch(`/api/vendor/orders/${orderId}`)
+        const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+        
+        function showOrderDetail(button) {
+            const orderId = button.getAttribute('data-order-id');
+            fetch(`/seller/orders/detail/${orderId}`)
                 .then(response => response.json())
-                .then(data => {
-                    document.getElementById('orderIdSpan').textContent = data.id;
-                    document.getElementById('customerName').textContent = data.user.fullName;
-                    document.getElementById('customerPhone').textContent = data.user.phone;
-                    document.getElementById('customerEmail').textContent = data.user.email;
-                    document.getElementById('shippingAddress').textContent = data.deliveryAddress;
-                    document.getElementById('totalAmount').textContent = new Intl.NumberFormat('vi-VN', 
-                        { style: 'currency', currency: 'VND' }).format(data.totalAmount);
+                .then(order => {
+                    document.getElementById('modalOrderId').textContent = order.id;
                     
-                    const itemsHtml = data.items.map(item => `
+                    document.getElementById('customerInfo').innerHTML = `
+                        <p>Tên: ${order.user.fullName}</p>
+                        <p>SĐT: ${order.user.phone}</p>
+                        <p>Email: ${order.user.email}</p>
+                    `;
+                    
+                    document.getElementById('shippingAddress').textContent = order.deliveryAddress;
+                    
+                    const items = order.items.map(item => `
                         <tr>
                             <td>${item.book.title}</td>
-                            <td>${new Intl.NumberFormat('vi-VN', 
-                                { style: 'currency', currency: 'VND' }).format(item.price)}</td>
+                            <td>${formatCurrency(item.price)}</td>
                             <td>${item.quantity}</td>
-                            <td>${new Intl.NumberFormat('vi-VN', 
-                                { style: 'currency', currency: 'VND' }).format(item.price * item.quantity)}</td>
+                            <td>${formatCurrency(item.price * item.quantity)}</td>
                         </tr>
                     `).join('');
-                    document.getElementById('orderItems').innerHTML = itemsHtml;
+                    document.getElementById('orderItems').innerHTML = items;
+                    
+                    document.getElementById('modalTotalAmount').textContent = formatCurrency(order.totalAmount);
+                    
+                    modal.show();
                 });
         }
 
-        // Event listener for order detail modal
-        document.getElementById('orderDetailModal').addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const orderId = button.getAttribute('data-order-id');
-            loadOrderDetail(orderId);
-        });
-
-        function confirmOrder(orderId) {
-            if (confirm('Xác nhận đơn hàng này?')) {
-                fetch(`/api/vendor/orders/${orderId}/confirm`, {
-                    method: 'POST'
+        function updateOrderStatus(orderId, status) {
+            if (confirm('Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng?')) {
+                fetch(`/seller/orders/${orderId}/status?status=${status}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }).then(() => window.location.reload());
             }
         }
 
-        function cancelOrder(orderId) {
-            if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
-                fetch(`/api/vendor/orders/${orderId}/cancel`, {
-                    method: 'POST'
-                }).then(() => window.location.reload());
-            }
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
         }
     </script>
 </body>
