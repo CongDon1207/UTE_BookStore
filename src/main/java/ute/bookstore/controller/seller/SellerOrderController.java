@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ute.bookstore.entity.Order;
 import ute.bookstore.enums.OrderStatus;
 import ute.bookstore.service.IOrderService;
@@ -19,6 +20,11 @@ public class SellerOrderController {
     public SellerOrderController(IOrderService orderService) {
     	this.orderService = orderService;
     	}
+    
+    @ModelAttribute
+	public void addAttributes(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
+	}
     
     @GetMapping
     public String getOrderList(Model model,
@@ -36,9 +42,10 @@ public class SellerOrderController {
     }
 
     @GetMapping("/detail/{id}")
-    @ResponseBody
-    public ResponseEntity<Order> getOrderDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(orderService.getOrderById(id));
+    public String getOrderDetail(@PathVariable Long id, Model model) {
+        Order order = orderService.getOrderById(id);
+        model.addAttribute("order", order);
+        return "seller/order-detail";
     }
 
     @PostMapping("/{id}/status") 
