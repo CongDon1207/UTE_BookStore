@@ -4,6 +4,7 @@ package ute.bookstore.controller.user;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,22 +17,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ute.bookstore.entity.Address;
+import ute.bookstore.entity.Book;
+import ute.bookstore.entity.Category;
 import ute.bookstore.entity.User;
 import ute.bookstore.service.IAddressService;
+import ute.bookstore.service.IBookService;
+import ute.bookstore.service.ICategoryService;
 import ute.bookstore.service.IUserService;
 
 @Controller
 @RequestMapping("/user")
 public class UserHomeController {
+	@Autowired
+	private ICategoryService categoryService;
+	 @Autowired
+	    private IBookService bookService;
 	 @Autowired
 	 private IUserService userService;
 	  @Autowired
 	   private IAddressService addressService;
 	
 	@GetMapping({"","/home"})
-	public String home() {
-		return "user/user-home";
-	}
+    public String homePage(Model model) {
+        // Lấy danh sách sách từ database
+        List<Book> featuredBooks = bookService.getFeaturedBooks();
+        model.addAttribute("featuredBooks", featuredBooks);
+        return "user/user-home";
+    }
+
 	@GetMapping("/cart")
 	public String getCartPage() {
 		return "user/cart/show.html";
@@ -178,12 +191,42 @@ public class UserHomeController {
 		return "user/user-purchase-history";
 	}
 	@GetMapping("/bookdetail")
-	public String getBookDetailPage() {
-		return "user/product-detail";
+	public String getBookDetailPage(@RequestParam Long id, Model model) {
+	    Book book = bookService.getBookById(id);
+	    model.addAttribute("book", book);
+	  
+	    return "user/product-detail";
 	}
+
 	
 	@GetMapping("/favoriteBooks")
 	public String getFavouriteBookPage() {
 		return "user/favourite-books";
 	}
+	
+	@GetMapping("/allBooks")
+	public String getAllBooks(
+	    @RequestParam(value = "categoryId", required = false) Long categoryId,
+	    @RequestParam(value = "sortBy", defaultValue = "title") String sortBy,
+	    @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir,
+	    Model model) {
+
+	    // Lấy danh sách các thể loại
+	    List<Category> categories = categoryService.getAllCategories();
+	    model.addAttribute("categories", categories);
+	    
+
+	    // Lấy danh sách sách dựa trên bộ lọc
+	    Page<Book> books = bookService.getBooks(categoryId, sortBy, sortDir, 1, 10); // Ví dụ phân trang
+	    model.addAttribute("books", books.getContent());
+	    model.addAttribute("currentPage", books.getNumber());
+	    model.addAttribute("totalPages", books.getTotalPages());
+	    model.addAttribute("sortBy", sortBy);
+	    model.addAttribute("sortDir", sortDir);
+	    model.addAttribute("categoryId", categoryId);
+
+	    return "user/all-books";
+	}
+
+
 }

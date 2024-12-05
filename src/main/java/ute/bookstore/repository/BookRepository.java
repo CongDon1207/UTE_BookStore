@@ -17,6 +17,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	Page<Book> findByShopsInAndTitleContainingAndCategoryAndIsAvailable(
 	        List<Shop> shops, String searchTerm, Category category, Boolean availability, Pageable pageable
 	    );
-    
+	Page<Book> findAll(Pageable pageable); // Thêm hỗ trợ phân trang
 	List<Book> findByShopsIn(Collection<Shop> shops);
+	List<Book> findTop6ByOrderByIdDesc();
+	Page<Book> findByCategoryId(Long categoryId, Pageable pageable);
+
 }

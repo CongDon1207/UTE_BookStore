@@ -47,7 +47,41 @@
 <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
+<!-- Thêm kiểu hoạt hình nổ vào trong thẻ style -->
+<style>
 
+        .bg-pattern {
+            background-image: 
+                linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%), 
+                linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+  
+    @keyframes boom {
+        0% {
+            transform: scale(1); /* Bắt đầu với kích thước bình thường */
+            opacity: 1;
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3); /* Bóng nhẹ */
+        }
+        50% {
+            transform: scale(1.5); /* Phóng to phần tử lên 1.5 lần */
+            opacity: 0.9; /* Giảm độ trong suốt */
+            box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.5); /* Bóng mạnh hơn, tạo cảm giác nổ */
+        }
+        100% {
+            transform: scale(1); /* Quay lại kích thước ban đầu */
+            opacity: 1; /* Độ trong suốt trở lại bình thường */
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3); /* Bóng nhẹ lại */
+        }
+    }
+    .hidden {
+    display: none;
+}
+    
+</style>
 </head>
 
 <body id="default_theme" class="it_serv_shopping_cart shopping-cart">
@@ -59,101 +93,132 @@
      <!-- Main Content Area (Add your page-specific content here) -->
     <main>
 
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-16 text-center">
-        <h2 class="text-4xl font-bold mb-4">Khám Phá Tri Thức Tại UTE Bookstore</h2>
-        <p class="text-xl mb-6" style="color: white;">Nguồn Sách Chuyên Nghiệp Cho Sinh Viên Kỹ Thuật</p>
-        <div class="flex justify-center space-x-4">
-            <button class="bg-white text-blue-600 px-6 py-3 rounded-full hover:bg-gray-100 flex items-center">
-                <i class="fas fa-file-alt mr-2"></i> Danh Mục Sách
-            </button>
-            <button class="bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 flex items-center">
-                <i class="fas fa-users mr-2"></i> Giới Thiệu
-            </button>
+     <section class="relative bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800 text-white py-20 overflow-hidden">
+        <!-- Subtle Background Pattern -->
+        <div class="absolute inset-0 bg-pattern opacity-10"></div>
+        
+        <!-- Content Container -->
+        <div class="container mx-auto px-4 relative z-0">
+            <div class="max-w-3xl mx-auto text-center">
+                <!-- Animated Heading -->
+                <h2 class="text-5xl font-extrabold mb-5 tracking-tight transform transition-all animate-pulse duration-500 hover:scale-105 ease-in-out hover:text-yellow-200">
+                    Khám Phá Tri Thức Tại UTE Bookstore
+                </h2>
+                
+                <!-- Subtle Underline -->
+                <div class="h-1 w-32 bg-white/30 mx-auto mb-6 rounded-full"></div>
+                
+                <!-- Subheading -->
+                <p class="text-xl mb-8 text-white/90 leading-relaxed">
+                    Nguồn Sách Chuyên Nghiệp Cho Sinh Viên Kỹ Thuật
+                </p>
+                
+                
+                
+            </div>
+        </div>
+        
+        <!-- Bottom Wave Divider -->
+        <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
+            <svg 
+                viewBox="0 0 1440 100" 
+                preserveAspectRatio="none" 
+                class="w-full h-16 text-white fill-current"
+            >
+                <path 
+                    d="M0,0 C720,100 1440,0 1440,0 L1440,100 L0,100 Z" 
+                    opacity=".15"
+                ></path>
+            </svg>
         </div>
     </section>
 
-    <!-- Featured Books -->
-    <!-- Featured Books -->
-<section class="container mx-auto py-12 px-4">
-    <div class="flex justify-between items-center mb-8 w-full max-w-6xl ml-16"> <!-- Thêm ml-8 -->
-        <h3 class="text-3xl font-bold text-gray-800 flex items-center">
-            <i class="fas fa-star text-yellow-500 mr-2"></i> Sách Nổi Bật
+  <!-- Featured Books Section -->
+<section class="container mx-auto py-16 px-10 max-w-full">
+    <div class="flex justify-between items-center mb-8 max-w-7xl mx-auto ml-30">
+        <h3 class="text-3xl font-bold text-gray-900 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500 mr-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+            </svg>
+            Sách Nổi Bật
         </h3>
-        <a href="#" class="text-blue-700 hover:underline ml-10">Xem Tất Cả</a>
-    </div>
-    
-    <div class="grid grid-cols-3 gap-6 w-full ml-16">
-        <!-- Sách 1 -->
-        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all">
-            <img 
-            th:src="@{'/images?fname=' + 'download.jpg'}"
-                alt="Giáo Trình Lập Trình" 
-                class="w-full h-64 object-cover rounded-t-lg mb-4"
-            >
-            <h4 class="text-xl font-semibold text-gray-800">Giáo Trình Lập Trình</h4>
-            <p class="text-gray-600 mb-2">Nguyễn Văn A</p>
-    
-    <div class="flex flex-col justify-between items-start mb-4">
-        <!-- Nút xem chi tiết -->
-         <!-- Nút xem chi tiết, căn phải -->
-        <div class="w-full flex justify-end mb-2">
-    <a href="/user/bookdetail" class="bg-yellow-500 text-white px-4 py-2 rounded-full hover:bg-yellow-600 flex items-center">
-        <i class="fas fa-eye mr-2"></i> Xem chi tiết
+        <a href="/user/allBooks" class="text-blue-600 hover:text-blue-800 transition-colors font-semibold ml-auto">
+        Xem Tất Cả →
     </a>
-</div>
 
-        <!-- Nút mua ngay và giá -->
-        <div class="flex justify-between items-center w-full">
-            <span class="text-green-600 font-bold text-lg">
-                120.000 VND
-            </span>
-            <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 flex items-center">
-                <i class="fas fa-shopping-cart mr-2"></i> Mua Ngay
-            </button>
-        </div>
-        </div>
-        </div>
+    </div>
 
-        <!-- Sách 2 -->
-        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all">
-            <img 
-                th:src="@{'/images?fname=' + 'download (1).jpg'}"
-                alt="Cấu Trúc Dữ Liệu" 
-                class="w-full h-64 object-cover rounded-t-lg mb-4"
-            >
-            <h4 class="text-xl font-semibold text-gray-800">Cấu Trúc Dữ Liệu</h4>
-            <p class="text-gray-600 mb-2">Trần Văn B</p>
-            <div class="flex justify-between items-center">
-                <span class="text-green-600 font-bold text-lg">
-                    95.000 VND
-                </span>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 flex items-center">
-                    <i class="fas fa-shopping-cart mr-2"></i> Mua Ngay
-                </button>
+    <div class="grid grid-cols-3 gap-6 w-3/4  ml-40 " id="productGrid" > <!-- Dịch sang phải với ml-32 -->
+        <div th:each="book, iterStat : ${featuredBooks}" 
+             class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 product-item"
+             th:classappend="${iterStat.index > 2} ? 'hidden' : ''">
+            
+            <div class="relative"  >
+               <div class="flex items-center justify-center bg-purple-200 rounded-t-xl" >
+				    <img 
+				        th:if="${book.images != null && !book.images.empty}" th:src="${book.images[0]}"
+				        alt="Ảnh sách"
+				        class="w-full h-full object-contain p-2" style="width: 300px; height: 400px; object-fit: cover;" >
+				    
+				</div>
+           <span th:if="${book.isAvailable}" 
+      class="absolute top-3 right-3 text-white px-4 py-2 text-sm"
+      style="background-color: #48bb78; font-weight: bold; font-size: 12px; 
+             animation: boom 0.8s ease-out infinite;">
+    Còn hàng
+</span>
+
+<span th:if="${!book.isAvailable}" 
+      class="absolute top-3 right-3 text-white px-4 py-2 text-sm"
+      style="background-color: #f56565; font-weight: bold; font-size: 12px; 
+             animation: boom 0.8s ease-out infinite;">
+    Hết hàng
+</span>
+            </div>
+
+            <div class=" border-2 border-purple-200">
+                <h4 class="text-center font-bold text-gray-900 " style="font-size:20px;" th:text="${book.title}"></h4>
+                
+                <div class="mb-4">
+                    <p class="text-center text-gray-600" th:each="bookAuthor : ${book.authors}" 
+                       th:text="${bookAuthor.role} + ': ' + ${bookAuthor.author.name}"></p>
+                      
+                </div>
+                
+
+                <div class="flex justify-between items-center">
+                 <span class="text-green-600 font-bold text-2xl" 
+                          th:text="''+${book.price} + ' đ'"></span>
+                
+                    <div class="flex space-x-2">
+                        <a th:href="@{/user/bookdetail(id=${book.id})}"
+                           class="bg-amber-500 text-white px-4 py-2 rounded-full hover:bg-amber-600 transition-colors flex items-center" title="Xem chi tiết">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor" >
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            </svg>
+                            
+                        </a>
+                        
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors flex items-center" title="Thêm vào giỏ hàng">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                            </svg>
+                           
+                        </button>
+                    </div>
+                </div><br>
             </div>
         </div>
-
-        <!-- Sách 3 -->
-        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all">
-            <img 
-                th:src="@{'/images?fname=' + 'download (2).jpg'}"
-                alt="Thiết Kế Web" 
-                class="w-full h-64 object-cover rounded-t-lg mb-4"
-            >
-            <h4 class="text-xl font-semibold text-gray-800">Thiết Kế Web</h4>
-            <p class="text-gray-600 mb-2">Lê Văn C</p>
-            <div class="flex justify-between items-center">
-                <span class="text-green-600 font-bold text-lg">
-                    85.000 VND
-                </span>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 flex items-center">
-                    <i class="fas fa-shopping-cart mr-2"></i> Mua Ngay
-                </button>
-            </div>
-        </div>
+    </div>
+    <!-- Load More Button -->
+    <div class="text-center mt-8">
+        <button id="loadMore" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors">
+            Xem Thêm
+        </button>
     </div>
 </section>
+    
 
 
     <!-- Special Offers -->
@@ -193,10 +258,33 @@
         </div>
     </section>
     </main>
-	
+	<!-- Sử dụng fragment footer -->
+    <div th:replace="~{user/layout/footer :: footer}"></div>
 <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-	
+	<script >
+	document.addEventListener("DOMContentLoaded", function () {
+	    const products = document.querySelectorAll(".product-item");
+	    const loadMoreButton = document.getElementById("loadMore");
+	    let visibleProducts = 3; // Số sản phẩm hiển thị ban đầu
+
+	    loadMoreButton.addEventListener("click", function () {
+	        // Hiển thị thêm 3 sản phẩm
+	        for (let i = visibleProducts; i < visibleProducts + 3 && i < products.length; i++) {
+	            products[i].classList.remove("hidden");
+	        }
+
+	        // Cập nhật số sản phẩm hiển thị
+	        visibleProducts += 3;
+
+	        // Ẩn nút nếu không còn sản phẩm để hiển thị
+	        if (visibleProducts >= products.length) {
+	            loadMoreButton.style.display = "none";
+	        }
+	    });
+	});
+
+	</script>
 </body>
 
 </html>

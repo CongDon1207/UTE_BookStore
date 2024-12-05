@@ -3,6 +3,8 @@ package ute.bookstore.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -100,6 +102,28 @@ public class BookServiceImpl implements IBookService{
         return bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
     }
+    
+    public List<Book> getFeaturedBooks() {
+        // Giả sử chúng ta chọn sách nổi bật bằng cách lọc dựa trên một tiêu chí cụ thể
+        return bookRepository.findTop6ByOrderByIdDesc(); // Ví dụ: Lấy 10 sách mới nhất
+    }
+    
+    @Override
+    public Page<Book> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable); // Gọi repository để lấy dữ liệu phân trang
+    }
+    @Override
+    public Page<Book> getBooks(Long categoryId, String sortBy, String sortDir, int page, int size) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        if (categoryId != null) {
+            return bookRepository.findByCategoryId(categoryId, pageable);
+        } else {
+            return bookRepository.findAll(pageable);
+        }
+    }
+
 
     
     

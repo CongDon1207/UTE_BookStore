@@ -26,13 +26,31 @@
 
                     </div>
                     <div class="float-right">
-                        <div class="make_appo"><a class="btn white_btn" href="it_cart.html">Liên hệ</a></div>
-                    </div>																		
+                   <div class="make_appo">
+    <a href="javascript:void(0);" class="btn white_btn" id="contactBtn">
+        <i class="fa fa-comments" aria-hidden="true"></i> Liên hệ
+    </a>
+</div>
+
+                </div>																				
                 </div>
             </div>
         </div>
     </div>
     <!-- end header top -->
+    
+    <!-- Chatbox (hidden by default) -->
+<div id="chatbox" class="chatbox" style="display: none;">
+    <div class="chatbox-header">
+        <span>Chat với Seller</span>
+        <button id="closeChat" class="close-btn">&times;</button>
+    </div>
+    <div class="chatbox-body">
+        <div id="chatContent"></div>
+        <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." class="chat-input" />
+        <button id="sendMessage" class="send-btn">Gửi</button>
+    </div>
+</div>
 
     <!-- header bottom -->
     <div class="header_bottom">
@@ -238,6 +256,31 @@
             }
         });
     });
+    
+ // Mở chatbox khi nhấn vào nút "Liên hệ"
+    document.getElementById("contactBtn").onclick = function() {
+        document.getElementById("chatbox").style.display = "flex";
+    };
+
+    // Đóng chatbox khi nhấn nút đóng
+    document.getElementById("closeChat").onclick = function() {
+        document.getElementById("chatbox").style.display = "none";
+    };
+
+    // Gửi tin nhắn (Bạn có thể thay đổi logic này để gửi tin nhắn thực tế)
+    document.getElementById("sendMessage").onclick = function() {
+        var userMessage = document.getElementById("userMessage").value;
+        if (userMessage.trim() !== "") {
+            var chatContent = document.getElementById("chatContent");
+            var newMessage = document.createElement("div");
+            newMessage.classList.add("message");
+            newMessage.innerHTML = "<strong>Bạn:</strong> " + userMessage;
+            chatContent.appendChild(newMessage);
+            document.getElementById("userMessage").value = ""; // Xóa nội dung tin nhắn sau khi gửi
+            chatContent.scrollTop = chatContent.scrollHeight; // Cuộn xuống cuối tin nhắn
+        }
+    };
+
 </script>
     
 </header>
