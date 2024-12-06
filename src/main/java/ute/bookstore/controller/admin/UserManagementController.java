@@ -69,16 +69,22 @@ public class UserManagementController {
 
 	@GetMapping("/edit/{id}")
 	public String getEditUserPage(@PathVariable Long id, Model model) {
-		User user = userService.getUserById(id);
-		model.addAttribute("user", user);
-		model.addAttribute("roles", UserRole.values());
-		return "admin/user/edit";
+	    User user = userService.getUserById(id);
+	    model.addAttribute("user", user);
+	    model.addAttribute("roles", UserRole.values());
+	    return "admin/user/edit";
 	}
 
 	@PostMapping("/edit/{id}")
-	public String updateUser(@PathVariable Long id, @Valid @ModelAttribute User user) {
-		userService.updateUser(id, user);
-		return "redirect:/admin/user-management";
+	public String updateUser(@PathVariable Long id, 
+	                        @Valid @ModelAttribute User userDetails, 
+	                        BindingResult result) {
+	    if (result.hasErrors()) {
+	        return "admin/user/edit";
+	    }
+	    
+	    userService.updateUser(id, userDetails);
+	    return "redirect:/admin/user-management";
 	}
 
 	@PostMapping("/toggle-status/{id}")
