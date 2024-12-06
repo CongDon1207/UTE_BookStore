@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<!-- basic -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- site metas -->
+	<title>UTEBookStore - User Management</title>
+
+	<!-- Liên kết Font Awesome -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Icons -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+		}
+
+		body {
+			background-color: #f4f6f9;
+		}
+
+		.sidebar {
+			height: 100vh;
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 100;
+			padding-top: 2rem;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			border-right: 2px solid #dee2e6;
+		}
+
+		.admin_header {
+			background-color: #343a40;
+			color: #fff;
+			padding: 10px 20px;
+			border-bottom: 3px solid #007bff;
+			position: fixed;
+			top: 0;
+			width: 100%;
+			z-index: 1000;
+		}
+
+		.content-wrapper {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.main-content {
+			width: calc(100% - 250px);
+			margin-left: 250px;
+			padding: 20px;
+			padding-top: 70px;
+		}
+
+		.table thead th {
+			background-color: #f8f9fa;
+			border-bottom: 2px solid #dee2e6;
+			padding: 12px;
+		}
+
+		.table tbody td {
+			padding: 12px;
+			vertical-align: middle;
+		}
+
+		footer {
+			background-color: #343a40;
+			color: #fff;
+			text-align: center;
+			padding: 5px 20px;
+			position: relative;
+			z-index: 1000;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Header -->
+	<div th:replace="admin/layout/header :: header"></div>
+
+	<div class="content-wrapper">
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Sidebar -->
+				<div th:insert="~{'admin/layout/sidebar' :: sidebar}"></div>
+
+				<!-- Main Content -->
+				<main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+					<!-- Tiêu đề và các nút action -->
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<h1 class="h2">Quản lý User</h1>
+						<div class="btn-group">
+							<a href="/admin/user-management/create" class="btn btn-primary me-2">
+								<i class="bi bi-plus-circle me-1"></i>Thêm User
+							</a>
+							<a href="/admin/user-management/export" class="btn btn-success">
+								<i class="bi bi-file-excel me-1"></i>Export Users
+							</a>
+						</div>
+					</div>
+
+					<!-- Thanh tìm kiếm -->
+					<div class="card mb-4">
+						<div class="card-body">
+							<form method="get" class="row g-3 align-items-center">
+								<div class="col-md-6">
+									<div class="input-group">
+										<input type="text" name="search" th:value="${search}" class="form-control"
+											placeholder="Tìm kiếm theo email hoặc tên...">
+										<button type="submit" class="btn btn-primary">
+											<i class="bi bi-search me-1"></i>Tìm kiếm
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<!-- Bảng danh sách user -->
+					<div class="card">
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Email</th>
+											<th>Họ Tên</th>
+											<th>SĐT</th>
+											<th>Role</th>
+											<th>Trạng thái</th>
+											<th>Thao tác</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="user : ${users}">
+											<td th:text="${user.id}"></td>
+											<td th:text="${user.email}"></td>
+											<td th:text="${user.fullName}"></td>
+											<td th:text="${user.phone}"></td>
+											<td>
+												<span class="badge rounded-pill"
+													th:classappend="${user.role == 'ADMIN' ? 'bg-danger' : 
+                                                                   user.role == 'VENDOR' ? 'bg-success' : 'bg-primary'}" th:text="${user.role}">
+												</span>
+											</td>
+											<td>
+												<div class="form-check form-switch">
+													<input class="form-check-input toggle-status" type="checkbox"
+														th:checked="${user.isActive}" th:data-id="${user.id}">
+												</div>
+											</td>
+											<td>
+												<div class="btn-group">
+													<a th:href="@{/admin/user-management/edit/{id}(id=${user.id})}"
+														class="btn btn-sm btn-outline-primary" title="Sửa">
+														<i class="bi bi-pencil"></i>
+													</a>
+													<a href="#" class="btn btn-sm btn-outline-info" title="Chi tiết">
+														<i class="bi bi-info-circle"></i>
+													</a>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<!-- Phân trang -->
+							<nav th:if="${totalPages > 1}" class="mt-4">
+								<ul class="pagination justify-content-center">
+									<li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+										<a class="page-link"
+											th:href="@{/admin/user-management(page=${currentPage-1},search=${search})}">
+											<i class="bi bi-chevron-left"></i>
+										</a>
+									</li>
+
+									<li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+										th:classappend="${currentPage == i ? 'active' : ''}">
+										<a class="page-link"
+											th:href="@{/admin/user-management(page=${i},search=${search})}"
+											th:text="${i+1}">
+										</a>
+									</li>
+
+									<li class="page-item"
+										th:classappend="${currentPage == totalPages-1 ? 'disabled' : ''}">
+										<a class="page-link"
+											th:href="@{/admin/user-management(page=${currentPage+1},search=${search})}">
+											<i class="bi bi-chevron-right"></i>
+										</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</main>
+			</div>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<div th:replace="admin/layout/footer :: footer"></div>
+
+	<!-- Toast Notification -->
+	<div class="toast position-fixed top-0 end-0 p-3" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="toast-header">
+			<strong class="me-auto">Thông báo</strong>
+			<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		<div class="toast-body"></div>
+	</div>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		// Xử lý toggle status
+		document.querySelectorAll('.toggle-status').forEach(checkbox => {
+			checkbox.addEventListener('change', function () {
+				const userId = this.dataset.id;
+				fetch(`/admin/user-management/toggle-status/${userId}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					}
+				})
+					.then(response => response.json())
+					.then(data => {
+						const toast = new bootstrap.Toast(document.querySelector('.toast'));
+						document.querySelector('.toast-body').textContent =
+							`Trạng thái user đã được cập nhật thành ${data.status ? 'active' : 'inactive'}`;
+						toast.show();
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						this.checked = !this.checked;
+					});
+			});
+		});
+	</script>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		// Script xử lý toggle status đã có sẵn
+		document.querySelectorAll('.toggle-status').forEach(checkbox => {
+			checkbox.addEventListener('change', function () {
+				// ... code cũ ...
+			});
+		});
+
+		// Thêm script mới cho export
+		document.querySelector('a[href="/admin/user-management/export"]').addEventListener('click', function (e) {
+			e.preventDefault();
+
+			// Hiển thị loading spinner
+			this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Exporting...';
+			this.classList.add('disabled');
+
+			// Thực hiện download
+			fetch(this.href)
+				.then(response => {
+					if (response.ok) {
+						return response.blob();
+					}
+					throw new Error('Export failed');
+				})
+				.then(blob => {
+					// Tạo link download
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = 'users_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+
+					// Hiển thị thông báo thành công
+					const toast = new bootstrap.Toast(document.querySelector('.toast'));
+					document.querySelector('.toast-body').textContent = 'Export users thành công!';
+					toast.show();
+				})
+				.catch(error => {
+					// Hiển thị thông báo lỗi
+					const toast = new bootstrap.Toast(document.querySelector('.toast'));
+					document.querySelector('.toast-body').textContent = 'Export users thất bại!';
+					document.querySelector('.toast-body').classList.add('text-danger');
+					toast.show();
+				})
+				.finally(() => {
+					// Restore nút về trạng thái ban đầu
+					this.innerHTML = '<i class="bi bi-file-excel me-1"></i>Export Users';
+					this.classList.remove('disabled');
+				});
+		});
+	</script>
+
+	<!-- Thêm CSS vào phần style có sẵn -->
+	<style>
+		/* Các style có sẵn */
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* ... các style khác ... */
+
+		/* Thêm style mới cho export button */
+		.btn.disabled {
+			pointer-events: none;
+			opacity: 0.65;
+		}
+
+		.spinner-border {
+			width: 1rem;
+			height: 1rem;
+			border-width: 0.1em;
+		}
+	</style>
+
+</body>
+
+</html>

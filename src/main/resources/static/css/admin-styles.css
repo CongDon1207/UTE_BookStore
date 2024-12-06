@@ -1,0 +1,57 @@
+/* Admin Layout Styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    background-color: #f4f6f9;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding-top: 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-right: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+    width: 250px;
+}
+
+.sidebar.collapsed {
+    margin-left: -250px;
+}
+
+/* Header Styles */
+.admin_header {
+    /* Các style hiện tại */
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    font-size: 1.25rem;
+    line-height: 1;
+    margin-right: 10px;
+    padding: 4px 8px;
+    transition: transform 0.3s ease;
+}
+
+/* Main Content Styles */
+.main-content {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 20px;
+    padding-top: 70px;
+    transition: all 0.3s ease;
+}
+
+.main-content.expanded {
+    width: 100% !important;
+    margin-left: 0 !important;
+}
