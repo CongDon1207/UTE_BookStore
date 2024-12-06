@@ -28,7 +28,11 @@
 		<url />
 	</scm>
 	<properties>
+<<<<<<< HEAD
+		<java.version>21</java.version>
+=======
 		<java.version>22</java.version>
+>>>>>>> main
 	</properties>
 	<dependencies>
 
@@ -120,6 +124,21 @@
 			<artifactId>cloudinary-http44</artifactId>
 			<version>1.39.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.3.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.3.0</version>
+		</dependency>
+
 
 	</dependencies>
 
