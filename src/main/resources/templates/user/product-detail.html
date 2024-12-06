@@ -56,112 +56,166 @@
    <main class="container py-5">
     <div class="row">
         <!-- Thông tin chi tiết sản phẩm -->
-        <div class="col-md-6">
-            <div class="product-images">
-                <!-- Hình ảnh sản phẩm (Lấy từ bảng book_images) -->
-                <img src="/path/to/book_image.jpg" class="img-fluid" alt="Product Image" id="mainImage">
-                <div class="row mt-3">
-                    <!-- Các hình ảnh phụ -->
-                    <div class="col-4">
-                        <img src="/path/to/book_image1.jpg" class="img-thumbnail" alt="Product Image" onclick="changeImage('path/to/book_image1.jpg')">
-                    </div>
-                    <div class="col-4">
-                        <img src="/path/to/book_image2.jpg" class="img-thumbnail" alt="Product Image" onclick="changeImage('path/to/book_image2.jpg')">
-                    </div>
-                    <div class="col-4">
-                        <img src="/path/to/book_image3.jpg" class="img-thumbnail" alt="Product Image" onclick="changeImage('path/to/book_image3.jpg')">
-                    </div>
-                </div>
-                 <!-- Nút chức năng -->
-            <div class="d-flex justify-content-between mt-4">
-                <button class="btn btn-danger btn-lg">Yêu Thích</button>
-                <button class="btn btn-success btn-lg" onclick="addToCart()">Thêm vào giỏ hàng</button>
-                <button class="btn btn-primary btn-lg" onclick="buyNow()">Mua ngay</button>
-            </div>
-            </div>
+       <div class="col-md-6">
+    <div class="product-images">
+        <!-- Hình ảnh sản phẩm (Sử dụng th:src để gắn hình từ model) -->
+        <img th:src="${book.images[0]}" class="img-fluid" alt="Product Image" id="mainImage">
+        
+        <div class="row mt-3">
+            <!-- Các hình ảnh phụ -->
+            <div th:each="image : ${book.images}" class="col-auto position-relative">
+                                                <img th:src="${image}" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                                                <button type="button"
+                                                        style="background-color: white;" 
+                                                        th:data-image="${image}"
+                                                        >
+                                                </button>
+                                            </div>
+            
+            
         </div>
+
+        <!-- Các nút chức năng -->
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-danger btn-lg">Yêu Thích</button>
+            <button class="btn btn-success btn-lg" onclick="addToCart()">Thêm vào giỏ hàng</button>
+            <button class="btn btn-primary btn-lg" onclick="buyNow()">Mua ngay</button>
+        </div>
+    </div>
+</div>
 
         <!-- Thông tin chi tiết sản phẩm và chức năng mua -->
         <div class="col-md-6">
-            <h2 class="text-danger" id="productTitle">Thế Giới Thợ - Cuộc Sống Thợ Mộc</h2>
-           
-            <p class="font-weight-bold">Giá: <span id="productPrice">120.000₫</span></p>
-            <p>
-                <label for="quantity">Số lượng:</label>
-                <input type="number" id="quantity" class="form-control w-25" min="1" max="99" value="1">
-            </p>
-            <p class="font-weight-bold">
-                <span id="productAvailability">Còn hàng</span>
-            </p>
-              <!-- Thông tin vận chuyển -->
-            <p>
-                <label for="shippingAddress">Thông tin vận chuyển:</label>
-                <div>
-                    Giao hàng đến: <span id="shippingAddress">Hà Nội</span>
-                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="chooseShippingAddress()">Chọn địa chỉ</button>
+    <h2 class="text-danger" id="productTitle" th:text="${book.title}">Tên sản phẩm</h2>
+    
+    <p>Nhà cung cấp: <span class="text-gray-600" th:each="bookShop : ${book.shops}" 
+                       th:text="${bookShop.name} " >UTEBookstore</span></p>
+            <div class="mb-4">
+                    <p class="text-gray-600" th:each="bookAuthor : ${book.authors}" 
+                       th:text="${bookAuthor.role} + ': ' + ${bookAuthor.author.name} "></p>
+                      
                 </div>
-            </p>
+           <span th:if="${book.isAvailable}" th:text ="'Số lượng còn lại : ' + ${book.quantity}"
+      class="absolute top-3 right-3 text-white px-4 py-2 text-sm"
+      style="background-color: #48bb78; font-weight: bold; font-size: 16px; 
+             animation: boom 0.8s ease-out infinite;">
+    Còn hàng
+</span>
 
-            <!-- Mã giảm giá -->
-            <p>
-                <label for="discountCode">Mã giảm giá:</label>
-                <input type="text" id="discountCode" class="form-control w-50" placeholder="Nhập mã giảm giá">
-            </p>
+<span th:if="${!book.isAvailable}"  th:text ="'Số lượng còn lại : ' + ${book.quantity}"
+      class="absolute top-3 right-3 text-white px-4 py-2 text-sm"
+      style="background-color: #f56565; font-weight: bold; font-size: 16px; 
+             animation: boom 0.8s ease-out infinite;">
+    Hết hàng
+</span>
 
-            <!-- Số lượng -->
-            <p>
-                <label for="quantity">Số lượng:</label>
-                <input type="number" id="quantity" class="form-control w-25" min="1" max="99" value="1">
-            </p>
+    <h3 class="text-warning"><br>
+        Giá: <span id="productPrice" th:text="${book.price} + ' VND'">120.000₫</span>
+    </h3>
+     
 
-            <!-- Tình trạng sản phẩm -->
-            <p class="font-weight-bold">
-                <span id="productAvailability">Còn hàng</span>
-            </p>
+   
 
-            <!-- Chi tiết sản phẩm -->
-            <div>
-                <h5>Thông tin chi tiết:</h5>
-                <ul>
-                    <li>Mã hàng: <span id="productCode">TGTH1234</span></li>
-                    <li>Nhà cung cấp: <span id="productSupplier">UTEBookstore</span></li>
-                    <li>Tác giả: <span id="productAuthor">Nguyễn Văn A</span></li>
-                    <li>Số lượng đã bán: <span id="soldQuantity">250</span></li>
-                    <li>Số đánh giá: <span id="productReviews">35</span></li>
-                    <li>Số lượt yêu thích: <span id="productLikes">200</span></li>
-                </ul>
-            </div>
+    <!-- Thông tin vận chuyển -->
+    
+        <h4 for="shippingAddress">Thông tin vận chuyển:</h4><br>
+        <div>
+            Giao hàng đến: <span id="shippingAddress">Hà Nội</span>
             
-             <p id="productDescription">Mô tả chi tiết sản phẩm...</p>
+        </div><br>
+   
 
-           
-        </div>
+    <!-- Mã giảm giá -->
+    <div>
+        <h4 for="discountCode">Mã giảm giá:</h4>
+        <input type="text" id="discountCode" class="form-control w-50" placeholder="Nhập mã giảm giá">
+    </div>
+    
+     <div>
+        <h4 for="quantity">Nhập Số lượng:</h4>
+        <input type="number" id="quantity" class="form-control w-25" min="1" max="99" value="1">
+    </div><br>
+
+    
+
+    <!-- Thông tin chi tiết sản phẩm -->
+    <div>
+    <h5>Thông tin chi tiết:</h5>
+    <ul class="list-unstyled">
+        <!-- Mã hàng -->
+        <li><strong>Mã hàng:</strong> <span id="productCode" th:text="${book.id}">TGTH1234</span></li>
+        
+        <!-- Tác giả -->
+        <li>
+            
+            <div th:each="bookAuthor : ${book.authors}">
+                <span th:text="${bookAuthor.role} + ': ' + ${bookAuthor.author.name}" style="color: #007bff; font-weight: bold;"></span><br>
+
+                <span th:text="'Năm Sinh: ' + ${bookAuthor.author.birthDate}"></span> |
+                <span th:text="'Năm Mất: ' + ${bookAuthor.author.deathDate}"></span><br>
+                <span th:text="'Mô tả : ' + ${bookAuthor.author.biography}"></span>
+            </div>
+        </li>
+
+        <!-- Thể loại -->
+        <li><strong>Thể loại:</strong> <span th:text="${book.category.name}"></span></li>
+
+        <!-- Mô tả thể loại -->
+        <li><strong>Mô tả thể loại:</strong> <span th:text="${book.category.description}"></span></li>
+
+        <!-- Số lượng đã bán -->
+        <li><strong>Số lượng đã bán:</strong> <span id="soldQuantity">250</span></li>
+
+        <!-- Số đánh giá -->
+        <li><strong>Số đánh giá:</strong> <span id="productReviews">35</span></li>
+
+        <!-- Số lượt yêu thích -->
+        <li><strong>Số lượt yêu thích:</strong> <span id="productLikes">200</span></li>
+    </ul>
+</div>
+
+
+    <div>
+       <h5>Mô tả sản phẩm:</h5>
+    <p id="productDescription" th:text="${book.description}">Mô tả chi tiết sản phẩm...</p>
+    </div>
+</div>
+
     </div>
 
-    <!-- Phần đánh giá sản phẩm -->
-    <div class="reviews mt-5">
-        <h3 class="text-primary">Đánh giá sản phẩm</h3>
-        <span class="text-warning">⭐⭐⭐⭐⭐</span>
+   <!-- Phần đánh giá sản phẩm -->
+<div class="reviews mt-5">
+    <h3 class="text-primary">Đánh giá sản phẩm <span class="text-warning" >⭐⭐⭐⭐⭐</span></h3>
+
+    <div th:if="${book.reviews != null and not #lists.isEmpty(book.reviews)}">
         <div class="list-group" id="reviewsList">
             <!-- Các bài đánh giá lấy từ bảng reviews -->
-            <div class="list-group-item">
+            <div class="list-group-item" th:each="bookReview : ${book.reviews}">
                 <div class="d-flex justify-content-between">
-                    <strong>Nguyễn Văn A</strong>
-                    
+                    <strong th:text="'Người dùng : '+${bookReview.user.fullName}"></strong>
                 </div>
-                <p class="text-muted">Ngày tạo: 2024-11-30</p>
-                <p class="mb-1">Sản phẩm rất tốt, chất lượng vượt trội!</p>
+                <span class="text-danger" th:text="'Số sao : ' +${bookReview.rating}">⭐⭐⭐⭐⭐</span>
+                <p class="text-muted" th:text="'Ngày tạo : '+ ${bookReview.createdAt}"></p>
+                <p class="mb-1" th:text="'Bình luận : '+${bookReview.comment}"></p>
                 <div>
-                    <img src="/path/to/review_image1.jpg" class="img-thumbnail" alt="Review Image">
-                    <img src="/path/to/review_image2.jpg" class="img-thumbnail" alt="Review Image">
+                    <img class="img-thumbnail" alt="Review Image">
+                    <img class="img-thumbnail" alt="Review Image">
                 </div>
             </div>
             <!-- Thêm bài đánh giá khác ở đây -->
         </div>
+
         <div class="text-center mt-4">
             <button class="btn btn-outline-primary" onclick="loadMoreReviews()">Xem thêm đánh giá</button>
         </div>
     </div>
+
+    <!-- Thông báo nếu không có đánh giá -->
+    <div th:if="${book.reviews == null or #lists.isEmpty(book.reviews)}" class="alert alert-warning" role="alert">
+        Hiện tại sản phẩm chưa có đánh giá nào.
+    </div>
+</div>
+
 </main>
 
 <script>
