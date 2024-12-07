@@ -12,7 +12,7 @@ public interface IUserService {
 	User getUserById(Long Id);
 	void changePassword(User user,String currentPassword, String newPassword, String confirmPassword);
     void updateUserInfo(User user);
-    
+    User findByEmail(String email);
     
     Page<User> getAllUsers(int page, int size, String search);
     User createUser(User user);

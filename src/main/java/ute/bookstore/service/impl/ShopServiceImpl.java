@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User; 
+import ute.bookstore.entity.Address; 
 import ute.bookstore.exception.ResourceNotFoundException;
 
 import ute.bookstore.repository.ShopRepository;
@@ -33,8 +34,8 @@ public class ShopServiceImpl implements IShopService {
     private ICloudinaryService cloudinaryService;
 
     @Override
-    public Shop getShopByUserId(String userId) {
-        return shopRepository.findByUserEmail(userId)
+    public Shop getShopByUserEmail(String email) {
+        return shopRepository.findByUserEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("Shop not found"));
     }
     
@@ -44,41 +45,34 @@ public class ShopServiceImpl implements IShopService {
             .orElseThrow(() -> new ResourceNotFoundException("Shop not found"));
     }
 
+ // ShopServiceImpl.java 
+ // ShopServiceImpl.java
     @Override
-    public Shop updateShop(Shop shopUpdate, MultipartFile logoFile, String userId) {
-        Shop existingShop = getShopByUserId(userId);
-        
-        if (!existingShop.getUser().getEmail().equals(userId)) {
-            throw new EntityNotFoundException("Shop not found for user");
-        }
+    public Shop updateShop(Shop shopUpdate, MultipartFile logoFile, String email) {
+       try {
+           Shop existingShop = getShopByUserEmail(email);
+           System.out.println("Shop info - ID: " + shopUpdate.getId() + ", Name: " + shopUpdate.getName());
 
-        // Update basic info
-        existingShop.setName(shopUpdate.getName());
-        existingShop.setDescription(shopUpdate.getDescription());
-        existingShop.setPhone(shopUpdate.getPhone());
-        
-        // Update address if provided
-        if (shopUpdate.getAddress() != null) {
-            existingShop.getAddress().setStreet(shopUpdate.getAddress().getStreet());
-            existingShop.getAddress().setDistrict(shopUpdate.getAddress().getDistrict());
-            existingShop.getAddress().setCity(shopUpdate.getAddress().getCity());
-        }
+           if (logoFile != null && !logoFile.isEmpty()) {
+               if (existingShop.getLogo() != null) {
+                   cloudinaryService.deleteImage(existingShop.getLogo()); 
+               }
+               String logoUrl = cloudinaryService.uploadImage(logoFile);
+               existingShop.setLogo(logoUrl);
+           }
 
-        // Upload new logo if provided
-        if (logoFile != null && !logoFile.isEmpty()) {
-        	   try {
-        	       String logoUrl = cloudinaryService.uploadImage(logoFile);
-        	       // Delete old logo if exists
-        	       if (existingShop.getLogo() != null) {
-        	           cloudinaryService.deleteImage(existingShop.getLogo());
-        	       }
-        	       existingShop.setLogo(logoUrl);
-        	   } catch (IOException e) {
-        	       throw new RuntimeException("Failed to upload shop logo", e);
-        	   }
-        	}
+           existingShop.setName(shopUpdate.getName());
+           existingShop.setDescription(shopUpdate.getDescription());
+           existingShop.setPhone(shopUpdate.getPhone());
 
-        return shopRepository.save(existingShop);
+           Address address = shopUpdate.getAddress();
+           address.setShop(existingShop); 
+           existingShop.setAddress(address);
+
+           return shopRepository.save(existingShop);
+       } catch (Exception e) {
+           throw new RuntimeException("Failed to update shop", e);
+       }
     }
 
     @Override
@@ -96,6 +90,18 @@ public class ShopServiceImpl implements IShopService {
     @Override
     public boolean isShopOwner(String userId, Long shopId) {
         return shopRepository.existsByUserEmailAndId(userId, shopId);
+    }
+
+    @Override
+    public Shop save(Shop shop) {
+        if (shop == null) {
+            throw new IllegalArgumentException("Shop cannot be null");
+        }
+        try {
+            return shopRepository.save(shop);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save shop: " + e.getMessage());
+        }
     }
 	
 

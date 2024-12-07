@@ -14,9 +14,11 @@ import ute.bookstore.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findById(Long id);
 	boolean existsByEmailAndIdNot(String email, Long id);
-	
+	Optional<User> findByEmail(String email);
 	
 	Page<User> findByEmailContainingOrFullNameContainingIgnoreCase(
 	        String email, String name, Pageable pageable);
 	    boolean existsByEmail(String email);
+	    
+	    
 }
