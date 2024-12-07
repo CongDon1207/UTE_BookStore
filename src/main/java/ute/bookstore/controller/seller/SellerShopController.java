@@ -10,37 +10,45 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
+import ute.bookstore.service.ICloudinaryService;
 import ute.bookstore.service.IShopService;
+import ute.bookstore.service.IUserService;
 
 
 
 @Controller
 @RequestMapping("/seller/shop")
 public class SellerShopController {
-    @Autowired private IShopService shopService;
+   @Autowired private IShopService shopService;
+   @Autowired private ICloudinaryService cloudinaryService;
+   
+   private static final String DEFAULT_EMAIL = "vendor@gmail.com";
+   private static final String REDIRECT_SUCCESS = "redirect:/seller/shop?success";
+   private static final String REDIRECT_ERROR = "redirect:/seller/shop?error=";
 
-    
-    @GetMapping
-    public String showShopManagement(Model model, Principal principal) {
-       String email = getDefaultOrCurrentUser(principal);
-       Shop shop = shopService.getShopByUserId(email);
-       model.addAttribute("shop", shop);
-       return "seller/shop-management";
-    }
+   @GetMapping
+   public String showShopManagement(Model model) {
+       try {
+           Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+           model.addAttribute("shop", shop);
+           return "seller/shop-management";
+       } catch (Exception e) {
+           return REDIRECT_ERROR + e.getMessage();
+       }
+   }
 
-    private String getDefaultOrCurrentUser(Principal principal) {
-       return principal != null ? principal.getName() : "vendor@gmail.com";
-    }
-
-    @PostMapping("")
-    public String updateShopInfo(@ModelAttribute Shop shop,
-            @RequestParam(required = false) MultipartFile logoFile,
-            Principal principal) {
-        try {
-            shopService.updateShop(shop, logoFile, principal.getName());
-            return "redirect:/seller/shop/management?success"; 
-        } catch (Exception e) {
-            return "redirect:/seller/shop/management?error";
-        }
-    }
+   @PostMapping
+   public String updateShopInfo(@ModelAttribute Shop shopUpdate,
+                              @RequestParam(required = false) MultipartFile logoFile) {
+       try {
+           System.out.println("Update shop: " + shopUpdate);
+           System.out.println("Logo: " + (logoFile != null ? logoFile.getOriginalFilename() : "No file"));
+           
+           shopService.updateShop(shopUpdate, logoFile, DEFAULT_EMAIL);
+           return REDIRECT_SUCCESS;
+       } catch (Exception e) {
+           e.printStackTrace();
+           return REDIRECT_ERROR + e.getMessage();
+       }
+   }
 }
