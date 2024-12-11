@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -38,6 +39,12 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public User getUserById(Long Id) {
 		return userRepository.findById(Id).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại."));
+	}
+	
+	@Override
+	public User findByEmail(String email) {
+	    return userRepository.findByEmail(email)
+	        .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 	}
 
 	@Override
