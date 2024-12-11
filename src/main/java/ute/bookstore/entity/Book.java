@@ -1,6 +1,7 @@
 package ute.bookstore.entity;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -58,4 +59,8 @@ public class Book {
     
     @ManyToMany(mappedBy = "books")
     private List<Shop> shops;
+    
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteBook> favoriteBooks;
+
 }

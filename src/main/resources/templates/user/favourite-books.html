@@ -39,6 +39,24 @@
             transform: scale(1.02);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+        .hidden {
+    display: none;
+}
+
+.block {
+    display: block;
+}
+
+#notification {
+    background-color: #28a745; /* Màu xanh lá cho thông báo thành công */
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+        
     </style>
 </head>
 <body class="bg-gray-50">
@@ -62,87 +80,83 @@
 
     
     <main>
-    
     <div class="container mx-auto px-4 py-8">
-      
+    <div id="notification" class="hidden bg-green-100 text-green-800 px-4 py-2 rounded-md mb-4"></div>
+    
         <div id="favoriteBooks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Sách 1 -->
-            <div class="book-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:scale-105">
-                <div class="flex">
-                    <img src="https://via.placeholder.com/200x300" alt="Bìa sách" class="w-32 h-48 object-cover">
+            <!-- Lặp qua danh sách sách yêu thích -->
+            <div th:each="book : ${favoriteBooks}" 
+                 class="book-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:scale-105">
+                 <a th:href="@{/user/bookdetail(id=${book.book.id})}" class="book-card-link">
+                <div class="flex" style="border: 3px solid pink;">
+                    <!-- Hiển thị ảnh bìa -->
+                    <img th:src="${book.book.images[0]}" alt="Bìa sách" class="w-32 h-48 object-cover">
                     <div class="p-4 flex-1 relative">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Lập Trình Python</h2>
-                        <p class="text-gray-600 mb-1">Tác giả: Nguyễn Văn A</p>
-                        <p class="text-gray-600 mb-1">Thể loại: Công Nghệ</p>
-                        <p class="text-blue-600 font-bold text-lg">120.000 ₫</p>
+                        <!-- Tên sách -->
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2" th:text="${book.book.title}">Tên sách</h2>
                         
-                        <button class="absolute bottom-4 right-4 text-red-500 hover:bg-red-100 p-2 rounded-full">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+                        <!-- Thể loại -->
+                        <p class="text-gray-600 mb-1" th:text="'Thể loại: '+${book.book.category.name}">Thể loại</p>
+                        
+                        <!-- Tác giả -->
+                        <p class="text-gray-600 mb-1" th:each="bookAuthor : ${book.book.authors}"  th:if="${bookAuthor.role} == 'Author'" 
+                       th:text="'Tác giả: ' + ${bookAuthor.author.name} "></p>
+                        
+                        <!-- Giá -->
+                        <p class="text-blue-600 font-bold text-lg" th:text="${book.book.price} +'₫'">₫</p>
 
-            <!-- Sách 2 -->
-            <div class="book-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:scale-105">
-                <div class="flex">
-                    <img src="https://via.placeholder.com/200x300" alt="Bìa sách" class="w-32 h-48 object-cover">
-                    <div class="p-4 flex-1 relative">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Khoa Học Dữ Liệu</h2>
-                        <p class="text-gray-600 mb-1">Tác giả: Trần Thị B</p>
-                        <p class="text-gray-600 mb-1">Thể loại: Khoa Học</p>
-                        <p class="text-blue-600 font-bold text-lg">150.000 ₫</p>
-                        
-                        <button class="absolute bottom-4 right-4 text-red-500 hover:bg-red-100 p-2 rounded-full">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+                        <!-- Nút xóa sách yêu thích -->
+                <form th:onclick="'removeFromFavorites(' + ${book.id} + ')'" >
+                    <button   class="absolute bottom-4 right-4 text-red-500 hover:bg-red-100 p-2 rounded-full">
+                        <i class="fas fa-trash-alt" ></i>
+                    </button>
+                </form>
 
-            <!-- Sách 3 -->
-            <div class="book-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:scale-105">
-                <div class="flex">
-                    <img src="https://via.placeholder.com/200x300" alt="Bìa sách" class="w-32 h-48 object-cover">
-                    <div class="p-4 flex-1 relative">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Thiết Kế UI/UX</h2>
-                        <p class="text-gray-600 mb-1">Tác giả: Lê Văn C</p>
-                        <p class="text-gray-600 mb-1">Thể loại: Thiết Kế</p>
-                        <p class="text-blue-600 font-bold text-lg">180.000 ₫</p>
-                        
-                        <button class="absolute bottom-4 right-4 text-red-500 hover:bg-red-100 p-2 rounded-full">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
                     </div>
                 </div>
+                </a>
             </div>
         </div>
 
         <!-- Trạng thái khi không có sách -->
-        <div id="emptyState" class="hidden text-center text-gray-500 py-12">
+        <div th:if="${favoriteBooks.isEmpty()}" id="emptyState" class="text-center text-gray-500 py-12">
             <p class="text-xl">Bạn chưa có sách yêu thích nào.</p>
             <p class="mt-2">Hãy khám phá và thêm sách bạn yêu thích!</p>
         </div>
     </div>
-    </main>
+</main>
+
     <!-- Sử dụng fragment footer -->
     <div th:replace="~{user/layout/footer :: footer}"></div>
-
-    <script>
-        // Ví dụ JavaScript để xóa sách
-        document.querySelectorAll('.book-card button').forEach(button => {
-            button.addEventListener('click', function() {
-                this.closest('.book-card').remove();
-                
-                // Kiểm tra nếu không còn sách
-                const bookCards = document.querySelectorAll('.book-card');
-                const emptyState = document.getElementById('emptyState');
-                
-                if (bookCards.length === 0) {
-                    emptyState.classList.remove('hidden');
+    
+   <script>
+   function removeFromFavorites(bookId) {
+        const isConfirmed = confirm("Bạn có chắc chắn muốn xóa sách này khỏi danh sách yêu thích?");
+        
+        if (isConfirmed) {
+            fetch(`/user/favoriteBooks/remove/${bookId}`, {
+                method: 'POST',
+            })
+            .then(response => {
+                if (response.ok) {
+                    
+                    // Nếu xóa thành công, bạn có thể làm gì đó để cập nhật giao diện, ví dụ:
+                    document.getElementById(`book-${bookId}`).remove();
+                } else {
+                    alert("Không thể xóa sách khỏi danh sách yêu thích!");
                 }
             });
-        });
-    </script>
+        } else {
+            // Nếu người dùng không xác nhận, không làm gì
+            console.log("Hủy xóa sách");
+        }
+    }
+</script>
+
+
+
+    
+
+    
 </body>
 </html>
