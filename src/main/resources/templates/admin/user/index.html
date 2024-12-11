@@ -8,9 +8,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<!-- site metas -->
 	<title>UTEBookStore - User Management</title>
-	
+
 	<link rel="stylesheet" th:href="@{/css/admin-layout.css}">
-	
+
 	<!-- Liên kết Font Awesome -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 	<!-- Bootstrap CSS -->
@@ -20,29 +20,29 @@
 
 	<style>
 		/* Chỉ giữ lại style cho export button */
-        .btn.disabled {
-            pointer-events: none;
-            opacity: 0.65;
-        }
+		.btn.disabled {
+			pointer-events: none;
+			opacity: 0.65;
+		}
 
-        .spinner-border {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.1em;
-        }
-        
-        /* Thêm style cho bảng user */
-        .table thead th {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            padding: 12px;
-        }
+		.spinner-border {
+			width: 1rem;
+			height: 1rem;
+			border-width: 0.1em;
+		}
 
-        .table tbody td {
-            padding: 12px;
-            vertical-align: middle;
-        }
-    </style>
+		/* Thêm style cho bảng user */
+		.table thead th {
+			background-color: #f8f9fa;
+			border-bottom: 2px solid #dee2e6;
+			padding: 12px;
+		}
+
+		.table tbody td {
+			padding: 12px;
+			vertical-align: middle;
+		}
+	</style>
 	</style>
 </head>
 
@@ -128,9 +128,13 @@
 														class="btn btn-sm btn-outline-primary" title="Sửa">
 														<i class="bi bi-pencil"></i>
 													</a>
-													<a href="#" class="btn btn-sm btn-outline-info" title="Chi tiết">
+													<!-- Thay đổi nút chi tiết -->
+													<button type="button"
+														class="btn btn-sm btn-outline-info btn-view-detail"
+														title="Chi tiết" th:data-id="${user.id}"
+														onclick="showUserDetail(this.getAttribute('data-id'))">
 														<i class="bi bi-info-circle"></i>
-													</a>
+													</button>
 												</div>
 											</td>
 										</tr>
@@ -215,12 +219,6 @@
 	<!-- Scripts -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
-		// Script xử lý toggle status đã có sẵn
-		document.querySelectorAll('.toggle-status').forEach(checkbox => {
-			checkbox.addEventListener('change', function () {
-				// ... code cũ ...
-			});
-		});
 
 		// Thêm script mới cho export
 		document.querySelector('a[href="/admin/user-management/export"]').addEventListener('click', function (e) {
@@ -265,6 +263,137 @@
 					this.innerHTML = '<i class="bi bi-file-excel me-1"></i>Export Users';
 					this.classList.remove('disabled');
 				});
+		});
+	</script>
+
+	<!-- Modal Chi tiết User -->
+	<div class="modal fade" id="userDetailModal" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Chi tiết User</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<!-- Thông tin cơ bản -->
+					<div class="card mb-3">
+						<div class="card-header">
+							<h6 class="mb-0">Thông tin cơ bản</h6>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 mb-2">
+									<strong>Email:</strong>
+									<span id="userEmail"></span>
+								</div>
+								<div class="col-md-6 mb-2">
+									<strong>Họ tên:</strong>
+									<span id="userFullName"></span>
+								</div>
+								<div class="col-md-6 mb-2">
+									<strong>Số điện thoại:</strong>
+									<span id="userPhone"></span>
+								</div>
+								<div class="col-md-6 mb-2">
+									<strong>Vai trò:</strong>
+									<span id="userRole" class="badge"></span>
+								</div>
+								<div class="col-md-6 mb-2">
+									<strong>Trạng thái:</strong>
+									<span id="userStatus" class="badge"></span>
+								</div>
+								<div class="col-md-6 mb-2">
+									<strong>Ngày tạo:</strong>
+									<span id="userCreatedAt"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Lịch sử hoạt động -->
+					<div class="card">
+						<div class="card-header">
+							<h6 class="mb-0">Lịch sử hoạt động gần đây</h6>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-sm">
+									<thead>
+										<tr>
+											<th>Thời gian</th>
+											<th>Hoạt động</th>
+											<th>Chi tiết</th>
+										</tr>
+									</thead>
+									<tbody id="activityLog">
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function showUserDetail(userId) {
+			fetch(`/admin/user-management/detail/${userId}`)
+				.then(response => response.json())
+				.then(data => {
+					// Cập nhật thông tin user
+					document.getElementById('userEmail').textContent = data.user.email;
+					document.getElementById('userFullName').textContent = data.user.fullName;
+					document.getElementById('userPhone').textContent = data.user.phone;
+
+					// Xử lý Role badge
+					const roleSpan = document.getElementById('userRole');
+					roleSpan.textContent = data.user.role;
+					roleSpan.className = `badge bg-${getRoleBadgeClass(data.user.role)}`;
+
+					// Xử lý Status badge
+					const statusSpan = document.getElementById('userStatus');
+					statusSpan.textContent = data.user.isActive ? 'Đang hoạt động' : 'Đã khóa';
+					statusSpan.className = `badge bg-${data.user.isActive ? 'success' : 'danger'}`;
+
+					// Format và hiển thị ngày tạo
+					document.getElementById('userCreatedAt').textContent =
+						new Date(data.user.createdAt).toLocaleDateString('vi-VN');
+
+					// Cập nhật lịch sử hoạt động
+					const activityLog = document.getElementById('activityLog');
+					activityLog.innerHTML = data.activities.map(activity => `
+                <tr>
+                    <td>${new Date(activity.createdAt).toLocaleString('vi-VN')}</td>
+                    <td>${activity.activity}</td>
+                    <td>${activity.description}</td>
+                </tr>
+            `).join('');
+
+					// Hiển thị modal
+					new bootstrap.Modal(document.getElementById('userDetailModal')).show();
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('Có lỗi xảy ra khi tải thông tin user');
+				});
+		}
+
+		function getRoleBadgeClass(role) {
+			switch (role) {
+				case 'ADMIN': return 'danger';
+				case 'VENDOR': return 'success';
+				default: return 'primary';
+			}
+		}
+
+		// Sửa lại nút xem chi tiết trong bảng user
+		document.querySelectorAll('.btn-view-detail').forEach(button => {
+			button.addEventListener('click', function (e) {
+				e.preventDefault();
+				const userId = this.getAttribute('data-id');
+				showUserDetail(userId);
+			});
 		});
 	</script>
 

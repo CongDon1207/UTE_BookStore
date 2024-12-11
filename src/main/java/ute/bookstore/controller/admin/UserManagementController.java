@@ -1,5 +1,7 @@
 package ute.bookstore.controller.admin;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 
 import jakarta.validation.Valid;
 import ute.bookstore.entity.User;
+import ute.bookstore.entity.UserActivityLog;
 import ute.bookstore.enums.UserRole;
 import ute.bookstore.service.impl.UserServiceImpl;
 import ute.bookstore.service.impl.admin.UserExportService;
@@ -104,5 +107,17 @@ public class UserManagementController {
 	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
 	        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
 	        .body(file);
+	}
+	
+	@GetMapping("/detail/{id}")
+	public ResponseEntity<Map<String, Object>> getUserDetail(@PathVariable Long id) {
+	    User user = userService.getUserById(id);
+	    List<UserActivityLog> activities = userService.getUserActivities(id, 0, 5); // 5 hoạt động gần nhất
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("user", user);
+	    response.put("activities", activities);
+	    
+	    return ResponseEntity.ok(response);
 	}
 }
