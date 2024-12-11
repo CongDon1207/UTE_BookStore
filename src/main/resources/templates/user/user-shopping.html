@@ -104,6 +104,23 @@
         .section-header h2 {
             margin-bottom: 0;
         }
+          @keyframes boom {
+        0% {
+            transform: scale(1); /* Bắt đầu với kích thước bình thường */
+            opacity: 1;
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3); /* Bóng nhẹ */
+        }
+        50% {
+            transform: scale(1.5); /* Phóng to phần tử lên 1.5 lần */
+            opacity: 0.9; /* Giảm độ trong suốt */
+            box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.5); /* Bóng mạnh hơn, tạo cảm giác nổ */
+        }
+        100% {
+            transform: scale(1); /* Quay lại kích thước ban đầu */
+            opacity: 1; /* Độ trong suốt trở lại bình thường */
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3); /* Bóng nhẹ lại */
+        }
+         }
        
     </style>
 <!-- IE Compatibility -->
@@ -121,92 +138,73 @@
 	<main class="container py-5">
         <!-- Sách Mới Nhất -->
         <section class="mb-5 danh-muc-section" id="sachmoi">
-            <div class="section-header">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-clock text-primary me-3" style="font-size: 1.5rem;"></i>
-                    <h2 class="text-primary">Sách Mới Nhất</h2>
-                </div>
-                <a href="#" class="btn btn-outline-primary">Xem Tất Cả</a>
-            </div>
-            <div class="row" id="new-books">
-                <div class="col-md-4 mb-4">
-                    <div class="card book-card">
-                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới">
-                        <div class="card-body">
-                            <div class="book-detail-badge">
-                                <i class="bi bi-calendar-check text-primary"></i>
-                                <small>Thêm mới: 2 ngày trước</small>
-                            </div>
-                            <h5 class="card-title">Nhà Giả Kim</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 text-primary mb-0">120.000₫</span>
-                                <button class="btn btn-sm btn-primary">Thêm giỏ</button>
-                            </div>
-                        </div>
+    <div class="section-header">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-clock text-primary me-3" style="font-size: 1.5rem;"></i>
+            <h2 class="text-primary">Top 20 Sách Mới Nhất</h2>
+        </div>
+    </div>
+    <div class="row" id="new-books">
+        <div class="col-md-4 mb-4" th:each="newbook, iterStat : ${newBooks}">
+        <a th:href="@{/user/bookdetail(id=${newbook.id})}" class="book-card-link">
+            <div class="card book-card" style="border-color: #007bff; font-weight: bold;">
+                <img th:if="${newbook.images != null && !newbook.images.empty}" th:src="${newbook.images[0]}" class="card-img-top" alt="Sách mới">
+                <div class="card-body">
+                    <div class="book-detail-badge">
+                        <i class="bi bi-calendar-check text-primary"></i>
+                        <small th:text="'Thêm mới gần đây('+${newbook.id}+')'"></small>
+                    </div>
+                    
+                    <!-- Badge Top hiển thị theo id -->
+                    <span class="badge badge-custom" 
+                          th:text="'Top ' + ${iterStat.index + 1}" 
+                          style="background-color: #007bff; font-weight: bold; font-size: 20px; animation: boom 0.8s ease-out infinite;">
+                          Mới Nhất
+                    </span>
+                    
+                    <h5 class="card-title" th:text="${newbook.title}"></h5>
+                     <p class="text-gray-600 mb-1" th:text="'Thể loại: '+${newbook.category.name}">Thể Loại</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-primary mb-0" th:text="${newbook.price} +' ₫'"></span>
+                        <button class="btn btn-sm btn-primary">Thêm giỏ</button>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card book-card">
-                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới">
-                        <div class="card-body">
-                            <div class="book-detail-badge">
-                                <i class="bi bi-calendar-check text-primary"></i>
-                                <small>Thêm mới: 2 ngày trước</small>
-                            </div>
-                            <h5 class="card-title">Nhà Giả Kim</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 text-primary mb-0">120.000₫</span>
-                                <button class="btn btn-sm btn-primary">Thêm giỏ</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card book-card">
-                        <img src="/images/books/new1.jpg" class="card-img-top" alt="Sách mới">
-                        <div class="card-body">
-                            <div class="book-detail-badge">
-                                <i class="bi bi-calendar-check text-primary"></i>
-                                <small>Thêm mới: 2 ngày trước</small>
-                            </div>
-                            <h5 class="card-title">Nhà Giả Kim</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 text-primary mb-0">120.000₫</span>
-                                <button class="btn btn-sm btn-primary">Thêm giỏ</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Thêm 2 sách mới khác tương tự -->
             </div>
-            <div class="text-center mt-3">
-                <button id="load-more-new-books" class="btn btn-primary">Xem Thêm</button>
-            </div>
-        </section>
+            </a>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <button id="load-more-new-books" class="btn btn-primary">Xem Thêm</button>
+    </div>
+</section>
+
+
 
         <!-- Sách Bán Chạy Nhất -->
         <section class="mb-5 danh-muc-section" id="sachbanchay">
             <div class="section-header">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-graph-up text-success me-3" style="font-size: 1.5rem;"></i>
-                    <h2 class="text-success">Sách Bán Chạy Nhất</h2>
+                    <h2 class="text-success">Top 20 Sách Bán Chạy Nhất</h2>
                 </div>
-                <a href="#" class="btn btn-outline-success">Xem Tất Cả</a>
+               
             </div>
             <div class="row" id="bestseller-books">
-                <div class="col-md-4 mb-4">
-                    <div class="card book-card">
-                        <span class="badge bg-success badge-custom">Bán: 5,420 cuốn</span>
-                        <img src="/images/books/bestseller1.jpg" class="card-img-top" alt="Sách bán chạy">
+                <div class="col-md-4 mb-4" th:each="book : ${bestSellingBooks}">
+                <a th:href="@{/user/bookdetail(id=${book.id})}" class="book-card-link">
+                    <div class="card book-card border-2" style="border-color: #28a745; font-weight: bold;">
+                        <span class="badge bg-success badge-custom" style="font-weight: bold; font-size: 16px; animation: boom 0.8s ease-out infinite;" th:text="'Đã Bán: '+${book['totalSold']}+' cuốn'">Bán: 5,420 cuốn</span>
+                        <img th:src="${book['imageUrl']}" class="card-img-top" alt="Sách bán chạy">
                         <div class="card-body">
-                            <h5 class="card-title">Hạt Giống Tâm Hồn</h5>
+                            <h5 class="card-title" th:text="${book['title']}"></h5>
+                             <p class="text-gray-600 mb-1" th:text="'IDThể loại: '+${book['category_id']}">Thể Loại</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 text-success mb-0">150.000₫</span>
+                                <span class="h5 text-success mb-0" th:text="${book['price']} +' ₫'"></span>
                                 <button class="btn btn-sm btn-success">Thêm giỏ</button>
                             </div>
                         </div>
                     </div>
+                    </a>
                 </div>
                 <!-- Thêm 2 sách bán chạy khác tương tự -->
             </div>
@@ -220,18 +218,20 @@
             <div class="section-header">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-star text-warning me-3" style="font-size: 1.5rem;"></i>
-                    <h2 class="text-warning">Sách Đánh Giá Cao</h2>
+                    <h2 class="text-warning">Top 20 Sách Đánh Giá Cao</h2>
                 </div>
-                <a href="#" class="btn btn-outline-warning">Xem Tất Cả</a>
+              
             </div>
             <div class="row" id="highly-rated-books">
-                <div class="col-md-4 mb-4">
-                    <div class="card book-card">
-                        <span class="badge bg-warning text-dark badge-custom">
+                <div class="col-md-4 mb-4" th:each="bookrt : ${bestRatingBooks}">
+                 <a th:href="@{/user/bookdetail(id=${bookrt.id})}" class="book-card-link">
+                    <div class="card book-card border-2" style="border-color: #ffc107; font-weight: bold;">
+                        <span class="badge bg-warning text-dark badge-custom bi bi-star-fill" style="font-weight: bold; font-size: 16px; animation: boom 0.8s ease-out infinite;" 
+                        th:text="${bookrt['averageRating']}+'/5 ('+${bookrt['reviewCount']}+' đánh giá)'">
                             <i class="bi bi-star-fill"></i> 4.8/5 
                             (1,200 đánh giá)
                         </span>
-                        <img src="/images/books/highlyrated1.jpg" class="card-img-top" alt="Sách đánh giá cao">
+                        <img th:src="${bookrt['imageUrl']}" class="card-img-top" alt="Sách đánh giá cao">
                         <div class="card-body">
                             <div class="star-rating mb-2">
                                 <i class="bi bi-star-fill"></i>
@@ -240,13 +240,15 @@
                                 <i class="bi bi-star-fill"></i>
                                 <i class="bi bi-star-half"></i>
                             </div>
-                            <h5 class="card-title">Nghệ Thuật Sống Đẹp</h5>
+                            <h5 class="card-title" th:text="${bookrt['title']}"></h5>
+                            <p class="text-gray-600 mb-1" th:text="'IDThể loại: '+${bookrt['category_id']}">Thể Loại</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 text-warning mb-0">130.000₫</span>
+                                <span class="h5 text-warning mb-0" th:text="${bookrt['price'] + ' ₫'}"></span>
                                 <button class="btn btn-sm btn-warning">Thêm giỏ</button>
                             </div>
                         </div>
                     </div>
+                    </a>
                 </div>
                 <!-- Thêm 2 sách đánh giá cao khác tương tự -->
             </div>
@@ -256,37 +258,45 @@
         </section>
 
         <!-- Sách Yêu Thích Nhất -->
-        <section class="mb-5 danh-muc-section"  id="sachyeuthich">
-            <div class="section-header">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-heart text-danger me-3" style="font-size: 1.5rem;"></i>
-                    <h2 class="text-danger">Sách Yêu Thích Nhất</h2>
-                </div>
-                <a href="#" class="btn btn-outline-danger">Xem Tất Cả</a>
-            </div>
-            <div class="row" id="favorite-books">
-                <div class="col-md-4 mb-4">
-                    <div class="card book-card">
-                        <span class="badge bg-danger badge-custom">
-                            <i class="bi bi-heart-fill"></i> 12,500 Lượt Yêu Thích
-                        </span>
-                        <img src="/images/books/favorite1.jpg" class="card-img-top" alt="Sách yêu thích">
-                        <div class="card-body">
-                            <h5 class="card-title">Đắc Nhân Tâm</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 text-danger mb-0">140.000₫</span>
-                                <button class="btn btn-sm btn-danger">Thêm giỏ</button>
-                            </div>
+        <section class="mb-5 danh-muc-section" id="sachyeuthich">
+    <div class="section-header">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-heart text-danger me-3" style="font-size: 1.5rem;"></i>
+            <h2 class="text-danger">Top 20 Sách Yêu Thích Nhất</h2>
+        </div>
+       
+    </div>
+    <div class="row" id="favorite-books">
+        <th:block th:each="book : ${mostFavoritedBooks}">
+        
+            <div class="col-md-4 mb-4">
+             <a th:href="@{/user/bookdetail(id=${book.id})}" class="book-card-link">
+                <div class="card book-card border-2" style="border-color: #dc3545; font-weight: bold;">
+                    <span class="badge bg-danger badge-custom" style="font-weight: bold; font-size: 16px; animation: boom 0.8s ease-out infinite;">
+                        <i class="bi bi-heart-fill"></i> <span th:text="${book.favoritedCount}">12,500</span> Lượt Yêu Thích
+                    </span>
+                    <img class="card-img-top" th:src="@{${book.imageUrl}}" alt="Sách yêu thích">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${book.title}">Đắc Nhân Tâm</h5>
+                        <p class="text-gray-600 mb-1" th:text="'IDThể loại: '+${book['category_id']}">Thể Loại</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 text-danger mb-0" th:text="${book.price} +'₫'">140.000₫</span>
+                            <button class="btn btn-sm btn-danger">Thêm giỏ</button>
                         </div>
                     </div>
                 </div>
-                <!-- Thêm 2 sách yêu thích khác tương tự -->
+                </a>
             </div>
-            <div class="text-center mt-3">
-                <button id="load-more-favorite-books" class="btn btn-danger">Xem Thêm</button>
-            </div>
-        </section>
-    </main>
+            
+        </th:block>
+    </div>
+    <div class="text-center mt-3">
+        <button id="load-more-favorite-books" class="btn btn-danger">Xem Thêm</button>
+    </div>
+   
+</section>
+
+        </main>
 
    
 	
@@ -308,7 +318,7 @@
             // Ẩn tất cả các danh mục sách
             const danhMucSections = document.querySelectorAll(".danh-muc-section");
             danhMucSections.forEach(section => section.style.display = "none");
-console.log(danhMuc);
+            console.log(danhMuc);
             // Hiển thị danh mục sách tương ứng
             if (danhMuc) {
                 const activeSection = document.getElementById(danhMuc);
@@ -341,7 +351,5 @@ console.log(danhMuc);
 	
 <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-	
 </body>
-
 </html>
