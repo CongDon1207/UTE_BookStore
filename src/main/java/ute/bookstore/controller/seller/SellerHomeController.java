@@ -6,7 +6,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.ui.Model;
 
 import ute.bookstore.entity.Address;
@@ -27,30 +31,14 @@ public class SellerHomeController {
 		return "seller/dashboard";
 	}
 	
-	
-	
-	
-	@GetMapping("/shop")
-	public String shopManagement(Model model) {
-	    Shop shop = new Shop();
-	    shop.setName("Book Shop UTE");
-	    shop.setPhone("0123456789"); 
-	    shop.setDescription("Cửa hàng sách UTE");
-	    shop.setLogo("/images/logos/bookstore3.png");
-	    shop.setRating(4.5);
-	    shop.setIsActive(true);
-	    shop.setBooks(new ArrayList<>()); // Thêm empty list
-	    shop.setOrders(new ArrayList<>()); // Thêm empty list
-
-	    Address address = new Address();
-	    address.setStreet("Số 1 Võ Văn Ngân");
-	    address.setDistrict("Thủ Đức");
-	    address.setCity("TP.HCM");
-	    shop.setAddress(address);
-
-	    model.addAttribute("shop", shop);
-	    return "seller/shop-management";
+	@ModelAttribute
+	public void addAttributes(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
 	}
+	
+	
+	
+	
 	
 	
 	

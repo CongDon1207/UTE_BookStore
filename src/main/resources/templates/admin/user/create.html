@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>UTEBookStore - Thêm User</title>
+    
+    <link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div th:replace="admin/layout/header :: header"></div>
+
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div th:insert="~{'admin/layout/sidebar' :: sidebar}"></div>
+
+                <!-- Main Content -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
+                        <h1 class="h2">Thêm User Mới</h1>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <form th:action="@{/admin/user-management/create}" 
+                                  th:object="${user}" 
+                                  method="post" 
+                                  class="needs-validation" 
+                                  novalidate>
+                                
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" 
+                                           class="form-control" 
+                                           id="email" 
+                                           th:field="*{email}"
+                                           pattern="^[\w-\.]+@[\w-]+\.[a-z]{2,6}$"
+                                           required>
+                                    <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="password" 
+                                           th:field="*{password}"
+                                           required>
+                                    <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                                </div>
+
+                                <!-- Full Name -->
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="fullName" 
+                                           th:field="*{fullName}"
+                                           required>
+                                    <div class="error-message" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="tel" 
+                                           class="form-control" 
+                                           id="phone" 
+                                           th:field="*{phone}"
+                                           pattern="^\+?[0-9]{10,12}$"
+                                           required>
+                                    <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                </div>
+
+                                <!-- Role -->
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">Vai trò <span class="text-danger">*</span></label>
+                                    <select class="form-select" 
+                                            id="role" 
+                                            th:field="*{role}"
+                                            required>
+                                        <option value="">Chọn vai trò</option>
+                                        <option th:each="role : ${roles}"
+                                                th:value="${role}"
+                                                th:text="${role}">
+                                        </option>
+                                    </select>
+                                    <div class="error-message" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-2"></i>Lưu
+                                    </button>
+                                    <a th:href="@{/admin/user-management}" class="btn btn-secondary ms-2">
+                                        <i class="bi bi-x-circle me-2"></i>Hủy
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="admin/layout/footer :: footer"></div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Form Validation Script -->
+    <script>
+        // Form validation
+        (function() {
+            'use strict';
+            
+            var forms = document.querySelectorAll('.needs-validation');
+            
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Custom email validation
+            const emailInput = document.getElementById('email');
+            emailInput.addEventListener('input', function() {
+                if (!this.value.match(/^[\w-\.]+@[\w-]+\.[a-z]{2,6}$/)) {
+                    this.setCustomValidity('Email không hợp lệ');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+
+            // Custom phone validation
+            const phoneInput = document.getElementById('phone');
+            phoneInput.addEventListener('input', function() {
+                if (!this.value.match(/^\+?[0-9]{10,12}$/)) {
+                    this.setCustomValidity('Số điện thoại không hợp lệ (10-12 số)');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

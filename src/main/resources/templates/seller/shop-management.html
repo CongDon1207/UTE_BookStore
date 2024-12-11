@@ -1,109 +1,162 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Quản lý Shop - UTE Book Store</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+	<meta charset="UTF-8">
+	<title>Quản lý Shop - UTE Book Store</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Font Awesome -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
 </head>
+
 <body>
-    <div th:replace="seller/layout/header :: header"></div>
+	<div th:replace="seller/layout/header :: header"></div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2 bg-light">
-                <div th:replace="seller/layout/sidebar :: sidebar"></div>
-            </div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2 bg-light">
+				<div th:replace="seller/layout/sidebar :: sidebar"></div>
+			</div>
 
-            <main class="col-md-10 ms-sm-auto px-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Thông tin Shop</h1>
-                </div>
+			<main class="col-md-10 ms-sm-auto px-4">
+				<div class="d-flex justify-content-between flex-md-nowrap pt-3 pb-2 mb-3 border-bottom">
+					<h1 class="h2">Thông tin Shop</h1>
+				</div>
 
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-body">
-                                <form th:object="${shop}" method="post" enctype="multipart/form-data">
-                                    <div class="mb-3">
-                                        <label class="form-label">Logo Shop</label>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <img th:if="${shop.logo}" th:src="${shop.logo}" class="img-thumbnail me-3" style="width: 100px;">
-                                            <div>
-                                                <input type="file" class="form-control" name="logoFile" accept="image/*">
-                                            </div>
-                                        </div>
-                                    </div>
+				<div class="row">
+					<div class="col-md-8">
+						<div class="card">
+							<div class="card-body">
+								<form th:action="@{/seller/shop}" th:object="${shop}" method="post"
+									enctype="multipart/form-data">
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Tên Shop</label>
-                                        <input type="text" class="form-control" th:field="*{name}" required>
-                                    </div>
+									<!-- Logo Section -->
+									<div class="mb-4">
+										<label class="form-label fw-bold">Logo Shop</label>
+										<div class="d-flex gap-3 align-items-start">
+											<div class="position-relative">
+												<img th:src="${shop.logo != null ? shop.logo : '/images/default-shop-logo.png'}"
+													id="preview-logo" alt="Shop Logo" class="img-thumbnail shadow"
+													style="width: 200px; height: 200px; object-fit: cover;">
+											</div>
+											<div>
+												<input type="file" class="form-control" name="logoFile" accept="image/*"
+													onchange="previewImage(this);">
+												<small class="text-muted d-block mt-1">Kích thước: 200x200px. Tối đa:
+													2MB</small>
+											</div>
+										</div>
+									</div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Số điện thoại</label>
-                                        <input type="tel" class="form-control" th:field="*{phone}" required>
-                                    </div>
+									<!-- Shop Info -->
+									<div class="mb-3">
+										<label class="form-label fw-bold">Tên Shop</label>
+										<input type="text" class="form-control" th:field="*{name}" required>
+									</div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Mô tả Shop</label>
-                                        <textarea class="form-control" th:field="*{description}" rows="4"></textarea>
-                                    </div>
+									<div class="mb-3">
+										<label class="form-label fw-bold">Số điện thoại</label>
+										<input type="tel" class="form-control" th:field="*{phone}" required>
+									</div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Địa chỉ</label>
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <input type="text" class="form-control" th:field="*{address.street}" placeholder="Số nhà, Đường" required>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" class="form-control" th:field="*{address.district}" placeholder="Quận/Huyện" required>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" class="form-control" th:field="*{address.city}" placeholder="Tỉnh/Thành phố" required>
-                                            </div>
-                                        </div>
-                                    </div>
+									<div class="mb-3">
+										<label class="form-label fw-bold">Mô tả Shop</label>
+										<textarea class="form-control" th:field="*{description}" rows="4"></textarea>
+									</div>
 
-                                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+									<!-- Address Section -->
+									<div class="mb-4">
+										<label class="form-label fw-bold">Địa chỉ</label>
+										<div class="row g-3">
+											<div class="col-12">
+												<input type="text" class="form-control" th:field="*{address.street}"
+													placeholder="Số nhà, Đường" required>
+											</div>
+											<div class="col-md-6">
+												<input type="text" class="form-control" th:field="*{address.district}"
+													placeholder="Quận/Huyện" required>
+											</div>
+											<div class="col-md-6">
+												<input type="text" class="form-control" th:field="*{address.city}"
+													placeholder="Tỉnh/Thành phố" required>
+											</div>
+										</div>
+									</div>
 
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Thống kê Shop</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label text-muted">Đánh giá trung bình</label>
-                                    <div class="h4" th:text="${shop.rating + ' ⭐'}">4.5 ⭐</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-muted">Số sản phẩm</label>
-                                    <div class="h4" th:text="${shop.books.size()}">45</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-muted">Đơn hàng đã bán</label>
-                                    <div class="h4" th:text="${shop.orders.size()}">120</div>
-                                </div>
-                                <div>
-                                    <label class="form-label text-muted">Trạng thái</label>
-                                    <div class="h4">
-                                        <span class="badge bg-success" th:if="${shop.isActive}">Hoạt động</span>
-                                        <span class="badge bg-danger" th:unless="${shop.isActive}">Tạm ngưng</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
+									<button type="submit" class="btn btn-primary px-4">
+										<i class="fas fa-save me-2"></i>Lưu thay đổi
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
 
-    <div th:replace="seller/layout/footer :: footer"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+					<!-- Stats Card -->
+					<div class="col-md-4">
+						<div class="card">
+							<div class="card-header bg-light">
+								<h5 class="card-title mb-0">Thống kê Shop</h5>
+							</div>
+							<div class="card-body">
+								<div class="mb-3">
+									<span class="text-muted">Đánh giá trung bình</span>
+									<div class="h4 mt-2">
+										<i class="fas fa-star text-warning me-1"></i>
+										<span th:text="${shop.rating}">4.5</span>
+									</div>
+								</div>
+
+								<div class="mb-3">
+									<span class="text-muted">Số sản phẩm</span>
+									<div class="h4 mt-2">
+										<i class="fas fa-book text-primary me-1"></i>
+										<span th:text="${shop.books.size()}">45</span>
+									</div>
+								</div>
+
+								<div class="mb-3">
+									<span class="text-muted">Đơn hàng đã bán</span>
+									<div class="h4 mt-2">
+										<i class="fas fa-shopping-cart text-success me-1"></i>
+										<span th:text="${shop.orders.size()}">120</span>
+									</div>
+								</div>
+
+								<div>
+									<span class="text-muted">Trạng thái</span>
+									<div class="h4 mt-2">
+										<span th:if="${shop.isActive}" class="badge bg-success">
+											<i class="fas fa-check-circle me-1"></i>Hoạt động
+										</span>
+										<span th:unless="${shop.isActive}" class="badge bg-danger">
+											<i class="fas fa-times-circle me-1"></i>Tạm ngưng
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+
+	<div th:replace="seller/layout/footer :: footer"></div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+	<script>
+		document.querySelector('input[name="logoFile"]').addEventListener('change', function (e) {
+			const file = e.target.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					const imgElement = document.querySelector('.img-thumbnail');
+					imgElement.src = e.target.result;
+				}
+				reader.readAsDataURL(file);
+			}
+		});
+	</script>
 </body>
+
 </html>

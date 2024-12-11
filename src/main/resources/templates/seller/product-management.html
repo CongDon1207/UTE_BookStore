@@ -80,7 +80,7 @@
 										class="img-thumbnail" style="width: 50px;">
 								</td>
 								<td th:text="${book.title}"></td>
-								<td th:text="${book.category.name}"></td>
+								<td th:text="${book.category != null ? book.category.name : ''}"></td>
 								<td th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT')}"></td>
 								<td th:text="${book.quantity}"></td>
 								<td>

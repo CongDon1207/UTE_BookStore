@@ -1,7 +1,7 @@
 package ute.bookstore.entity;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,38 +9,33 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "addresses")
+@Table(name = "user_activity_logs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address {
+public class UserActivityLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    private String street;
-    private String district;
-    private String city;
-    private String phone;
-    
-    @Column(name = "is_default")
-    private Boolean isDefault = false;
     
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
     
-    @OneToOne(mappedBy = "address", cascade = CascadeType.ALL)
-    private Shop shop;
+    @Column(nullable = false)
+    private String activity;
     
-    @OneToMany(mappedBy = "deliveryAddress")
-    private List<Order> orders;
+    private String description;
+    
+    @Column(name = "ip_address")
+    private String ipAddress;
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
