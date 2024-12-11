@@ -1,5 +1,7 @@
 package ute.bookstore.controller.admin;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 
 import jakarta.validation.Valid;
 import ute.bookstore.entity.User;
+import ute.bookstore.entity.UserActivityLog;
 import ute.bookstore.enums.UserRole;
 import ute.bookstore.service.impl.UserServiceImpl;
 import ute.bookstore.service.impl.admin.UserExportService;
@@ -69,16 +72,22 @@ public class UserManagementController {
 
 	@GetMapping("/edit/{id}")
 	public String getEditUserPage(@PathVariable Long id, Model model) {
-		User user = userService.getUserById(id);
-		model.addAttribute("user", user);
-		model.addAttribute("roles", UserRole.values());
-		return "admin/user/edit";
+	    User user = userService.getUserById(id);
+	    model.addAttribute("user", user);
+	    model.addAttribute("roles", UserRole.values());
+	    return "admin/user/edit";
 	}
 
 	@PostMapping("/edit/{id}")
-	public String updateUser(@PathVariable Long id, @Valid @ModelAttribute User user) {
-		userService.updateUser(id, user);
-		return "redirect:/admin/user-management";
+	public String updateUser(@PathVariable Long id, 
+	                        @Valid @ModelAttribute User userDetails, 
+	                        BindingResult result) {
+	    if (result.hasErrors()) {
+	        return "admin/user/edit";
+	    }
+	    
+	    userService.updateUser(id, userDetails);
+	    return "redirect:/admin/user-management";
 	}
 
 	@PostMapping("/toggle-status/{id}")
@@ -98,5 +107,17 @@ public class UserManagementController {
 	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
 	        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
 	        .body(file);
+	}
+	
+	@GetMapping("/detail/{id}")
+	public ResponseEntity<Map<String, Object>> getUserDetail(@PathVariable Long id) {
+	    User user = userService.getUserById(id);
+	    List<UserActivityLog> activities = userService.getUserActivities(id, 0, 5); // 5 hoạt động gần nhất
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("user", user);
+	    response.put("activities", activities);
+	    
+	    return ResponseEntity.ok(response);
 	}
 }

@@ -4,7 +4,7 @@
             <!-- Logo -->
             <div class="col-auto admin_logo">
                 <a href="admin_dashboard.html">
-                    <img src="images/logos/it_logo_white.png" alt="Admin Logo" class="logo">
+                    <img th:src="@{/images/logos/it_logo_white.png}" alt="Admin Logo" class="logo">
                 </a>
             </div>
             <!-- End Logo -->
@@ -45,7 +45,7 @@
             <div class="col-auto admin_user_section">
                 <div class="dropdown">
                     <a href="#" class="dropdown-toggle user_toggle" data-bs-toggle="dropdown">
-                        <img src="images/it_service/team-member-1.jpg" alt="Admin Avatar" class="user_avatar">
+                        <img th:src="@{/images/it_service/team-member-1.jpg}" alt="Admin Avatar" class="user_avatar">
                         <span class="user_name">Admin</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
