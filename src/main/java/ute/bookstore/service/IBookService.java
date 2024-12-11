@@ -7,6 +7,7 @@ import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Category;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 
 public interface IBookService {
@@ -23,5 +24,12 @@ public interface IBookService {
 	List<Book> getAllBooks();
 	Page<Book> getAllBooks(Pageable pageable); // Thêm tham số Pageable
 	List<Book> getFeaturedBooks();
-	 Page<Book> getBooks(Long categoryId, String sortBy, String sortDir, int page, int size);
+	Page<Book> getBooks(Long categoryId, String sortBy, String sortDir, int page, int size);
+	 
+	List<Book> getTop20NewBooks();
+	
+	
+	List<Map<String, Object>> getTop20BestSellingBooksWithImages();
+	List<Map<String, Object>> getTop20BooksWithRatings();
+	 List<Map<String, Object>> getTop20MostFavoritedBooks() ;
 }

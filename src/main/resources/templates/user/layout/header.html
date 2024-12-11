@@ -67,13 +67,14 @@
                     <div class="menu_side">
                         <div id="navbar_menu">
                             <ul class="first-ul">
-                            <li><a ><i class="fa fa-book"></i> __________________________________________</a></li>
+                            <li><a ><i class="fa fa-book"></i> __________________________</a></li>
                                 <li><a class="active" href="/user/home"><i class="fa fa-home"></i> Trang chủ</a></li>
                                
                                 <li><a  href="/user/shopping"><i class="fa fa-shopping-bag"></i> Mua sắm</a></li>
-                           <li class="notification-container">
-                        <a href="thong_bao.html" id="notification-trigger">
-                            <i class="fa fa-bell"></i> Thông báo
+                           <li class="notifications-container">
+                        <a href="/user/notifications" id="notifications-trigger">
+                            <i class="fa fa-bell" ></i> Thông báo
+                          
                             <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
                         </a>
                         <div id="notification-dropdown" class="notification-dropdown">
@@ -127,7 +128,7 @@
         </form>
 
         <!-- Nút Xem sách đã yêu thích -->
-      <button class="favorite-button" onclick="window.location.href='/user/favoriteBooks';">
+      <button class="favorite-button " onclick="window.location.href='/user/favoriteBooks';">
     <i class="fa fa-book"></i> <i class="fa fa-heart"></i>
     <span class="tooltip-text">Xem sách đã yêu thích</span>
 </button>
@@ -144,81 +145,9 @@
         </div>
     </div>
     <!-- header bottom end -->
+   
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const notificationTrigger = document.getElementById('notification-trigger');
-        const notificationDropdown = document.getElementById('notification-dropdown');
-        const notificationBadge = document.getElementById('notification-badge');
-
-        // Sample notification data (replace with your actual data source)
-        const notifications = [
-            {
-                icon: 'fa-shopping-cart',
-                message: 'Đơn hàng #12345 đã được xác nhận',
-                time: '10 phút trước'
-            },
-            {
-                icon: 'fa-truck',
-                message: 'Đơn hàng của bạn đang được giao',
-                time: '2 giờ trước'
-            },
-            {
-                icon: 'fa-tag',
-                message: 'Bạn có khuyến mãi mới!',
-                time: 'Hôm qua'
-            }
-        ];
-
-        // Update notification badge
-        function updateNotificationBadge() {
-            notificationBadge.textContent = notifications.length;
-            notificationBadge.style.display = notifications.length > 0 ? 'block' : 'none';
-        }
-
-        // Toggle dropdown visibility
-        notificationTrigger.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            notificationDropdown.classList.toggle('show');
-            renderNotifications();
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!notificationDropdown.contains(e.target) && 
-                e.target !== notificationTrigger) {
-                notificationDropdown.classList.remove('show');
-            }
-        });
-
-        // Render notifications
-        function renderNotifications() {
-            if (notifications.length === 0) {
-                notificationDropdown.innerHTML = `
-                    <div class="no-notifications">
-                        Không có thông báo mới
-                    </div>
-                `;
-                return;
-            }
-
-            const notificationsHTML = notifications.map(notification => `
-                <div class="notification-item">
-                    <i class="notification-icon fa ${notification.icon}"></i>
-                    <div class="notification-content">
-                        <div class="notification-message">${notification.message}</div>
-                        <div class="notification-time">${notification.time}</div>
-                    </div>
-                </div>
-            `).join('');
-
-            notificationDropdown.innerHTML = notificationsHTML;
-            updateNotificationBadge();
-        }
-
-        // Initial render to set up badge
-        updateNotificationBadge();
-    });
+    
 
     window.addEventListener('DOMContentLoaded', function() {
         // Kiểm tra xem liệu phần tử tìm kiếm có tồn tại không

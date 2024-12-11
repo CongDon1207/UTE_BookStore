@@ -62,6 +62,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
     
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteBook> favoriteBooks;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     

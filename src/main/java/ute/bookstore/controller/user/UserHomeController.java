@@ -2,6 +2,8 @@ package ute.bookstore.controller.user;
 
 
 import java.util.List;
+import java.util.Map;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,15 +21,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ute.bookstore.entity.Address;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Category;
+import ute.bookstore.entity.Notification;
 import ute.bookstore.entity.User;
 import ute.bookstore.service.IAddressService;
 import ute.bookstore.service.IBookService;
 import ute.bookstore.service.ICategoryService;
+import ute.bookstore.service.INotificationService;
 import ute.bookstore.service.IUserService;
 
 @Controller
 @RequestMapping("/user")
 public class UserHomeController {
+	private long userID = 1L;
+	@Autowired
+	private INotificationService notificationService;
 	@Autowired
 	private ICategoryService categoryService;
 	 @Autowired
@@ -49,8 +56,64 @@ public class UserHomeController {
 	public String getCartPage() {
 		return "user/cart/show.html";
 	}
+	
+	@GetMapping("/notifications")
+	public String getNotificationPage(Model model) {
+		User user = userService.getUserById(userID);
+	    List<Notification> notifications = user.getNotifications();
+
+	    // Đảm bảo danh sách không null và sắp xếp thông báo từ mới đến cũ
+	    if (notifications != null) {
+	        notifications.sort((n1, n2) -> n2.getCreatedAt().compareTo(n1.getCreatedAt()));
+	    }
+
+	    model.addAttribute("user", user);
+	    model.addAttribute("notifications", notifications);
+		return "user/user-notifications.html";
+	}
+	
+	  @RequestMapping("/notification/read/{id}")
+	public String getReadNotificationPage(@PathVariable("id") Long id,Model model) {
+		Notification notification = notificationService.findById(id);
+	    if (notification != null) {
+	        notification.setIsRead(true);
+	        notificationService.save(notification);
+	       
+	    } else {
+	       
+	    }
+	    User user = userService.getUserById(userID);
+	    List<Notification> notifications = user.getNotifications();
+
+	    // Đảm bảo danh sách không null và sắp xếp thông báo từ mới đến cũ
+	    if (notifications != null) {
+	        notifications.sort((n1, n2) -> n2.getCreatedAt().compareTo(n1.getCreatedAt()));
+	    }
+
+	    model.addAttribute("user", user);
+	    model.addAttribute("notifications", notifications);
+		return "user/user-notifications.html";
+	}
+	
 	@GetMapping("/shopping")
-	public String getShoppingPage() {
+	public String getShoppingPage(Model model) {
+		// Lấy danh sách sách từ database
+        List<Book> newBooks = bookService.getTop20NewBooks();
+        model.addAttribute("newBooks", newBooks);
+        
+        // Lấy danh sách top 20 sách bán chạy cùng hình ảnh
+        List<Map<String, Object>> bestSellingBooks = bookService.getTop20BestSellingBooksWithImages();
+        model.addAttribute("bestSellingBooks", bestSellingBooks);
+        
+     // Lấy danh sách top 20 sách dánh giá cao
+        List<Map<String, Object>> bestRatingingBooks = bookService.getTop20BooksWithRatings();
+        model.addAttribute("bestRatingBooks", bestRatingingBooks);
+        
+        
+        // Lấy danh sách top 20 sách được yêu thích nhiều nhất
+        List<Map<String, Object>> mostFavoritedBooks = bookService.getTop20MostFavoritedBooks();
+        model.addAttribute("mostFavoritedBooks", mostFavoritedBooks);
+    
 		return "user/user-shopping.html";
 	}
 	// Lấy trang cập nhật thông tin
@@ -60,7 +123,7 @@ public class UserHomeController {
         if (id == null) {
             id = 1L; // ID mặc định cho mục đích thử nghiệm, thay bằng logic lấy ID người dùng đang đăng nhập
         }
-        User user = userService.getUserById(id);
+        User user = userService.getUserById(userID);
         model.addAttribute("user", user);
         return "user/user-edit"; // Thymeleaf tự động thêm .html
     }
@@ -81,7 +144,7 @@ public class UserHomeController {
 	public String getDeliveryAddressesPage(Model model/* , Principal principal */) {
 		 // Lấy thông tin user hiện tại
        // User user = userService.findByUsername(principal.getName());
-		 User user = userService.getUserById(1L);
+		 User user = userService.getUserById(userID);
 		 // Lấy danh sách địa chỉ của user
         List<Address> addresses = addressService.getAddressesByUserId(user.getId());
         
@@ -97,68 +160,7 @@ public class UserHomeController {
 		
 	}
 	
-	 @PostMapping("/addresses/add")
-		public String addAddress(@ModelAttribute("newAddress") Address address,
-				/* Principal principal, */ RedirectAttributes redirectAttributes) {
-	        // Lấy user hiện tại
-	        //User user = userService.findByUsername(principal.getName());
-		 User user = userService.getUserById(1L);
-
-	        // Gán user cho địa chỉ
-	        address.setUser(user);
-
-	        // Lưu địa chỉ mới
-	        addressService.saveAddress(address);
-	        redirectAttributes.addFlashAttribute("message", "Địa chỉ đã được thêm thành công.");
-	        return "redirect:/user/manageDeliveryAddresses";
-	    }
 	 
-	 @GetMapping("/addresses/delete/{id}")
-	    public String deleteAddress(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-		 try {
-		        addressService.deleteAddressById(id); // Thực hiện xóa địa chỉ
-		        redirectAttributes.addFlashAttribute("message", "Địa chỉ đã được xóa thành công!");
-		    } catch (Exception e) {
-		        redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi xóa địa chỉ!");
-		    }
-		    return "redirect:/user/manageDeliveryAddresses"; // Chuyển hướng về trang quản lý địa chỉ
-	    }
-	 	 
-	 @GetMapping("/addresses/edit/{id}")
-	 public String showEditAddressForm(@PathVariable("id") Long id, Model model) {
-		  Address address = addressService.getAddressById(id);
-		    model.addAttribute("address", address);
-		    return "redirect:/user/manageDeliveryAddresses";
-		 
-	 }
-	 
-	 @PostMapping("/addresses/edit/{id}")
-	 public String updateAddress(@PathVariable("id") Long id, 
-	                              @ModelAttribute Address address, 
-	                              RedirectAttributes redirectAttributes) {
-	     try {
-	         Address existingAddress = addressService.getAddressById(id);
-	         
-	         // Update existing address fields
-	         existingAddress.setStreet(address.getStreet());
-	         existingAddress.setDistrict(address.getDistrict());
-	         existingAddress.setCity(address.getCity());
-	         existingAddress.setPhone(address.getPhone());
-	         existingAddress.setIsDefault(address.getIsDefault());
-	         
-				/*
-				 * // Handle default address logic if (address.getIsDefault()) {
-				 * address.setIsDefault(existingAddress.getIsDefault()); }
-				 */
-	         
-	         addressService.saveAddress(existingAddress);
-	         redirectAttributes.addFlashAttribute("message", "Địa chỉ đã được cập nhật thành công.");
-	     } catch (Exception e) {
-	         redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi cập nhật địa chỉ.");
-	     }
-	     return "redirect:/user/manageDeliveryAddresses";
-	 }
-	
 
 	
 	// Hiển thị trang đổi mật khẩu
@@ -175,7 +177,7 @@ public class UserHomeController {
                                  RedirectAttributes redirectAttributes) {
         try {
         	 // Lấy người dùng từ session (hoặc security context)
-            User currentUser =  userService.getUserById(1L);
+            User currentUser =  userService.getUserById(userID);
             
             // Gọi service để đổi mật khẩu
             userService.changePassword(currentUser, currentPassword, newPassword, confirmPassword);
@@ -193,16 +195,16 @@ public class UserHomeController {
 	@GetMapping("/bookdetail")
 	public String getBookDetailPage(@RequestParam Long id, Model model) {
 	    Book book = bookService.getBookById(id);
+	    
+	 
+     
 	    model.addAttribute("book", book);
 	  
 	    return "user/product-detail";
 	}
 
 	
-	@GetMapping("/favoriteBooks")
-	public String getFavouriteBookPage() {
-		return "user/favourite-books";
-	}
+	
 	
 	@GetMapping("/allBooks")
 	public String getAllBooks(
