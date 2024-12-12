@@ -1,17 +1,23 @@
 package ute.bookstore.entity;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ute.bookstore.enums.DiscountType;
 @Entity
 @Table(name = "promotions")
 @Data
@@ -45,4 +51,17 @@ public class Promotion {
     @ManyToOne
     @JoinColumn(name = "shop_id")
     private Shop shop;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "promotion_books",
+        joinColumns = @JoinColumn(name = "promotion_id"),
+        inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    private List<Book> books;
+
+    // Thêm trường để phân biệt loại giảm giá
+    @Enumerated(EnumType.STRING)
+    @Column(name = "discount_type")
+    private DiscountType discountType; // PERCENT hoặc AMOUNT
 }

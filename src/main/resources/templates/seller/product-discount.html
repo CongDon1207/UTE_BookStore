@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý giảm giá - UTE Book Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="seller/layout/header :: header"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 bg-light">
+                <div th:replace="seller/layout/sidebar :: sidebar"></div>
+            </div>
+
+            <main class="col-md-10 ms-sm-auto px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Quản lý giảm giá sản phẩm</h1>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDiscountModal">
+                        <i class="fas fa-plus"></i> Thêm giảm giá
+                    </button>
+                </div>
+
+                <!-- Danh sách giảm giá -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Loại giảm giá</th>
+                                <th>Giá trị</th>
+                                <th>Thời gian bắt đầu</th>
+                                <th>Thời gian kết thúc</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+						<tbody>
+						   <tr th:each="discount : ${discounts}">
+						       <td>
+						           <span th:each="book, iter : ${discount.books}">
+						               <span th:text="${book.title}"></span>
+						               <span th:if="${!iter.last}">, </span>
+						           </span>
+						       </td>
+						       <td th:text="${discount.discountType == 'PERCENT' ? 'Phần trăm' : 'Số tiền'}"></td>
+						       <td>
+						           <span th:text="${discount.discountType == 'PERCENT' ? discount.discount + '%' : #numbers.formatDecimal(discount.discount, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}"></span>
+						       </td>
+						       <td th:text="${#temporals.format(discount.startDate, 'dd-MM-yyyy HH:mm')}"></td>
+						       <td th:text="${#temporals.format(discount.endDate, 'dd-MM-yyyy HH:mm')}"></td>
+						       <td>
+						           <span class="badge" th:classappend="${discount.isActive ? 'bg-success' : 'bg-danger'}" 
+						                 th:text="${discount.isActive ? 'Đang chạy' : 'Kết thúc'}">
+						           </span>
+						       </td>
+						       <td>
+						           <button class="btn btn-sm btn-primary me-2" th:data-discount="${discount.id}"
+						                   onclick="editDiscount(this.getAttribute('data-discount'))">
+						               <i class="fas fa-edit"></i>
+						           </button>
+						           <button class="btn btn-sm btn-danger" 
+						                   th:onclick="'deleteDiscount(' + ${discount.id} + ')'">
+						               <i class="fas fa-trash"></i>
+						           </button>
+						       </td>
+						   </tr>
+						</tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal thêm/sửa giảm giá -->
+    <div class="modal fade" id="addDiscountModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="discountForm" th:action="@{/seller/promotions/discount/add}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm giảm giá</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Chọn sách</label>
+                            <select class="form-select" name="bookId" required>
+                                <option value="">-- Chọn sách --</option>
+                                <option th:each="book : ${books}" 
+                                        th:value="${book.id}"
+                                        th:text="${book.title}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Loại giảm giá</label>
+                            <select class="form-select" name="discountType" required>
+                                <option value="PERCENT">Phần trăm (%)</option>
+                                <option value="AMOUNT">Số tiền (VNĐ)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Giá trị giảm</label>
+                            <input type="number" class="form-control" name="value" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Thời gian bắt đầu</label>
+                                    <input type="datetime-local" class="form-control" name="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Thời gian kết thúc</label>
+                                    <input type="datetime-local" class="form-control" name="endDate" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="seller/layout/footer :: footer"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    function editDiscount(id) {
+        // Load discount data and show modal
+    }
+    
+    function deleteDiscount(id) {
+        if(confirm('Bạn có chắc muốn xóa khuyến mãi này?')) {
+            window.location.href = `/seller/promotions/discount/${id}/delete`;
+        }
+    }
+    </script>
+</body>
+</html>
