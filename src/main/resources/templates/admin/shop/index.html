@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>UTEBookStore - Shop Management</title>
+    
+    <link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .btn.disabled {
+            pointer-events: none;
+            opacity: 0.65;
+        }
+
+        .spinner-border {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.1em;
+        }
+        
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            padding: 12px;
+        }
+
+        .table tbody td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div th:replace="admin/layout/header :: header"></div>
+
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div th:insert="~{'admin/layout/sidebar' :: sidebar}"></div>
+
+                <!-- Main Content -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+                    <!-- Tiêu đề và các nút action -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h2">Quản lý Shop</h1>
+                        <div class="btn-group">
+                            <a th:href="@{/admin/shop-management/create}" class="btn btn-primary me-2">
+                                <i class="bi bi-plus-circle me-1"></i>Thêm Shop
+                            </a>
+                            <a th:href="@{/admin/shop-management/export}" class="btn btn-success">
+                                <i class="bi bi-file-excel me-1"></i>Export Shops
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Thanh tìm kiếm -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form th:action="@{/admin/shop-management}" method="get" class="row g-3 align-items-center">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" name="search" th:value="${search}" class="form-control"
+                                            placeholder="Tìm kiếm theo tên shop, email chủ shop hoặc số điện thoại...">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-search me-1"></i>Tìm kiếm
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Bảng danh sách shop -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <!-- Bảng của bạn ở đây -->
+                                <table class="table table-hover">
+                                    <!-- ... code bảng của bạn ... -->
+                                </table>
+                            </div>
+
+                            <!-- Phân trang -->
+                            <nav th:if="${totalPages > 1}" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                        <a class="page-link"
+                                            th:href="@{/admin/shop-management(page=${currentPage-1},search=${search})}">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                                        th:classappend="${currentPage == i ? 'active' : ''}">
+                                        <a class="page-link"
+                                            th:href="@{/admin/shop-management(page=${i},search=${search})}"
+                                            th:text="${i+1}">
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item"
+                                        th:classappend="${currentPage == totalPages-1 ? 'disabled' : ''}">
+                                        <a class="page-link"
+                                            th:href="@{/admin/shop-management(page=${currentPage+1},search=${search})}">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="admin/layout/footer :: footer"></div>
+
+    <!-- Modal Chi tiết Shop -->
+    <div class="modal fade" id="shopDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết Shop</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Chi tiết shop sẽ được load bằng JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast position-fixed top-0 end-0 p-3" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto">Thông báo</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Xử lý toggle status
+        document.querySelectorAll('.toggle-status').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const shopId = this.dataset.id;
+                fetch(`/admin/shop-management/toggle-status/${shopId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const toast = new bootstrap.Toast(document.querySelector('.toast'));
+                    document.querySelector('.toast-body').textContent = 
+                        `Trạng thái shop đã được cập nhật thành ${data.status ? 'active' : 'inactive'}`;
+                    toast.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.checked = !this.checked;
+                });
+            });
+        });
+
+        // Function hiển thị chi tiết shop
+        function showShopDetail(shopId) {
+            // TODO: Implement shop detail modal
+        }
+    </script>
+</body>
+</html>

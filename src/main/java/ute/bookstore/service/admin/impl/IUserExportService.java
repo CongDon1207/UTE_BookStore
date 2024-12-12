@@ -1,4 +1,4 @@
-package ute.bookstore.service;
+package ute.bookstore.service.admin.impl;
 
 import java.io.ByteArrayInputStream;
 
