@@ -52,16 +52,19 @@ public class Promotion {
     @JoinColumn(name = "shop_id")
     private Shop shop;
     
-    @ManyToMany
-    @JoinTable(
-        name = "promotion_books",
-        joinColumns = @JoinColumn(name = "promotion_id"),
-        inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
-    private List<Book> books;
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
 
     // Thêm trường để phân biệt loại giảm giá
     @Enumerated(EnumType.STRING)
     @Column(name = "discount_type")
     private DiscountType discountType; // PERCENT hoặc AMOUNT
+
+    public String getDiscountType(){
+        if(this.discountType != null){
+            return this.discountType.name();
+        }
+        return null;
+    }
 }

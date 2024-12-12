@@ -1,5 +1,8 @@
 package ute.bookstore.controller.seller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ute.bookstore.entity.Promotion;
+import ute.bookstore.entity.Book;
+import ute.bookstore.enums.DiscountType;
 import ute.bookstore.service.IBookService;
 import ute.bookstore.service.IPromotionService;
 
@@ -25,15 +30,32 @@ public class SellerPromotionController {
 
    @GetMapping("/discount") 
    public String getDiscountPage(Model model) {
-       model.addAttribute("books", bookService.getAllBooks());
-       model.addAttribute("discounts", promotionService.getAllPromotions());
+       List<Book> books = bookService.getAllBooks();
+       List<Promotion> discounts = promotionService.getAllPromotions();
+       System.out.println("Books: " + books);
+       System.out.println("Discounts: " + discounts);
+       
+       model.addAttribute("books", books);
+       model.addAttribute("discounts", discounts);
        return "seller/product-discount";
    }
 
    @PostMapping("/discount/add")
-   public String addDiscount(@ModelAttribute Promotion promotion, @RequestParam Double value) {
-       promotion.setDiscount(value);
+   public String addDiscount(@RequestParam Long bookId, 
+                            @RequestParam DiscountType discountType,
+                            @RequestParam Double discount,
+                            @RequestParam LocalDateTime startDate,
+                            @RequestParam LocalDateTime endDate) {
+       
+       Book book = bookService.getBookById(bookId);
+       Promotion promotion = new Promotion();
+       promotion.setBook(book); // Set book trực tiếp
+       promotion.setDiscountType(discountType);
+       promotion.setDiscount(discount);
+       promotion.setStartDate(startDate);
+       promotion.setEndDate(endDate);
        promotion.setIsActive(true);
+       
        promotionService.savePromotion(promotion);
        return "redirect:/seller/promotions/discount";
    }
@@ -49,4 +71,6 @@ public class SellerPromotionController {
        promotionService.deletePromotion(id);
        return "redirect:/seller/promotions/discount";
    }
+   
+   
 }

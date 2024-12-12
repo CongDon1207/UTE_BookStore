@@ -4,11 +4,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Promotion;
+import ute.bookstore.repository.BookRepository;
 import ute.bookstore.repository.PromotionRepository;
 import ute.bookstore.service.IPromotionService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -16,6 +19,9 @@ public class PromotionServiceImpl implements IPromotionService {
 
    @Autowired
    private PromotionRepository promotionRepository;
+   
+   @Autowired 
+   private BookRepository bookRepository;
 
    @Override
    public List<Promotion> getAllPromotions() {
@@ -24,7 +30,7 @@ public class PromotionServiceImpl implements IPromotionService {
 
    @Override
    public Promotion savePromotion(Promotion promotion) {
-       validatePromotion(promotion);
+       validatePromotion(promotion); 
        return promotionRepository.save(promotion);
    }
 
