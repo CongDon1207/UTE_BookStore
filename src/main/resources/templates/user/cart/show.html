@@ -34,12 +34,44 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 
+
+
 <!-- JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
  <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
+    .custom-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 9999;
+}
+
+.custom-message.show {
+    opacity: 1;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+    
         .cart-item-image {
             max-width: 80px;
             max-height: 100px;
@@ -105,60 +137,161 @@
     <div th:replace="~{user/layout/header :: header}"></div>
 	  <!-- Main Content -->
     <main class="container py-5">
-     <h1 class="mb-2" style="font-size: 20px;color:purple">Giỏ Hàng(1 sản phẩm)</h1>
+     <h5 th:text="'Giỏ Hàng('+${items.size()}+' sản phẩm)'"  style="color:purple">Giỏ Hàng(1 sản phẩm)</h5>
              <input type="checkbox" id="selectAll" onclick="toggleAll(this)" style="width: 20px; height: 20px;"> Chọn tất cả
-                        
+         
+       
+<!-- Cart Content -->
+<div class="section py-4">
+    <div class="container">
+        <!-- Error Message -->
+       
+        <!-- Empty Cart Message -->
+			<div th:if="${items.isEmpty()}" class="text-center py-5">
+    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+    <h3>Giỏ hàng trống</h3>
+    <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+    <a th:href="@{/user}" class="btn btn-primary mt-3">
+        <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
+    </a>
+</div>
 
-        
-        <!-- Bảng hiển thị các sản phẩm trong giỏ hàng -->
-        <div class="table-responsive"  >
-            <table class="table table-bordered text-center ">
-                <thead class="table-dark" >
+        <!-- Cart Items -->
+<div th:if="${!items.isEmpty()}" class="row">
+            <!-- Cart Table -->
+            <div class="col-lg-8 mb-4">
+                <div class="">
+                    <div class="card-body">
+                        <table class="table table-bordered text-center ">
+                            <thead class="table-primary">
                     <tr>
-                        <th style="color: white;">Hình ảnh</th>
-                        <th style="color: white;">Tên sách</th>
-                        <th style="color: white;">Số lượng</th>
-                        <th style="color: white;">Đơn giá</th>
-                        <th style="color: white;">Thành tiền</th>
+                        <th style="color: blue;">Hình ảnh</th>
+                        <th style="color: blue;">Tên sách</th>
+                        <th style="color: blue;">Số lượng</th>
+                        <th style="color: blue;">Đơn giá</th>
+                        <th style="color: blue;">Thành tiền</th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Mẫu thông tin sản phẩm -->
-                    <tr>
-                        <td><img src="/images/books/book1.jpg" alt="Book Image" class="cart-item-image"></td>
-                        <td>Thế Giới Thợ - Cuộc Sống Thợ Mộc</td>
-                        <td>
-                            <input type="number" class="form-control quantity-input mx-auto" value="1" min="1" max="99">
-                        </td>
-                        <td>100.000₫</td>
-                        <td>100.000₫</td>
-                    <td>
-    <i class="fa fa-trash text-danger" style="cursor: pointer;" title="Xóa" onclick="deleteItem(this)"></i>
-    <input type="checkbox" name="selectedItems">
+                            <tbody>
+                                <tr th:each="item : ${items}" th:attr="data-id=${item.book.id}" >
+                                    <!-- Product Image -->
+                                    <td>
+                                        <img th:src="${item.book.images[0]}" alt="Hình ảnh sách" class="rounded" style="width: 70px; height: 70px;">
+                                    </td>
+
+                                    <!-- Product Name -->
+                                    <td>
+                                        <h6 class="mb-1" th:text="${item.book.title}"></h6>
+                                        <span th:if="${item.book.IsAvailable}"
+														class="badge bg-success">Còn
+														hàng</span>
+													<span th:unless="${item.book.IsAvailable}" class="badge bg-danger">Hết
+														hàng</span>
+													<span th:if="${!item.book.IsAvailable} "
+														class="badge bg-danger">Số lượng sản phẩm không đủ</span>
+                                    </td>
+
+                                    <!-- Quantity -->
+                                  <td class="text-center">
+    <div class="d-flex justify-content-center align-items-center">
+        <!-- Biểu tượng giảm -->
+        <span class="me-2" style="cursor: pointer;" 
+              th:onclick="'changeQuantity(-1, \'quantityInput\', ' + ${item.book.id} + ')'">
+            <i class="fa fa-minus-circle text-secondary" style="font-size: 20px;"></i>
+        </span>
+
+        <!-- Ô nhập số lượng -->
+        <input type="number" id="quantityInput" class="form-control text-center" style="width: 70px;" 
+               th:min="1" th:max="${item.book.quantity}" th:value="${item.quantity}" 
+               data-id="${item.book.id}" th:onchange="validateQuantity(event, 'quantityInput')">
+
+        <!-- Biểu tượng tăng -->
+        <span class="ms-2" style="cursor: pointer;" 
+              th:onclick="'changeQuantity(1, \'quantityInput\', ' + ${item.book.id} + ')'">
+            <i class="fa fa-plus-circle text-secondary" style="font-size: 20px;"></i>
+        </span>
+    </div>
 </td>
 
 
-                    </tr>
-                    <!-- Thêm sản phẩm khác -->
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Tổng tiền và tiếp tục thanh toán -->
-        <div class="cart-summary">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="fs-5">Tổng tiền: <span class="text-primary fw-bold">100.000₫</span></p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="/user/shopping" class="btn btn-secondary me-2">Tiếp tục mua sắm</a>
-                    <a href="/checkout" class="btn btn-primary">Thanh toán</a>
+
+
+
+
+
+
+                                    <!-- Prices -->
+                                    <td class="text-center" th:text="${item.book.price} + 'đ'" style="font-weight: bold;"></td>
+<td class="text-center"  th:text="${(item.quantity * item.book.price * 100).doubleValue() / 100} + ' đ'" style="font-weight: bold;"></td>
+
+                                    <td>
+    <i class="fa fa-trash text-danger" style="cursor: pointer;" title="Xóa" onclick="deleteItem(this)"></i>
+    <input type="checkbox" name="selectedItems">
+</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
+           <!-- Cart Summary -->
+<div class="col-lg-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Tóm tắt giỏ hàng</h5>
+            
+           
+
+            <!-- Phần Khuyến mãi -->
+            <div class="mb-3">
+                <label for="promoCode" class="form-label">Chọn mã khuyến mãi</label>
+                <select id="promoCode" class="form-select" onchange="applyPromoCode()">
+                    <option value="">Chọn mã khuyến mãi</option>
+                    <option value="DISCOUNT10">Mã giảm giá 10%</option>
+                    <option value="DISCOUNT20">Mã giảm giá 20%</option>
+                    <option value="DISCOUNT30">Mã giảm giá 30%</option>
+                    <!-- Thêm các mã giảm giá khác tại đây -->
+                </select>
+                <div class="mt-2">
+                    <span id="promoMessage" class="text-success"></span>
+                    <span id="promoErrorMessage" class="text-danger"></span>
+                </div>
+            </div>
+             <!-- Hiển thị tổng tiền -->
+            <div class="d-flex justify-content-between mb-3">
+                <span>Tạm tính:</span>
+                <span th:text="${(cart.totalAmount * 100).doubleValue() / 100} + ' đ'"></span>
+            </div>
+
+            <hr>
+
+            <!-- Hiển thị số tiền sau khi khuyến mãi -->
+           <div class="d-flex justify-content-between mb-4">
+    <strong style="font-size: 1.5rem; font-weight: bold;">Tổng số tiền:</strong>
+    <strong class="text-primary" id="totalAmount" th:text="${(cart.totalAmount * 100).doubleValue() / 100} + ' đ'"  style="font-size: 1.5rem; font-weight: bold;"></strong>
+</div>
+
+
+            <!-- Checkout Button -->
+            <a th:href="@{/user/cart/checkout}" class="btn btn-primary w-100 mb-3">
+                Tiến hành thanh toán
+            </a>
+
+            <!-- Tiếp tục mua sắm -->
+            <a th:href="@{/user/shopping}" class="btn btn-outline-primary w-100 text-primary">Tiếp tục mua sắm</a>
+
         </div>
-    </main>
-	<div id="confirmDialog" class="confirm-dialog">
+    </div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+ <div id="confirmDialog" class="confirm-dialog">
     <div class="confirm-content">
         <p>Bạn có chắc chắn muốn xóa không?</p>
         <div class="confirm-buttons">
@@ -167,6 +300,13 @@
         </div>
     </div>
 </div>
+<div id="custom-message" class="custom-message">
+    <span id="message-text"></span>
+    <button id="close-btn" class="close-btn">X</button>
+</div>
+
+    </main>
+	
 	
 	
 	
@@ -175,16 +315,109 @@
     <div th:replace="~{user/layout/footer :: footer}"></div>
 	
 	<script>
-	function deleteItem(element) {
-	    const row = element.closest('tr'); // Tìm hàng (row) chứa biểu tượng
+	function applyPromoCode() {
+	    const promoCode = document.getElementById("promoCode").value;
+	    const totalAmountElement = document.getElementById("totalAmount");
+	    const promoMessage = document.getElementById("promoMessage");
+	    const promoErrorMessage = document.getElementById("promoErrorMessage");
 
-	    showConfirmDialog(function (isConfirmed) {
+	    // Kiểm tra mã khuyến mãi
+	    if (promoCode === "DISCOUNT10") {
+	        let originalAmount = parseFloat(totalAmountElement.innerText.replace('đ', '').trim());
+	        let discount = originalAmount * 0.1; // Giảm 10%
+	        let newTotal = originalAmount - discount;
+
+	        // Hiển thị tổng số tiền mới
+	        totalAmountElement.innerText = newTotal.toFixed(0) + "đ";
+
+	        // Hiển thị thông báo khuyến mãi thành công
+	        promoMessage.innerText = "Mã giảm giá 10% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + "đ.";
+	        promoErrorMessage.innerText = ""; // Xóa thông báo lỗi
+
+	    } else if (promoCode === "DISCOUNT20") {
+	        let originalAmount = parseFloat(totalAmountElement.innerText.replace('đ', '').trim());
+	        let discount = originalAmount * 0.2; // Giảm 20%
+	        let newTotal = originalAmount - discount;
+
+	        totalAmountElement.innerText = newTotal.toFixed(0) + "đ";
+
+	        promoMessage.innerText = "Mã giảm giá 20% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + "đ.";
+	        promoErrorMessage.innerText = "";
+
+	    } else if (promoCode === "DISCOUNT30") {
+	        let originalAmount = parseFloat(totalAmountElement.innerText.replace('đ', '').trim());
+	        let discount = originalAmount * 0.3; // Giảm 30%
+	        let newTotal = originalAmount - discount;
+
+	        totalAmountElement.innerText = newTotal.toFixed(0) + "đ";
+
+	        promoMessage.innerText = "Mã giảm giá 30% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + "đ.";
+	        promoErrorMessage.innerText = "";
+
+	    } else {
+	        // Nếu không có mã giảm giá được chọn
+	        promoErrorMessage.innerText = "Vui lòng chọn mã giảm giá hợp lệ.";
+	        promoMessage.innerText = ""; // Xóa thông báo thành công
+	    }
+	}
+
+
+	function showCustomMessage(message) {
+	    const messageContainer = document.getElementById('custom-message');
+	    const messageText = document.getElementById('message-text');
+	    const closeButton = document.getElementById('close-btn');
+	    
+	    messageText.innerText = message;  // Đặt nội dung thông báo
+	    messageContainer.classList.add('show');  // Hiển thị thông báo
+
+	    // Đóng thông báo khi nhấn nút "X"
+	    closeButton.onclick = function() {
+	        messageContainer.classList.remove('show');  // Ẩn thông báo
+	    };
+
+	    // Tự động ẩn thông báo sau 5 giây
+	    setTimeout(function() {
+	        messageContainer.classList.remove('show');
+	    }, 5000);
+	}
+
+
+	function deleteItem(element) {
+	    const row = element.closest('tr');
+	    const itemId = row.getAttribute('data-id');
+	    console.log('ID sản phẩm:', itemId); // Debug hoặc sử dụng itemId trong logic
+
+	    showConfirmDialog((isConfirmed) => {
 	        if (isConfirmed) {
-	            row.remove(); // Xóa hàng khỏi bảng
-	            alert("Hàng đã bị xóa!");
+	            fetch(`/user/cart/remove/${itemId}`, {
+	                method: 'POST',
+	                headers: { 'Content-Type': 'application/json' }
+	            })
+	            .then(response => response.text()) // Đọc nội dung trả về là HTML (vì chuyển hướng)
+	            .then(data => {
+	            	// Nếu xóa thành công, trang sẽ tự động chuyển hướng (do redirect trong controller)
+	                row.remove(); // Xóa dòng khỏi bảng (nếu cần)
+	                // Lưu thông báo vào sessionStorage
+	                sessionStorage.setItem('cartMessage', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
+	                window.location.reload(); // Tải lại trang
+	            })
+	            .catch(error => {
+	            	 console.error('Lỗi:', error);
+	                 // Lưu thông báo lỗi vào sessionStorage
+	                 sessionStorage.setItem('cartMessage', 'Đã xảy ra lỗi khi xóa sản phẩm. Vui lòng thử lại.');
+	                 window.location.reload(); // Tải lại trang
+	            });
 	        }
 	    });
 	}
+	// Kiểm tra xem có thông báo nào từ sessionStorage không khi trang được tải lại
+	window.onload = function() {
+	    const message = sessionStorage.getItem('cartMessage');
+	    if (message) {
+	        showCustomMessage(message); // Hiển thị thông báo
+	        sessionStorage.removeItem('cartMessage'); // Xóa thông báo sau khi hiển thị
+	    }
+	};
 
 	function showConfirmDialog(callback) {
 	    const dialog = document.getElementById('confirmDialog');
@@ -206,11 +439,82 @@
 	        callback(false); // Hủy hành động
 	    };
 	}
+
 	 // Chọn/Bỏ chọn tất cả
     function toggleAll(source) {
         const checkboxes = document.querySelectorAll('input[name="selectedItems"]');
         checkboxes.forEach(checkbox => checkbox.checked = source.checked);
     }
+    function changeQuantity(amount, inputId, bookId) {
+        console.log("Book ID: ", bookId); // Kiểm tra giá trị bookId
+        const input = document.getElementById(inputId);
+        let quantity = parseInt(input.value);
+
+        // Cập nhật số lượng mới
+        quantity += amount;
+
+        // Kiểm tra số lượng hợp lệ
+        if (quantity < 1) {
+            alert("Số lượng không thể nhỏ hơn 1.");
+            quantity = 1;
+        } else if (quantity > parseInt(input.max)) {
+            alert("Không đủ sản phẩm trong kho: còn lại  " + input.max);
+            quantity = parseInt(input.max);
+        }
+
+        // Cập nhật giá trị input
+        input.value = quantity;
+
+        // Gọi API cập nhật giỏ hàng
+        updateCartItemQuantity(bookId, quantity);
+    }
+
+    function validateQuantity(event, inputId) {
+        const input = document.getElementById(inputId);
+        let quantity = parseInt(input.value);
+
+        // Kiểm tra và điều chỉnh số lượng nếu nhập sai
+        if (quantity < 1) {
+            alert("Số lượng không thể nhỏ hơn 1.");
+            input.value = 1;
+        } else if (quantity > parseInt(input.max)) {
+            alert("Không đủ sản phẩm trong kho: còn lại  " + input.max);
+            input.value = parseInt(input.max);
+        }
+
+        // Lấy bookId từ thuộc tính data-id
+        const bookId = input.getAttribute('data-id');
+
+        // Gọi API cập nhật giỏ hàng
+        updateCartItemQuantity(bookId, parseInt(input.value));
+    }
+
+
+    function updateCartItemQuantity(bookId, quantity) {
+        // Gửi yêu cầu POST đến API cập nhật giỏ hàng
+        fetch(`/user/cart/update/${bookId}`, {
+            method: 'POST',  // Thay PUT thành POST
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'  // Sử dụng x-www-form-urlencoded thay vì application/json
+            },
+            body: `bookId=${bookId}&quantity=${quantity}`  // Gửi dữ liệu theo định dạng key-value
+        })
+        .then(response => response.text())
+        .then(data => {
+        	 window.location.reload(); // Tải lại trang
+            if (data.success) {
+                console.log('Cập nhật thành công');
+                // Cập nhật giao diện nếu cần thiết (tóm tắt giỏ hàng, tổng tiền,...)
+                
+            } else {
+                console.log('Có lỗi xảy ra');
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi cập nhật số lượng:', error);
+        });
+    }
+
 
 
 	</script>
