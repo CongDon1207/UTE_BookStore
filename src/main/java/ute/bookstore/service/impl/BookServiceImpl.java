@@ -231,6 +231,10 @@ public class BookServiceImpl implements IBookService{
         });
     }
 
+    public boolean checkAvailableQuantity(Book book, int requestedQuantity) {
+        return book.getQuantity() >= requestedQuantity;
+    }
+
 
 
     
