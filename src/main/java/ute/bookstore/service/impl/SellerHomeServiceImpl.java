@@ -66,4 +66,14 @@ public class SellerHomeServiceImpl implements ISellerHomeService {
     public List<Object[]> getRevenueData(Shop shop) {
         return orderRepository.findMonthlyRevenueByShop(shop);
     }
+    
+    @Override
+    public List<Object[]> getTopSellingBooks(Shop shop) {
+        return orderRepository.findTopSellingBooks(shop);
+    }
+    
+    @Override
+    public List<Object[]> getBooksByCategory(Shop shop) {
+        return orderRepository.findBookDistributionByCategory(shop);
+    }
 }

@@ -19,6 +19,8 @@ import ute.bookstore.enums.OrderStatus;
 import ute.bookstore.service.ICloudinaryService;
 import ute.bookstore.service.ISellerHomeService;
 import ute.bookstore.service.IShopService;
+import ute.bookstore.service.impl.SellerHomeServiceImpl;
+import ute.bookstore.service.impl.ShopServiceImpl;
 
 @Controller
 @RequestMapping("/seller")
@@ -27,8 +29,6 @@ public class SellerHomeController {
     @Autowired
     private ISellerHomeService sellerHomeService;
     @Autowired private IShopService shopService;
-    @Autowired private ICloudinaryService cloudinaryService;
-    
     private static final String DEFAULT_EMAIL = "vendor@gmail.com";
     
     @ModelAttribute
@@ -47,7 +47,21 @@ public class SellerHomeController {
         model.addAttribute("recentOrders", sellerHomeService.getRecentOrders(shop));
         model.addAttribute("revenueData", sellerHomeService.getRevenueData(shop));
         model.addAttribute("requestURI", request.getRequestURI());
+        model.addAttribute("topSellingBooks", sellerHomeService.getTopSellingBooks(shop));
+        model.addAttribute("booksByCategory", sellerHomeService.getBooksByCategory(shop));
         
         return "seller/dashboard";
+    }
+    
+    public static void main(String args[]) {
+    	try {
+    		ISellerHomeService sellerHomeService = new SellerHomeServiceImpl();
+    		IShopService shopService = new ShopServiceImpl();
+    		Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+    		
+    		System.out.println("Revenue Data: " + sellerHomeService.getTopSellingBooks(shop)); // Thêm log để kiểm tra
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
 }
