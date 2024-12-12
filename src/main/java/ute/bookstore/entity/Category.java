@@ -38,4 +38,12 @@ public class Category {
     
     @OneToMany(mappedBy = "category")
     private List<Book> books;
+    
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}'; 
+    }
 }
