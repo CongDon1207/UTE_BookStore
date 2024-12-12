@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
 import ute.bookstore.service.ICloudinaryService;
@@ -25,7 +26,12 @@ public class SellerShopController {
    private static final String DEFAULT_EMAIL = "vendor@gmail.com";
    private static final String REDIRECT_SUCCESS = "redirect:/seller/shop?success";
    private static final String REDIRECT_ERROR = "redirect:/seller/shop?error=";
-
+   
+   @ModelAttribute
+	public void addAttributes(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
+	}
+   
    @GetMapping
    public String showShopManagement(Model model) {
        try {
