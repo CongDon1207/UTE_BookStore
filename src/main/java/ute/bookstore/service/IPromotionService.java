@@ -11,5 +11,8 @@ public interface IPromotionService {
     Promotion updatePromotion(Long id, Promotion promotion);
     void deletePromotion(Long id);
     
+    Promotion getPromotionById(Long id);
+    
     List<Promotion> getShopVouchers(Shop shop);
+    List<Promotion> findShopDiscounts(Shop shop);
 }

@@ -13,4 +13,8 @@ import ute.bookstore.entity.Shop;
 public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 	@Query("SELECT p FROM Promotion p WHERE p.shop = :shop AND p.code IS NOT NULL ORDER BY p.startDate DESC")
     List<Promotion> findShopVouchers(@Param("shop") Shop shop);
+	
+	// Method cho discount
+    @Query("SELECT p FROM Promotion p WHERE p.shop = :shop AND p.code IS NULL ORDER BY p.startDate DESC")
+    List<Promotion> findShopDiscounts(@Param("shop") Shop shop);
 }

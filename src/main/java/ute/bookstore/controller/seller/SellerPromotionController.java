@@ -32,46 +32,66 @@ public class SellerPromotionController {
 	
 	@Autowired
 	private IShopService shopService;
+	
+	private static final String DEFAULT_EMAIL = "vendor@gmail.com";
 
 	@GetMapping("/discount")
 	public String getDiscountPage(Model model) {
-		List<Book> books = bookService.getAllBooks();
-		List<Promotion> discounts = promotionService.getAllPromotions();
-		System.out.println("Books: " + books);
-		System.out.println("Discounts: " + discounts);
+	    Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+	    List<Book> books = bookService.getAllBooks();
+	    List<Promotion> discounts = promotionService.findShopDiscounts(shop);
 
-		model.addAttribute("books", books);
-		model.addAttribute("discounts", discounts);
-		return "seller/product-discount";
+	    model.addAttribute("books", books);
+	    model.addAttribute("discounts", discounts);
+	    return "seller/product-discount";
 	}
 
 	@PostMapping("/discount/add")
-	public String addDiscount(@RequestParam Long bookId, @RequestParam DiscountType discountType,
-			@RequestParam Double discount, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+	public String addDiscount(@RequestParam Long bookId, 
+	                         @RequestParam DiscountType discountType,
+	                         @RequestParam Double discount, 
+	                         @RequestParam LocalDateTime startDate, 
+	                         @RequestParam LocalDateTime endDate) {
 
-		Book book = bookService.getBookById(bookId);
-		Promotion promotion = new Promotion();
-		promotion.setBook(book); // Set book trực tiếp
-		promotion.setDiscountType(discountType);
-		promotion.setDiscount(discount);
-		promotion.setStartDate(startDate);
-		promotion.setEndDate(endDate);
-		promotion.setIsActive(true);
+	    // Lấy shop hiện tại
+	    Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+	    Book book = bookService.getBookById(bookId);
 
-		promotionService.savePromotion(promotion);
-		return "redirect:/seller/promotions/discount";
+	    Promotion promotion = new Promotion();
+	    promotion.setBook(book);
+	    promotion.setDiscountType(discountType);
+	    promotion.setDiscount(discount);
+	    promotion.setStartDate(startDate);
+	    promotion.setEndDate(endDate);
+	    promotion.setIsActive(true);
+	    promotion.setShop(shop); // Thêm shop vào promotion
+
+	    promotionService.savePromotion(promotion);
+	    return "redirect:/seller/promotions/discount";
 	}
 
 	@PostMapping("/discount/{id}/edit")
-	public String updateDiscount(@PathVariable Long id, @RequestParam Long bookId, // Thêm bookId
-			@ModelAttribute Promotion promotion) {
-		// Lấy book từ bookId và set vào promotion
-		Book book = bookService.getBookById(bookId);
-		promotion.setBook(book);
+	public String updateDiscount(@PathVariable Long id,
+	                           @RequestParam Long bookId,
+	                           @ModelAttribute Promotion promotion) {
+	    // Lấy shop và book
+	    Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+	    Book book = bookService.getBookById(bookId);
+	    
+	    // Lấy promotion cũ 
+	    Promotion existingPromotion = promotionService.getPromotionById(id);
+	    
+	    // Cập nhật thông tin
+	    existingPromotion.setBook(book);
+	    existingPromotion.setDiscountType(DiscountType.valueOf(promotion.getDiscountType())); // Convert String to enum
+	    existingPromotion.setDiscount(promotion.getDiscount());
+	    existingPromotion.setStartDate(promotion.getStartDate());
+	    existingPromotion.setEndDate(promotion.getEndDate());
+	    existingPromotion.setShop(shop);
+	    existingPromotion.setIsActive(true);
 
-		// Cập nhật promotion
-		promotionService.updatePromotion(id, promotion);
-		return "redirect:/seller/promotions/discount";
+	    promotionService.updatePromotion(id, existingPromotion);
+	    return "redirect:/seller/promotions/discount";
 	}
 
 	@PostMapping("/discount/{id}/delete")
@@ -80,7 +100,6 @@ public class SellerPromotionController {
 		return "redirect:/seller/promotions/discount";
 	}
 
-	private static final String DEFAULT_EMAIL = "vendor@gmail.com";
 
 	@GetMapping("/voucher")
 	public String getVoucherPage(Model model) {

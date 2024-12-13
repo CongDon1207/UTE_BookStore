@@ -61,7 +61,18 @@ public class PromotionServiceImpl implements IPromotionService {
    }
    
    @Override
+   public Promotion getPromotionById(Long id) {
+       return promotionRepository.findById(id)
+               .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy khuyến mãi"));
+   }
+   
+   @Override
    public List<Promotion> getShopVouchers(Shop shop) {
        return promotionRepository.findShopVouchers(shop);
+   }
+   
+   @Override
+   public List<Promotion> findShopDiscounts(Shop shop) {
+       return promotionRepository.findShopDiscounts(shop);
    }
 }
