@@ -32,6 +32,7 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
+    @Transactional
     public ChatMessage sendMessage(ChatMessage message) {
        message.setSentAt(LocalDate.now());
        message = chatRepository.save(message);

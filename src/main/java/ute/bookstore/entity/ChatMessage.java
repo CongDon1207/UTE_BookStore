@@ -38,4 +38,6 @@ public class ChatMessage {
     
     @Column(name = "is_read")
     private Boolean isRead = false;
+    
+    private Long shopId; // Thêm getter/setter
 }
