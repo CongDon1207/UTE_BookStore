@@ -1,0 +1,76 @@
+<!-- templates/admin/promotion/create.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tạo khuyến mãi mới</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Tạo khuyến mãi mới</h2>
+        <form th:action="@{/admin/promotions/create}" method="post" th:object="${promotion}">
+            <div class="form-group">
+                <label>Mã khuyến mãi:</label>
+                <input type="text" class="form-control" th:field="*{code}" required
+                       pattern="[A-Za-z0-9]+" title="Chỉ cho phép chữ cái và số, không dấu cách"/>
+                <small class="form-text text-muted">Ví dụ: SUMMER2024, FREESHIP,...</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Loại giảm giá:</label>
+                <select class="form-control" th:field="*{discountType}" required>
+                    <option value="">-- Chọn loại giảm giá --</option>
+                    <option th:each="type : ${discountTypes}"
+                            th:value="${type}"
+                            th:text="${type == 'PERCENT' ? 'Giảm theo phần trăm' : 'Giảm số tiền cố định'}">
+                    </option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Giá trị giảm:</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" th:field="*{discount}" required
+                           min="0" step="0.01"/>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="discountUnit">VNĐ</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Ngày bắt đầu:</label>
+                <input type="datetime-local" class="form-control" th:field="*{startDate}" required/>
+            </div>
+            
+            <div class="form-group">
+                <label>Ngày kết thúc:</label>
+                <input type="datetime-local" class="form-control" th:field="*{endDate}" required/>
+            </div>
+            
+            <div class="form-group">
+                <label>Giá trị đơn hàng tối thiểu (VNĐ):</label>
+                <input type="number" class="form-control" th:field="*{minOrderAmount}" min="0"/>
+                <small class="form-text text-muted">Để trống nếu không yêu cầu giá trị tối thiểu</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Số lần sử dụng tối đa:</label>
+                <input type="number" class="form-control" th:field="*{maxUses}" min="1"/>
+                <small class="form-text text-muted">Để trống nếu không giới hạn số lần sử dụng</small>
+            </div>
+            
+            <div class="form-group">
+                <a th:href="@{/admin/promotions}" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">Tạo khuyến mãi</button>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+    document.querySelector('select[name="discountType"]').addEventListener('change', function() {
+        var unit = this.value === 'PERCENT' ? '%' : 'VNĐ';
+        document.getElementById('discountUnit').textContent = unit;
+    });
+    </script>
+</body>
+</html>
