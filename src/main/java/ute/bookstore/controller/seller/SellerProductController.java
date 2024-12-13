@@ -15,8 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Category;
+import ute.bookstore.entity.Promotion;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.service.ICategoryService;
+import ute.bookstore.service.IPromotionService;
 import ute.bookstore.service.IBookService;
 import ute.bookstore.service.IShopService;
 
@@ -33,6 +35,9 @@ public class SellerProductController {
 
 	@Autowired
 	private ICategoryService categoryService;
+	
+	@Autowired
+	private IPromotionService promotionService;
 
 	@ModelAttribute
 	public void addAttributes(Model model, HttpServletRequest request) {
@@ -107,25 +112,14 @@ public class SellerProductController {
 	    return "seller/edit-product";
 	}
 	
-	@PostMapping("/{id}/edit")
-	public String updateProduct(@PathVariable Long id,
-	                          @ModelAttribute Book book,
-	                          @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles) throws IOException {
-	    Book existingBook = bookService.getBookById(id);
-	    book.setId(id); // Đảm bảo ID được set
-	    
-	    // Nếu không có ảnh mới, dùng ảnh cũ
-	    if (imageFiles == null || imageFiles.length == 0 || imageFiles[0].isEmpty()) {
-	        book.setImages(existingBook.getImages());
-	        imageFiles = null; // Set null để BookService không xử lý ảnh
-	    }
-	    
-	    book.setShops(existingBook.getShops()); // Giữ nguyên shop relationships
-	    book.setAuthors(existingBook.getAuthors()); // Giữ nguyên author relationships
-	    book.setReviews(existingBook.getReviews()); // Giữ nguyên review relationships
-	    
-	    bookService.updateBook(id, book, imageFiles);
-	    return "redirect:/seller/products";
+	@PostMapping("/discount/{id}/edit")
+	public String updateDiscount(@PathVariable Long id, 
+	                           @RequestParam Long bookId,
+	                           @ModelAttribute Promotion promotion) {
+	    Book book = bookService.getBookById(bookId);
+	    promotion.setBook(book);
+	    promotionService.updatePromotion(id, promotion);
+	    return "redirect:/seller/promotions/discount"; 
 	}
 	
 	@PostMapping("/{id}/delete")

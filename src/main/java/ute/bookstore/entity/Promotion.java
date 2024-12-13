@@ -40,7 +40,7 @@ public class Promotion {
     private LocalDateTime endDate;
     
     @Column(name = "max_uses")
-    private LocalDateTime maxUses;
+    private Integer maxUses;
     
     @Column(name = "min_order_amount")
     private Double minOrderAmount;
