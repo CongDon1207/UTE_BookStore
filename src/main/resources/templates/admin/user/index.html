@@ -387,6 +387,16 @@
 			}
 		}
 
+		const userDetailModal = document.getElementById('userDetailModal');
+		userDetailModal.addEventListener('hidden.bs.modal', function () {
+			// Xóa backdrop và class modal-open khỏi body
+			document.body.classList.remove('modal-open');
+			const backdrop = document.querySelector('.modal-backdrop');
+			if (backdrop) {
+				backdrop.remove();
+			}
+		});
+
 		// Sửa lại nút xem chi tiết trong bảng user
 		document.querySelectorAll('.btn-view-detail').forEach(button => {
 			button.addEventListener('click', function (e) {

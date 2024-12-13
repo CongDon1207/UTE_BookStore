@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>UTEBookStore - Product Management</title>
+
+	<link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+	<style>
+		.table thead th {
+			background-color: #f8f9fa;
+			border-bottom: 2px solid #dee2e6;
+			padding: 12px;
+		}
+
+		.table tbody td {
+			padding: 12px;
+			vertical-align: middle;
+		}
+
+		.action-buttons .btn {
+			margin-right: 5px;
+		}
+
+		.modal-lg {
+			max-width: 1000px;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Header -->
+	<div th:replace="admin/layout/header :: header"></div>
+
+	<div class="content-wrapper">
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Sidebar -->
+				<div th:insert="~{'admin/layout/sidebar' :: sidebar}"></div>
+
+				<!-- Main Content -->
+				<main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+					<!-- Tiêu đề -->
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<h1 class="h2">Quản lý sản phẩm</h1>
+					</div>
+
+					<!-- Tab Menu -->
+					<div class="card mb-4">
+						<div class="card-body">
+							<ul class="nav nav-tabs">
+								<li class="nav-item">
+									<a class="nav-link active" data-bs-toggle="tab" href="#books">
+										<i class="bi bi-book me-2"></i>Sách
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" data-bs-toggle="tab" href="#categories">
+										<i class="bi bi-folder me-2"></i>Danh mục
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<!-- Tab Content -->
+					<div class="tab-content">
+						<!-- Books Tab -->
+						<div class="tab-pane fade show active" id="books">
+							<div class="card">
+								<div class="card-header">
+									<div class="d-flex justify-content-between align-items-center">
+										<div>
+											<i class="bi bi-table me-1"></i>
+											Danh sách sách
+										</div>
+										<div>
+											<button class="btn btn-primary" data-bs-toggle="modal"
+												data-bs-target="#filterModal">
+												<i class="bi bi-funnel me-2"></i>Lọc
+											</button>
+										</div>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="table-responsive">
+										<table class="table table-striped table-hover">
+											<thead>
+												<tr>
+													<th>ID</th>
+													<th>Hình ảnh</th>
+													<th>Tên sách</th>
+													<th>Danh mục</th>
+													<th>Giá</th>
+													<th>Số lượng</th>
+													<th>Trạng thái</th>
+													<th>Thao tác</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="book : ${books}">
+													<td th:text="${book.id}"></td>
+													<td>
+														<img th:if="${!#lists.isEmpty(book.images)}"
+															th:src="${book.images[0]}" class="img-thumbnail"
+															style="width: 50px; height: 50px;">
+													</td>
+													<td th:text="${book.title}"></td>
+													<td th:text="${book.category?.name}"></td>
+													<td
+														th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT')}">
+													</td>
+													<td th:text="${book.quantity}"></td>
+													<td>
+														<span
+															th:class="${book.isAvailable ? 'badge bg-success' : 'badge bg-danger'}"
+															th:text="${book.isAvailable ? 'Hiển thị' : 'Ẩn'}">
+														</span>
+													</td>
+													<td class="action-buttons">
+														<button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+															th:data-bs-target="'#editBookModal' + ${book.id}">
+															<i class="bi bi-pencil"></i>
+														</button>
+														<form
+															th:action="@{/admin/product-management/books/status/{id}(id=${book.id})}"
+															method="post" style="display: inline;">
+															<input type="hidden" name="isAvailable"
+																th:value="${!book.isAvailable}">
+															<button type="submit"
+																th:class="${book.isAvailable ? 'btn btn-warning btn-sm' : 'btn btn-success btn-sm'}"
+																th:title="${book.isAvailable ? 'Ẩn' : 'Hiển thị'}">
+																<i
+																	th:class="${book.isAvailable ? 'bi bi-eye-slash' : 'bi bi-eye'}"></i>
+															</button>
+														</form>
+														<button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+															th:data-bs-target="'#deleteBookModal' + ${book.id}">
+															<i class="bi bi-trash"></i>
+														</button>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<!-- Pagination -->
+									<nav th:if="${books.totalPages > 1}" aria-label="Page navigation" class="mt-4">
+										<ul class="pagination justify-content-center">
+											<li class="page-item" th:classappend="${books.first ? 'disabled' : ''}">
+												<a class="page-link"
+													th:href="@{/admin/product-management(page=${books.number - 1})}">
+													<i class="bi bi-chevron-left"></i>
+												</a>
+											</li>
+											<li class="page-item"
+												th:each="pageNum : ${#numbers.sequence(0, books.totalPages - 1)}"
+												th:classappend="${pageNum == books.number ? 'active' : ''}">
+												<a class="page-link"
+													th:href="@{/admin/product-management(page=${pageNum})}"
+													th:text="${pageNum + 1}"></a>
+											</li>
+											<li class="page-item" th:classappend="${books.last ? 'disabled' : ''}">
+												<a class="page-link"
+													th:href="@{/admin/product-management(page=${books.number + 1})}">
+													<i class="bi bi-chevron-right"></i>
+												</a>
+											</li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+						</div>
+
+						<!-- Categories Tab -->
+						<div class="tab-pane fade" id="categories">
+							<div class="card">
+								<div class="card-header">
+									<div class="d-flex justify-content-between align-items-center">
+										<div>
+											<i class="bi bi-folder me-1"></i>
+											Danh sách danh mục
+										</div>
+										<div>
+											<button class="btn btn-primary" data-bs-toggle="modal"
+												data-bs-target="#addCategoryModal">
+												<i class="bi bi-plus-lg me-2"></i>Thêm danh mục
+											</button>
+										</div>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="table-responsive">
+										<table class="table table-striped table-hover">
+											<thead>
+												<tr>
+													<th>ID</th>
+													<th>Tên danh mục</th>
+													<th>Mô tả</th>
+													<th>Cấp độ</th>
+													<th>Danh mục cha</th>
+													<th>Thao tác</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="category : ${categories}">
+													<td th:text="${category.id}"></td>
+													<td th:text="${category.name}"></td>
+													<td th:text="${category.description}"></td>
+													<td th:text="${category.level}"></td>
+													<td th:text="${category.parent?.name}"></td>
+													<td class="action-buttons">
+														<button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+															th:data-bs-target="'#editCategoryModal' + ${category.id}">
+															<i class="bi bi-pencil"></i>
+														</button>
+														<button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+															th:data-bs-target="'#deleteCategoryModal' + ${category.id}">
+															<i class="bi bi-trash"></i>
+														</button>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</main>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modals -->
+	<!-- Add Category Modal -->
+	<div class="modal fade" id="addCategoryModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form th:action="@{/admin/product-management/categories/create}" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm danh mục</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-3">
+							<label class="form-label">Tên danh mục</label>
+							<input type="text" class="form-control" name="name" required>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Mô tả</label>
+							<textarea class="form-control" name="description" rows="3"></textarea>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Cấp độ</label>
+							<input type="number" class="form-control" name="level" required>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Danh mục cha</label>
+							<select class="form-select" name="parent.id">
+								<option value="">Không có danh mục cha</option>
+								<option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">
+								</option>
+							</select>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="submit" class="btn btn-primary">Thêm</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Filter Modal -->
+	<div class="modal fade" id="filterModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Lọc sản phẩm</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<form th:action="@{/admin/product-management/books}" method="get">
+						<div class="mb-3">
+							<label class="form-label">Danh mục</label>
+							<select class="form-select" name="categoryId">
+								<option value="">Tất cả danh mục</option>
+								<option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">
+								</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Trạng thái</label>
+							<select class="form-select" name="isAvailable">
+								<option value="">Tất cả trạng thái</option>
+								<option value="true">Đang hiển thị</option>
+								<option value="false">Đang ẩn</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Giá từ</label>
+							<input type="number" class="form-control" name="minPrice">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Giá đến</label>
+							<input type="number" class="form-control" name="maxPrice">
+						</div>
+						<div class="text-end">
+							<button type="submit" class="btn btn-primary">Áp dụng</button>
+							<button type="reset" class="btn btn-secondary">Đặt lại</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Edit Category Modal -->
+	<div th:each="category : ${categories}" th:id="'editCategoryModal' + ${category.id}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form th:action="@{/admin/product-management/categories/update/{id}(id=${category.id})}" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">Sửa danh mục</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-3">
+							<label class="form-label">Tên danh mục</label>
+							<input type="text" class="form-control" name="name" th:value="${category.name}" required>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Mô tả</label>
+							<textarea class="form-control" name="description" rows="3"
+								th:text="${category.description}"></textarea>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Cấp độ</label>
+							<input type="number" class="form-control" name="level" th:value="${category.level}"
+								required>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Danh mục cha</label>
+							<select class="form-select" name="parent.id">
+								<option value="">Không có danh mục cha</option>
+								<option th:each="cat : ${categories}" th:if="${cat.id != category.id}"
+									th:value="${cat.id}" th:text="${cat.name}"
+									th:selected="${category.parent != null && category.parent.id == cat.id}">
+								</option>
+							</select>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Delete Category Modal -->
+	<div th:each="category : ${categories}" th:id="'deleteCategoryModal' + ${category.id}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form th:action="@{/admin/product-management/categories/delete/{id}(id=${category.id})}" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">Xác nhận xóa</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<p>Bạn có chắc chắn muốn xóa danh mục "<span th:text="${category.name}"></span>"?</p>
+						<p class="text-danger">Lưu ý: Việc xóa danh mục có thể ảnh hưởng đến các sách thuộc danh mục
+							này.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="submit" class="btn btn-danger">Xóa</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Edit Book Modal -->
+	<div th:each="book : ${books}" th:id="'editBookModal' + ${book.id}" class="modal fade">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form th:action="@{/admin/product-management/books/update/{id}(id=${book.id})}" method="post"
+					enctype="multipart/form-data">
+					<div class="modal-header">
+						<h5 class="modal-title">Sửa thông tin sách</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="mb-3">
+									<label class="form-label">Tên sách</label>
+									<input type="text" class="form-control" name="title" th:value="${book.title}"
+										required>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Giá</label>
+									<input type="number" class="form-control" name="price" th:value="${book.price}"
+										required>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Số lượng</label>
+									<input type="number" class="form-control" name="quantity"
+										th:value="${book.quantity}" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="mb-3">
+									<label class="form-label">Danh mục</label>
+									<select class="form-select" name="category.id" required>
+										<option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+											th:selected="${book.category != null && book.category.id == cat.id}">
+										</option>
+									</select>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Hình ảnh</label>
+									<input type="file" class="form-control" name="imageFiles" multiple accept="image/*">
+									<div class="mt-2" th:if="${!#lists.isEmpty(book.images)}">
+										<p>Hình ảnh hiện tại:</p>
+										<div class="d-flex flex-wrap gap-2">
+											<div th:each="image : ${book.images}" class="position-relative">
+												<img th:src="${image}" class="img-thumbnail"
+													style="width: 100px; height: 100px;">
+												<button type="button"
+													class="btn btn-danger btn-sm position-absolute top-0 end-0"
+													th:data-book-id="${book.id}" th:data-image-url="${image}"
+													onclick="deleteImage(this.getAttribute('data-book-id'), this.getAttribute('data-image-url'))">
+													<i class="bi bi-x"></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="mb-3">
+									<label class="form-label">Mô tả</label>
+									<textarea class="form-control" name="description" rows="4"
+										th:text="${book.description}"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Delete Book Modal -->
+	<div th:each="book : ${books}" th:id="'deleteBookModal' + ${book.id}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form th:action="@{/admin/product-management/books/delete/{id}(id=${book.id})}" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">Xác nhận xóa</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<p>Bạn có chắc chắn muốn xóa sách "<span th:text="${book.title}"></span>"?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="submit" class="btn btn-danger">Xóa</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<div th:replace="admin/layout/footer :: footer"></div>
+
+	<!-- Toast Notification -->
+	<div class="toast position-fixed top-0 end-0 p-3" role="alert">
+		<div class="toast-header">
+			<strong class="me-auto">Thông báo</strong>
+			<button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+		</div>
+		<div class="toast-body"></div>
+	</div>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script th:inline="javascript">
+		function showToast(message, type = 'success') {
+			const toast = new bootstrap.Toast(document.querySelector('.toast'));
+			const toastBody = document.querySelector('.toast-body');
+			toastBody.textContent = message;
+			toastBody.className = 'toast-body text-' + type;
+			toast.show();
+		}
+
+		function deleteImage(bookId, imageUrl) {
+			if (confirm('Bạn có chắc chắn muốn xóa hình ảnh này?')) {
+				fetch(`/admin/product-management/books/${bookId}/images?imageUrl=${encodeURIComponent(imageUrl)}`, {
+					method: 'DELETE'
+				}).then(response => {
+					if (response.ok) {
+						showToast('Đã xóa hình ảnh thành công');
+						location.reload();
+					} else {
+						showToast('Có lỗi xảy ra khi xóa hình ảnh', 'danger');
+					}
+				}).catch(error => {
+					console.error('Error:', error);
+					showToast('Có lỗi xảy ra khi xóa hình ảnh', 'danger');
+				});
+			}
+		}
+
+		// Initialize all tooltips
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl)
+		});
+	</script>
+</body>
+
+</html>
