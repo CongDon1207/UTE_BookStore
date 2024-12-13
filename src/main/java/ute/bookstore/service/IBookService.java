@@ -32,4 +32,7 @@ public interface IBookService {
 	List<Map<String, Object>> getTop20BestSellingBooksWithImages();
 	List<Map<String, Object>> getTop20BooksWithRatings();
 	 List<Map<String, Object>> getTop20MostFavoritedBooks() ;
+	 
+	 
+	 boolean checkAvailableQuantity(Book book, int requestedQuantity);
 }
