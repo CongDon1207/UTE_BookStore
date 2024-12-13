@@ -65,16 +65,30 @@
 	  <div th:replace="~{user/layout/header :: header}"></div> <!-- Thay thế với fragment header chung -->
 
 <!-- Header riêng cho "Sách Yêu Thích Của Bạn" -->
-<header class="bg-pink-400 py-10 mt-60 text-center relative z-0"> 
-    <div class="container mx-auto px-4">
-        <div class="flex items-center mb-8 justify-center">
-            <!-- Icon trái tim -->
-            <i class="fas fa-heart text-red-500 text-4xl mr-4"></i>
-            <!-- Tiêu đề trang -->
-            <h1 class="text-3xl font-bold text-white">Sách Yêu Thích Của Bạn</h1>
-        </div>
-    </div>
+<header class="bg-pink-400 py-1 mt-60 text-center relative z-0"> 
+    
 </header>
+<header class="bg-gradient-to-r from-pink-500 to-rose-500 py-16 shadow-lg relative overflow-hidden z-0">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="flex items-center justify-center mb-6">
+                    <i class="fas fa-heart text-white text-5xl mr-6 animate-pulse"></i>
+                    <h1 class="text-5xl font-extrabold text-white drop-shadow-lg">
+                        Sách Yêu Thích Của Bạn
+                    </h1>
+                </div>
+                <p class="text-white text-xl opacity-80 max-w-xl mx-auto">
+                    Khám phá và chia sẻ những cuốn sách đã chạm đến trái tim bạn
+                </p>
+            </div>
+        </div>
+        
+        <!-- Background decorative elements -->
+        <div class="absolute inset-0 z-0 opacity-20">
+            <div class="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-pink-300 to-transparent rotate-12"></div>
+            <div class="absolute bottom-0 right-0 w-1/2 h-full bg-gradient-to-tl from-rose-300 to-transparent -rotate-12"></div>
+        </div>
+    </header>
 
 
 
