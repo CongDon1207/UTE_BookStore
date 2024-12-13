@@ -11,6 +11,8 @@ import org.springframework.util.StringUtils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import ute.bookstore.entity.Shop;
+import ute.bookstore.enums.ApprovalStatus;
+import ute.bookstore.exception.ResourceNotFoundException;
 import ute.bookstore.repository.ShopRepository;
 import ute.bookstore.service.admin.impl.IAdminShopService;
 
@@ -58,15 +60,6 @@ public class AdminShopService implements IAdminShopService {
 	}
 
 	@Override
-    @Transactional
-    public boolean toggleShopStatus(Long id) {
-        Shop shop = getShopById(id);
-        shop.setIsActive(!shop.getIsActive());
-        shopRepository.save(shop);
-        return shop.getIsActive();
-    }
-
-	@Override
 	@Transactional
 	public void deleteShop(Long id) {
 	    Shop shop = getShopById(id);
@@ -92,5 +85,61 @@ public class AdminShopService implements IAdminShopService {
 	public Shop getShopById(Long id) {
 		return shopRepository.findById(id).orElseThrow(() -> new RuntimeException("Shop không tồn tại"));
 	}
+	
+	
+	// Lấy danh sách shop chờ duyệt
+    @Override
+	public Page<Shop> getPendingShops(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return shopRepository.findByApprovalStatus(ApprovalStatus.PENDING, pageable);
+    }
+    
+    // Bật/tắt trạng thái shop
+    @Override
+    public boolean toggleShopStatus(Long shopId) {
+        Shop shop = shopRepository.findById(shopId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop"));
+        shop.setIsActive(!shop.getIsActive());
+        shopRepository.save(shop);
+        return shop.getIsActive();
+    }
+    
+    // Duyệt shop
+    
+    @Override
+	public Shop approveShop(Long shopId) {
+        Shop shop = shopRepository.findById(shopId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop"));
+        shop.setApprovalStatus(ApprovalStatus.APPROVED);
+        return shopRepository.save(shop);
+    }
+    
+    // Từ chối shop
+    @Override
+	public Shop rejectShop(Long shopId, String reason) {
+        Shop shop = shopRepository.findById(shopId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop"));
+        shop.setApprovalStatus(ApprovalStatus.REJECTED);
+        shop.setRejectionReason(reason);
+        return shopRepository.save(shop);
+    }
+    
+    // Cập nhật chiết khấu
+    @Override
+	public Shop updateCommissionRate(Long shopId, Double rate) {
+        if (rate < 0 || rate > 100) {
+            throw new IllegalArgumentException("Tỷ lệ chiết khấu phải từ 0-100%");
+        }
+        Shop shop = shopRepository.findById(shopId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop"));
+        shop.setCommissionRate(rate);
+        return shopRepository.save(shop);
+    }
+    
+    @Override
+	public Shop getShopDetail(Long shopId) {
+        return shopRepository.findById(shopId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop"));
+    }
 
 }

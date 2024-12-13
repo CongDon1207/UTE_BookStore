@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="modal">
+    <div class="modal fade" id="approvalModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Duyệt Shop</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Lý do (nếu từ chối)</label>
+                        <textarea class="form-control" id="rejectReason" rows="3" 
+                                 placeholder="Nhập lý do từ chối..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" onclick="rejectShop()">Từ chối</button>
+                    <button type="button" class="btn btn-success" onclick="approveShop()">Duyệt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

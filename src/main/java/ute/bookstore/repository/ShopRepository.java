@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
+import ute.bookstore.enums.ApprovalStatus;
 
 import java.util.Optional;
 
@@ -25,4 +26,6 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     //admin
     Page<Shop> findByNameContainingOrPhoneContainingOrUser_EmailContaining(
             String name, String phone, String email, Pageable pageable);
+    
+    Page<Shop> findByApprovalStatus(ApprovalStatus status, Pageable pageable);
 }

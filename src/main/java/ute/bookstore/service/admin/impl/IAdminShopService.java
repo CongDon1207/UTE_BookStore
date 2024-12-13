@@ -11,4 +11,9 @@ public interface IAdminShopService {
     Page<Shop> getAllShopsForAdmin(int page, int size, String search);
     boolean toggleShopStatus(Long id);
     void deleteShop(Long id);
+	Shop getShopDetail(Long shopId);
+	Shop updateCommissionRate(Long shopId, Double rate);
+	Shop rejectShop(Long shopId, String reason);
+	Shop approveShop(Long shopId);
+	Page<Shop> getPendingShops(int page, int size);
 }

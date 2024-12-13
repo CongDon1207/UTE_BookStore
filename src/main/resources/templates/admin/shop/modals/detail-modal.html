@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Modal chính -->
+<div th:fragment="modal">
+   <div class="modal fade" id="shopDetailModal" tabindex="-1">
+       <div class="modal-dialog modal-lg">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title">Chi tiết Shop</h5>
+                   <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+               </div>
+               <div class="modal-body">
+                   <div id="shopDetailContent">
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+<!-- Fragment nội dung -->
+<div th:fragment="modalContent">
+   <div class="row">
+       <!-- Cột trái -->
+       <div class="col-md-6">
+           <div class="mb-3">
+               <label class="fw-bold">Tên shop:</label>
+               <p th:text="${shop?.name ?: 'Chưa có tên'}"></p>
+           </div>
+           <div class="mb-3">
+               <label class="fw-bold">Chủ shop:</label>
+               <p th:text="${shop?.user?.fullName ?: 'Chưa có tên'}"></p>
+           </div>
+           <div class="mb-3">
+               <label class="fw-bold">Email:</label>
+               <p th:text="${shop?.user?.email ?: 'Chưa có email'}"></p>
+           </div>
+           <div class="mb-3">
+               <label class="fw-bold">Số điện thoại:</label>
+               <p th:text="${shop?.phone ?: 'Chưa có số điện thoại'}"></p>
+           </div>
+       </div>
+
+       <!-- Cột phải -->
+       <div class="col-md-6">
+           <div class="mb-3">
+               <label class="fw-bold">Địa chỉ:</label>
+               <p th:if="${shop?.address != null}" 
+                  th:text="${shop.address.street + ', ' + shop.address.district + ', ' + shop.address.city}">
+               </p>
+               <p th:unless="${shop?.address != null}">Chưa có địa chỉ</p>
+           </div>
+           <div class="mb-3">
+               <label class="fw-bold">Trạng thái:</label>
+               <p>
+                   <span th:if="${shop?.isActive}" class="badge bg-success">Đang hoạt động</span>
+                   <span th:unless="${shop?.isActive}" class="badge bg-danger">Đã khóa</span>
+               </p>
+           </div>
+           <div class="mb-3">
+               <label class="fw-bold">Trạng thái duyệt:</label>
+               <p>
+                   <span th:if="${shop?.approvalStatus == 'PENDING'}" 
+                         class="badge bg-warning">Chờ duyệt</span>
+                   <span th:if="${shop?.approvalStatus == 'APPROVED'}" 
+                         class="badge bg-success">Đã duyệt</span>
+                   <span th:if="${shop?.approvalStatus == 'REJECTED'}" 
+                         class="badge bg-danger">Đã từ chối</span>
+               </p>
+           </div>
+           <div class="mb-3">
+               <label class="fw-bold">Chiết khấu:</label>
+               <p th:text="${shop?.commissionRate != null ? shop.commissionRate + '%' : '0%'}"></p>
+           </div>
+       </div>
+
+       <!-- Phần mô tả -->
+       <div class="col-12 mt-3" th:if="${shop?.description != null and !shop.description.isEmpty()}">
+           <label class="fw-bold">Mô tả:</label>
+           <p th:text="${shop.description}"></p>
+       </div>
+   </div>
+</div>
+
+</html>
