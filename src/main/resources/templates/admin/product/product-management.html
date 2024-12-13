@@ -440,7 +440,8 @@
 													style="width: 100px; height: 100px;">
 												<button type="button"
 													class="btn btn-danger btn-sm position-absolute top-0 end-0"
-													th:onclick="'deleteImage(' + ${book.id} + ', \'' + ${image} + '\')'">
+													th:data-book-id="${book.id}" th:data-image-url="${image}"
+													onclick="deleteImage(this.getAttribute('data-book-id'), this.getAttribute('data-image-url'))">
 													<i class="bi bi-x"></i>
 												</button>
 											</div>
