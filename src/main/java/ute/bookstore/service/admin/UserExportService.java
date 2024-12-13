@@ -1,4 +1,4 @@
-package ute.bookstore.service.impl.admin;
+package ute.bookstore.service.admin;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import ute.bookstore.entity.User;
 import ute.bookstore.repository.UserRepository;
-import ute.bookstore.service.IUserExportService;
+import ute.bookstore.service.admin.impl.IUserExportService;
 
 @Service
 public class UserExportService implements IUserExportService {
