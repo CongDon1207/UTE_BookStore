@@ -61,7 +61,14 @@ public class SellerPromotionController {
    }
 
    @PostMapping("/discount/{id}/edit")
-   public String updateDiscount(@PathVariable Long id, @ModelAttribute Promotion promotion) {
+   public String updateDiscount(@PathVariable Long id, 
+                              @RequestParam Long bookId, // Thêm bookId
+                              @ModelAttribute Promotion promotion) {
+       // Lấy book từ bookId và set vào promotion
+       Book book = bookService.getBookById(bookId);
+       promotion.setBook(book);
+       
+       // Cập nhật promotion
        promotionService.updatePromotion(id, promotion);
        return "redirect:/seller/promotions/discount"; 
    }
