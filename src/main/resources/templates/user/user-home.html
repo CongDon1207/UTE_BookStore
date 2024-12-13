@@ -132,9 +132,20 @@
             </svg>
         </div>
     </section>
+    
 
   <!-- Featured Books Section -->
 <section class="container mx-auto py-16 px-10 max-w-full">
+ <!-- Đặt ở đầu trang -->
+	<div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+		<span th:text="${success}"></span>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	<div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+		<span th:text="${error}"></span>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
     <div class="flex justify-between items-center mb-8 max-w-7xl mx-auto ml-30">
         <h3 class="text-3xl font-bold text-gray-900 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500 mr-4" viewBox="0 0 20 20" fill="currentColor">
@@ -145,8 +156,10 @@
         <a href="/user/allBooks" class="text-blue-600 hover:text-blue-800 transition-colors font-semibold ml-auto">
         Xem Tất Cả →
     </a>
+    
 
     </div>
+   
 
     <div class="grid grid-cols-3 gap-6 w-3/4  ml-40 " id="productGrid" > <!-- Dịch sang phải với ml-32 -->
         <div th:each="book, iterStat : ${featuredBooks}" 
@@ -184,36 +197,46 @@
                        th:text="${bookAuthor.role} + ': ' + ${bookAuthor.author.name}"></p>
                       
                 </div>
+                 <span class="text-red-400 font-bold text-2xl" th:text="'Giá :'+${book.price} + ' đ'"></span>
                 
 
-                <div class="flex justify-between items-center">
-                 <span class="text-green-600 font-bold text-2xl" 
-                          th:text="''+${book.price} + ' đ'"></span>
-                
-                    <div class="flex space-x-2">
-                        <a th:href="@{/user/bookdetail(id=${book.id})}"
-                           class="bg-amber-500 text-white px-4 py-2 rounded-full hover:bg-amber-600 transition-colors flex items-center" title="Xem chi tiết">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor" >
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                            </svg>
-                            
-                        </a>
-                        
-                        <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors flex items-center" title="Thêm vào giỏ hàng">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                            </svg>
-                           
-                        </button>
-                    </div>
-                </div><br>
+
+   
+   <div class="d-grid gap-1" >
+    <!-- Biểu tượng chi tiết sản phẩm -->
+    <a th:href="@{/user/bookdetail(id=${book.id})}"
+       class="btn btn-warning flex items-center justify-center w-100"
+       style="width: 30px; height: 30px;">
+        <i class="fas fa-info-circle" style="font-size: 14px;">Xem Chi tiết	</i> <!-- Kích thước icon nhỏ hơn -->
+    </a>
+
+    <!-- Biểu tượng thêm vào giỏ hàng -->
+    <form th:action="@{/user/cart/add/{id}(id=${book.id})}" method="POST">
+    <button type="submit"
+       class="btn btn-primary flex items-center justify-center w-100"
+       style="width: 30px; height: 30px; display: inline-flex; padding: 0;"
+       th:disabled="${!book.isAvailable}">
+        <i class="fas fa-shopping-cart text-xs" style="font-size: 12px;"></i> <!-- Kích thước icon nhỏ hơn -->
+        <span th:text="${book.isAvailable} ? 
+                                      'Thêm vào giỏ' : 'Hết hàng'">
+									</span>
+    </button>
+    </form>
+
+
+
+</div><br>
+
+
+
+
+
             </div>
         </div>
     </div>
     <!-- Load More Button -->
     <div class="text-center mt-8">
-        <button id="loadMore" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors">
+        <button id="loadMore" class="bg-green-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors">
             Xem Thêm
         </button>
     </div>

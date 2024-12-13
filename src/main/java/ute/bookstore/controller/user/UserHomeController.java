@@ -52,10 +52,7 @@ public class UserHomeController {
         return "user/user-home";
     }
 
-	@GetMapping("/cart")
-	public String getCartPage() {
-		return "user/cart/show.html";
-	}
+	
 	
 	@GetMapping("/notifications")
 	public String getNotificationPage(Model model) {

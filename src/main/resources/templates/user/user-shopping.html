@@ -166,7 +166,19 @@
                      <p class="text-gray-600 mb-1" th:text="'Thể loại: '+${newbook.category.name}">Thể Loại</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="h5 text-primary mb-0" th:text="${newbook.price} +' ₫'"></span>
-                        <button class="btn btn-sm btn-primary">Thêm giỏ</button>
+                        
+                        <!-- Biểu tượng thêm vào giỏ hàng -->
+					    <form th:action="@{/user/cart/add/{id}(id=${newbook.id})}" method="POST">
+					    <button type="submit"
+					       class="btn btn-primary flex items-center justify-center"
+					       style="width: 30px; height: 50px;"
+					       th:disabled="${!newbook.isAvailable}">
+					        <i class="fas fa-shopping-cart text-xs" style="font-size: 12px;"></i> <!-- Kích thước icon nhỏ hơn -->
+					        <span th:text="${newbook.isAvailable} ? 
+					                                      'Thêm vào giỏ' : 'Hết hàng'">
+														</span>
+					    </button>
+					    </form>
                     </div>
                 </div>
             </div>
@@ -200,7 +212,18 @@
                              <p class="text-gray-600 mb-1" th:text="'IDThể loại: '+${book['category_id']}">Thể Loại</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="h5 text-success mb-0" th:text="${book['price']} +' ₫'"></span>
-                                <button class="btn btn-sm btn-success">Thêm giỏ</button>
+                                
+                                <!-- Biểu tượng thêm vào giỏ hàng -->
+					    <form th:action="@{/user/cart/add/{id}(id=${book.id})}" method="POST">
+					    <button type="submit"
+					       class="btn btn-sm btn-success items-center justify-center"
+					       style="width: 30px; height: 50px;"
+					     >
+					        <i class="fas fa-shopping-cart text-xs" style="font-size: 12px;">Thêm vào giỏ</i> <!-- Kích thước icon nhỏ hơn -->
+					        
+					    </button>
+					    </form>
+                                
                             </div>
                         </div>
                     </div>
@@ -244,7 +267,16 @@
                             <p class="text-gray-600 mb-1" th:text="'IDThể loại: '+${bookrt['category_id']}">Thể Loại</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="h5 text-warning mb-0" th:text="${bookrt['price'] + ' ₫'}"></span>
-                                <button class="btn btn-sm btn-warning">Thêm giỏ</button>
+                                
+                                 <form th:action="@{/user/cart/add/{id}(id=${bookrt.id})}" method="POST">
+					    <button type="submit"
+					       class="btn btn-sm btn-warning items-center justify-center"
+					       style="width: 30px; height: 50px;"
+					     >
+					        <i class="fas fa-shopping-cart text-xs" style="font-size: 12px;">Thêm vào giỏ</i> <!-- Kích thước icon nhỏ hơn -->
+					        
+					    </button>
+					    </form>
                             </div>
                         </div>
                     </div>
@@ -281,7 +313,16 @@
                         <p class="text-gray-600 mb-1" th:text="'IDThể loại: '+${book['category_id']}">Thể Loại</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="h5 text-danger mb-0" th:text="${book.price} +'₫'">140.000₫</span>
-                            <button class="btn btn-sm btn-danger">Thêm giỏ</button>
+                            
+                            <form th:action="@{/user/cart/add/{id}(id=${book.id})}" method="POST">
+					    <button type="submit"
+					       class="btn btn-sm btn-danger flex items-center justify-center"
+					       style="width: 30px; height: 50px;"
+					       >
+					        <i class="fas fa-shopping-cart text-xs" style="font-size: 12px;">Thêm vào giỏ</i> <!-- Kích thước icon nhỏ hơn -->
+					        
+					    </button>
+					    </form>
                         </div>
                     </div>
                 </div>

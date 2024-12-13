@@ -17,4 +17,7 @@ public interface ISellerHomeService {
     List<Order> getRecentOrders(Shop shop);
 
     List<Object[]> getRevenueData(Shop shop); 
+    
+    List<Object[]> getTopSellingBooks(Shop shop);
+    List<Object[]> getBooksByCategory(Shop shop);
 }
