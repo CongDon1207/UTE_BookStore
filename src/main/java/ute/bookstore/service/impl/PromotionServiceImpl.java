@@ -6,6 +6,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Promotion;
+import ute.bookstore.entity.Shop;
 import ute.bookstore.repository.BookRepository;
 import ute.bookstore.repository.PromotionRepository;
 import ute.bookstore.service.IPromotionService;
@@ -57,5 +58,10 @@ public class PromotionServiceImpl implements IPromotionService {
        if(promotion.getDiscount() <= 0) {
            throw new IllegalArgumentException("Discount value must be positive");
        }
+   }
+   
+   @Override
+   public List<Promotion> getShopVouchers(Shop shop) {
+       return promotionRepository.findShopVouchers(shop);
    }
 }
