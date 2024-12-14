@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.RequiredArgsConstructor;
+import ute.bookstore.dto.admin.ShopRevenueStats;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.service.admin.AdminShopService;
 import ute.bookstore.service.admin.impl.IAdminShopService;
@@ -114,5 +115,13 @@ public class ShopManagementController {
 	@ResponseBody
 	public ResponseEntity<Shop> updateCommission(@PathVariable Long id, @RequestParam Double rate) {
 		return ResponseEntity.ok(adminShopService.updateCommissionRate(id, rate));
+	}
+	
+	@GetMapping("/{id}/stats")
+	@ResponseBody
+	public ResponseEntity<ShopRevenueStats> getShopStats(@PathVariable Long id) {
+	    Shop shop = adminShopService.getShopById(id);
+	    ShopRevenueStats stats = adminShopService.getShopStats(id);
+	    return ResponseEntity.ok(stats);
 	}
 }
