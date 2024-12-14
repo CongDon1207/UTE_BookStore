@@ -39,9 +39,15 @@ public class SellerHomeController {
 	private IUserService userService;
     private static final String DEFAULT_EMAIL = "vendor@gmail.com";
     
+    private static final Long TEMP_USER_ID = 1L;
+    
+    
     @ModelAttribute
 	public void addAttributes(Model model, HttpServletRequest request) {
 		model.addAttribute("requestURI", request.getRequestURI());
+		Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+		model.addAttribute("shop", shop != null ? shop : new Shop());
+		model.addAttribute("user", userService.getUserById(TEMP_USER_ID));
 	}
     
     @GetMapping({"","/home"})

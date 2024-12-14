@@ -49,10 +49,7 @@ public class SellerHomeServiceImpl implements ISellerHomeService {
 
     @Override
     public Double getAverageRating(Shop shop) {
-        // Implement logic to calculate average rating based on reviews 
-        // (assuming you have a Review entity and relationships)
-        // ...
-        return 5.0; // Placeholder
+        return shop.getRating(); // Placeholder
     }
 
     @Override

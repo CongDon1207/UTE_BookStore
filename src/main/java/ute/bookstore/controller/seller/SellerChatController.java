@@ -17,17 +17,31 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletRequest;
 import ute.bookstore.entity.ChatMessage;
+import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
 import ute.bookstore.repository.UserRepository;
 import ute.bookstore.service.IChatService;
-import java.util.List;
+import ute.bookstore.service.IShopService;
+import ute.bookstore.service.IUserService;
 @Controller
 @RequestMapping("/seller/chat")
 public class SellerChatController {
    @Autowired private IChatService chatService;
    @Autowired private UserRepository userRepository;
+   @Autowired private IUserService userService;
+   @Autowired private IShopService shopService;
+   
    private static final Long TEMP_USER_ID = 1L;
-
+   private static final String DEFAULT_EMAIL = "vendor@gmail.com";
+   
+   @ModelAttribute
+	public void addAttributes(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
+		Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+		model.addAttribute("shop", shop != null ? shop : new Shop());
+		model.addAttribute("user", userService.getUserById(TEMP_USER_ID));
+	}
+   
    @GetMapping
    public String chatPage(Model model) {
        User sender = userRepository.findById(TEMP_USER_ID).orElseThrow();

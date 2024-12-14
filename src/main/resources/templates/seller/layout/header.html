@@ -2,10 +2,10 @@
 	<div class="container-fluid">
 		<!-- Shop Info -->
 		<div class="d-flex align-items-center">
-			<img th:src="@{/images/logos/BookStore.png}" class="shop-avatar rounded-circle" width="40" height="40"
-				alt="Shop Avatar" />
+			<img th:if="${shop != null && shop.logo != null}" th:src="${shop.logo}" class="shop-avatar rounded-circle" width="40" height="40" alt="Shop Logo" />
+			<img th:unless="${shop != null && shop.logo != null}" th:src="@{/images/logos/BookStore.png}" class="shop-avatar rounded-circle" width="40" height="40" alt="Default Logo" />
 			<div class="shop-info ms-2 text-white">
-				<h6 class="mb-0">Shop Name</h6>
+			    <h6 class="mb-0" th:text="${shop.name ?: 'Shop Name'}">Shop Name</h6>
 			</div>
 		</div>
 
@@ -25,7 +25,7 @@
 				<button class="btn dropdown-toggle" data-bs-toggle="dropdown" style="background-color: #00A6E6;">
 					<img th:src="@{/images/logos/avatar-user2.webp}" class="rounded-circle" width="40" height="40"
 						alt="User" />
-					<span class="ms-2 text-light">User Name</span>
+					<span class="ms-2 text-light" th:text="${user != null ? user.fullName : 'Guest'}">User Name</span>
 				</button>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-item" href="/seller/updateInfo">Thông tin cá nhân</a></li>
