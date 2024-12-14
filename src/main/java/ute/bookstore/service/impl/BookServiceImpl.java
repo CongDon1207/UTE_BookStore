@@ -235,6 +235,13 @@ public class BookServiceImpl implements IBookService{
         return book.getQuantity() >= requestedQuantity;
     }
 
+	@Override
+	public void updateBook(Book book) {
+		bookRepository.save(book);
+		
+	}
+
+	
 
 
     

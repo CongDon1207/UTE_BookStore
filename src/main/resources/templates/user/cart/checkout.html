@@ -104,7 +104,7 @@
                                  onchange="updateAddressId(this.value)">
                         <label class="form-check-label" th:for="'address' + ${iter.index}">
                             <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                            <span th:text="${address.id}+${address.street} + ', ' + ${address.district} + ', ' + ${address.city}"></span>
+                            <span th:text="${address.street} + ', ' + ${address.district} + ', ' + ${address.city}"></span>
                             <span th:if="${address.isDefault}" class="badge bg-success ms-2">Mặc định</span>
                         </label>
                     </div>
