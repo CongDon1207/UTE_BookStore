@@ -78,8 +78,8 @@
 							<a th:href="@{/admin/shop-management/pending}" class="btn btn-warning me-2">
 								<i class="bi bi-clock-history me-1"></i>Shop chờ duyệt
 							</a>
-							<a th:href="@{/admin/shop-management/export}" class="btn btn-success">
-								<i class="bi bi-file-excel me-1"></i>Export Shops
+							<a th:href="@{/admin/shop-management/rejected}" class="btn btn-danger me-2">
+								<i class="bi bi-x-circle me-1"></i>Shop bị từ chối
 							</a>
 						</div>
 					</div>
@@ -338,9 +338,6 @@
 					if (!response.ok) {
 						throw new Error('Network response was not ok');
 					}
-					return response.json();
-				})
-				.then(data => {
 					showToast('Đã cập nhật chiết khấu thành công');
 					setTimeout(() => window.location.reload(), 1000);
 				})

@@ -16,4 +16,5 @@ public interface IAdminShopService {
 	Shop rejectShop(Long shopId, String reason);
 	Shop approveShop(Long shopId);
 	Page<Shop> getPendingShops(int page, int size);
+	Page<Shop> getRejectedShops(int page, int size);
 }
