@@ -225,7 +225,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                     this.checked = !this.checked;
-                    showToast('Có lỗi xảy ra khi cập nhật trạng thái', 'danger');
+                    showToast('Không thể kích hoạt khuyến mãi đã hết hạn!', 'danger');
                 });
             });
         });
