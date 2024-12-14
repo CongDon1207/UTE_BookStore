@@ -20,11 +20,32 @@ public class AdminBookManagementController {
 
     // Hiển thị trang quản lý sản phẩm
     @GetMapping
-    public String showProductManagement(Model model, Pageable pageable) {
-        Page<Book> books = adminBookManagementService.getAllBooks(pageable);
+    public String showProductManagement(
+            Model model, 
+            Pageable pageable,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Boolean isAvailable,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ) {
+        Page<Book> books;
+        if (categoryId != null || isAvailable != null || minPrice != null || maxPrice != null) {
+            // Nếu có tham số lọc, gọi service để lọc
+            books = adminBookManagementService.getFilteredBooks(categoryId, isAvailable, minPrice, maxPrice, pageable);
+        } else {
+            // Nếu không có tham số lọc, lấy tất cả sách
+            books = adminBookManagementService.getAllBooks(pageable);
+        }
+        
         List<Category> categories = adminBookManagementService.getAllCategories();
         model.addAttribute("books", books);
         model.addAttribute("categories", categories);
+        // Thêm các tham số filter vào model để giữ lại giá trị đã chọn
+        model.addAttribute("selectedCategoryId", categoryId);
+        model.addAttribute("selectedStatus", isAvailable);
+        model.addAttribute("selectedMinPrice", minPrice);
+        model.addAttribute("selectedMaxPrice", maxPrice);
+        
         return "admin/product/product-management";
     }
 
@@ -38,19 +59,19 @@ public class AdminBookManagementController {
     @PostMapping("/categories/create")
     public String createCategory(@ModelAttribute Category category) {
         adminBookManagementService.createCategory(category);
-        return "redirect:/admin/product-management/categories";
+        return "redirect:/admin/product-management";
     }
 
     @PostMapping("/categories/update/{id}")
     public String updateCategory(@PathVariable Long id, @ModelAttribute Category category) {
         adminBookManagementService.updateCategory(id, category);
-        return "redirect:/admin/product-management/categories";
+        return "redirect:/admin/product-management";
     }
 
     @PostMapping("/categories/delete/{id}")
     public String deleteCategory(@PathVariable Long id) {
         adminBookManagementService.deleteCategory(id);
-        return "redirect:/admin/product-management/categories";
+        return "redirect:/admin/product-management";
     }
 
     // Book Management
@@ -63,7 +84,7 @@ public class AdminBookManagementController {
     @PostMapping("/books/status/{id}")
     public String updateBookStatus(@PathVariable Long id, @RequestParam Boolean isAvailable) {
         adminBookManagementService.updateBookStatus(id, isAvailable);
-        return "redirect:/admin/product-management/books";
+        return "redirect:/admin/product-management";
     }
 
     @GetMapping("/books/category/{categoryId}")
@@ -75,13 +96,13 @@ public class AdminBookManagementController {
     @PostMapping("/books/update/{id}")
     public String updateBook(@PathVariable Long id, @ModelAttribute Book book) {
         adminBookManagementService.updateBook(id, book);
-        return "redirect:/admin/product-management/books";
+        return "redirect:/admin/product-management";
     }
 
     @PostMapping("/books/delete/{id}")
     public String deleteBook(@PathVariable Long id) {
         adminBookManagementService.deleteBook(id);
-        return "redirect:/admin/product-management/books";
+        return "redirect:/admin/product-management";
     }
 
     // Ajax endpoints for async operations
