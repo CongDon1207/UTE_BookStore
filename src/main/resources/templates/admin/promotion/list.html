@@ -1,0 +1,67 @@
+<!-- templates/admin/promotion/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý khuyến mãi</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Danh sách khuyến mãi</h2>
+        <a th:href="@{/admin/promotions/create}" class="btn btn-primary">Tạo khuyến mãi mới</a>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Mã khuyến mãi</th>
+                    <th>Loại giảm giá</th>
+                    <th>Giá trị</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Đơn hàng tối thiểu</th>
+                    <th>Lượt sử dụng tối đa</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="promotion : ${promotions}">
+                    <td th:text="${promotion.code}"></td>
+                    <td th:text="${promotion.discountType == 'PERCENT' ? 'Phần trăm' : 'Số tiền cố định'}"></td>
+                    <td>
+                        <span th:text="${promotion.discount}"></span>
+                        <span th:text="${promotion.discountType == 'PERCENT' ? '%' : ' VNĐ'}"></span>
+                    </td>
+                    <td th:text="${#temporals.format(promotion.startDate, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(promotion.endDate, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${promotion.minOrderAmount != null ? #numbers.formatDecimal(promotion.minOrderAmount, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '-'}"></td>
+                    <td th:text="${promotion.maxUses != null ? promotion.maxUses : 'Không giới hạn'}"></td>
+                    <td>
+                        <span th:class="${promotion.isActive ? 'badge badge-success' : 'badge badge-danger'}"
+                              th:text="${promotion.isActive ? 'Đang hoạt động' : 'Đã vô hiệu'}">
+                        </span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/promotions/edit/{id}(id=${promotion.id})}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Sửa
+                        </a>
+                        <form th:action="@{/admin/promotions/{id}/toggle-status(id=${promotion.id})}" 
+                              method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-info btn-sm">
+                                <i th:class="${promotion.isActive ? 'fas fa-ban' : 'fas fa-check'}"></i>
+                                <span th:text="${promotion.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}"></span>
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/promotions/delete/{id}(id=${promotion.id})}" 
+                              method="post" style="display: inline;"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa khuyến mãi này?')">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

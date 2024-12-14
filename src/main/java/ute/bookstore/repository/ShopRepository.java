@@ -10,6 +10,7 @@ import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
 import ute.bookstore.enums.ApprovalStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,4 +29,9 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
             String name, String phone, String email, Pageable pageable);
     
     Page<Shop> findByApprovalStatus(ApprovalStatus status, Pageable pageable);
+    
+    Long countByIsActiveTrue();
+    Long countByApprovalStatus(ApprovalStatus status);
+    
+    List<Shop> findAllByOrderByIdDesc(Pageable pageable);
 }
