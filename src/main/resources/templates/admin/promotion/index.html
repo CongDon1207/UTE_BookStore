@@ -356,14 +356,21 @@
 					method: 'POST',
 					headers: {'Content-Type': 'application/json'}
 				})
-					.then(response => response.json())
+					.then(response => {
+						if (!response.ok) {
+							return response.text().then(text => {
+								throw new Error(text);
+							});
+						}
+						return response.json();
+					})
 					.then(data => {
 						showToast(`Đã ${data.status ? 'kích hoạt' : 'vô hiệu hóa'} khuyến mãi`);
 					})
 					.catch(error => {
 						console.error('Error:', error);
-						this.checked = !this.checked;
-						showToast('Có lỗi xảy ra', 'danger');
+						this.checked = !this.checked; // Revert checkbox state
+						showToast(error.message || 'Có lỗi xảy ra', 'danger');
 					});
 			});
 		});
