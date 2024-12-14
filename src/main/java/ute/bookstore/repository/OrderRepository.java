@@ -20,6 +20,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	Page<Order> findByShopId(Long shopId, Pageable pageable);
 
 	Page<Order> findByShopIdAndStatus(Long shopId, OrderStatus status, Pageable pageable);
+	 // Thêm phân trang cho tìm kiếm đơn hàng theo trạng thái và người dùng
+    Page<Order> findByStatusAndUserId(OrderStatus status, Long userId, Pageable pageable);
 
 	Long countByShop(Shop shop);
 

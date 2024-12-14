@@ -77,6 +77,13 @@
     </h1>
 </div>
         </div>
+<div th:if="${successMessage}" class="alert alert-success">
+    <span th:text="${successMessage}"></span>
+</div>
+
+<div th:if="${errorMessage}" class="alert alert-danger">
+    <span th:text="${errorMessage}"></span>
+</div>
 
         <!-- Tabs trạng thái đơn hàng -->
     <div class="row mb-4">
@@ -119,119 +126,495 @@
     <!-- Nội dung các tab -->
     <div class="tab-content">
         <!-- Đơn Hàng Mới -->
-        <div class="tab-pane fade show active" id="newOrders">
-            <div th:each="order : ${newOrders}" class="card mb-3">
-                <div class="card-header bg-primary text-white d-flex justify-content-between">
-                    <span>Mã Đơn Hàng: <span th:text="${order.code}">UTE-2024-001</span></span>
-                    <span th:text="${order.createDate}">15/11/2023</span>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div th:each="item : ${order.items}" class="d-flex mb-2 pb-2 border-bottom">
-                                <img th:src="${item.book.image}" class="me-3" style="max-width: 80px;" alt="Sách">
-                                <div>
-                                    <h5 th:text="${item.book.title}">Tên Sách</h5>
-                                    <p class="text-muted">
-                                        Số lượng: <span th:text="${item.quantity}">2</span> | 
-                                        Giá: <span th:text="${#numbers.formatCurrency(item.price)}">120,000đ</span>
-                                    </p>
-                                </div>
+    <div class="tab-pane fade show active" id="newOrders">
+        <div th:each="order : ${newOrders.content}" class="card mb-3">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <span>Mã Đơn Hàng: <span th:text="${order.id}">UTE-2024-001</span></span>
+                <span th:text="'Ngày đặt: '+${order.createdAt}">15/11/2023</span>
+            </div>
+            <div class="card-body">
+            
+                <div class="row">
+                
+                    <div class="col-md-4">
+                    
+                        <!-- Hiển thị các mục trong đơn hàng -->
+                        <div th:each="item : ${order.items}" class="d-flex mb-2 pb-2 border-bottom">
+                            <img th:if="${item.book.images != null && !item.book.images.empty}" th:src="${item.book.images[0]}"  class="me-3" style="max-width: 80px;" alt="Sách">
+                            
+                            <div>
+                                <h5 th:text="${item.book.title}">Tên Sách</h5>
+                                <p class="text-muted">
+                                    Số lượng: <span th:text="${item.quantity}">2</span> | 
+                                    Giá: <span th:text="${item.price}">120,000đ</span>
+                                </p>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light p-3">
-                                <h6>Chi Tiết Thanh Toán</h6>
-                                <div class="d-flex justify-content-between">
-                                    <span>Tổng sách:</span>
-                                    <span th:text="${#numbers.formatCurrency(order.subtotal)}">335,000đ</span>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Phí vận chuyển:</span>
-                                    <span th:text="${#numbers.formatCurrency(order.shippingFee)}">25,000đ</span>
-                                </div>
-                                <hr>
-                                <div class="d-flex justify-content-between fw-bold">
-                                    <span>Tổng cộng:</span>
-                                    <span th:text="${#numbers.formatCurrency(order.total)}">360,000đ</span>
-                                </div>
-                                <div class="mt-3 text-center">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye me-1"></i>Chi Tiết Đơn Hàng
-                                    </button>
-                                </div>
+                         <!-- Thêm thông tin trạng thái, phương thức thanh toán và địa chỉ giao hàng -->
+            
+                    </div>
+                    <div class="col-md-4 card bg-light p-3">
+                    <h5 class="card-title text-primary text-center">Thông tin Đơn Hàng</h5>
+                    <div class="d-grid mt-3">
+                    
+                <p><i class="fas fa-clipboard-list me-2"></i> <strong>Trạng thái:</strong> 
+                <span class="badge bg-warning bold " 
+                 th:text="${order.status}+'-Chờ xác nhận'">Đang xử lý</span></p>
+                <p><i class="fas fa-credit-card me-2"></i><strong>Phương thức thanh toán:</strong> <span class="badge bg-danger" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</span></p>
+                <p> <i class="fas fa-phone-alt me-2"></i> <strong>Số Điện Thoại:</strong> <span  th:text="${order.deliveryAddress.phone}"></span></p>
+                <p> <i class="fas fa-map-marker-alt me-2"></i><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.deliveryAddress.street}+', '+${order.deliveryAddress.district}+', '+${order.deliveryAddress.city}"></span></p>
+            </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                    
+                        <div class="card bg-light p-3">
+                            <h5 class="card-title text-success text-center">Chi tiết thanh toán</h5>
+                            <div class="d-flex justify-content-between">
+                                <span>Tổng tiền sách:</span>
+                                <span th:text="${order.totalAmount} +' đ'">335,000đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Khuyến mãi:</span>
+                                <span >-25,000đ</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Tổng cộng:</span>
+                                <span th:text="${order.totalAmount} +' VND'">360,000đ</span>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <button class="btn btn-sm btn-outline-danger" style="color:red;">
+                                    <i class="fas fa-close me-1" > </i >Hủy Đơn Hàng
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div th:if="${#lists.isEmpty(newOrders)}" class="alert alert-info text-center">
-                Không có đơn hàng mới
+               
             </div>
         </div>
+        <div th:if="${#lists.isEmpty(newOrders.content)}" class="alert alert-info text-center">
+            Không có đơn hàng mới
+        </div>
 
-        <!-- Các tab khác (Đã Xác Nhận, Đang Giao, Đã Giao, Đã Hủy, Trả Hàng) 
-             Được xây dựng tương tự như tab Đơn Hàng Mới -->
-        <div class="tab-pane fade" id="confirmedOrders">
-            <!-- Nội dung đơn hàng đã xác nhận -->
-            <div th:if="${#lists.isEmpty(confirmedOrders)}" class="alert alert-info text-center">
+        <!-- Phân trang cho đơn hàng mới -->
+        <div class="pagination justify-content-center mt-3">
+            <a th:href="@{/user/purchaseHistory(page=${newOrders.number - 1})}" 
+               th:classappend="${newOrders.hasPrevious() ? '' : 'disabled'}" class="page-link">Trước</a>
+            <span th:text="${newOrders.number + 1}">1</span>
+            <a th:href="@{/user/purchaseHistory(page=${newOrders.number + 1})}" 
+               th:classappend="${newOrders.hasNext() ? '' : 'disabled'}" class="page-link">Tiếp</a>
+        </div>
+    </div>
+
+
+    <div class="tab-pane fade" id="confirmedOrders">
+        <!-- Nội dung đơn hàng đã xác nhận -->
+        <div th:each="order : ${confirmedOrders.content}" class="card mb-3">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <span>Mã Đơn Hàng: <span th:text="${order.id}">UTE-2024-001</span></span>
+                <span th:text="'Ngày đặt: '+${order.createdAt}">15/11/2023</span>
+            </div>
+            <div class="card-body">
+            
+                <div class="row">
+                
+                    <div class="col-md-4">
+                    
+                        <!-- Hiển thị các mục trong đơn hàng -->
+                        <div th:each="item : ${order.items}" class="d-flex mb-2 pb-2 border-bottom">
+                            <img th:if="${item.book.images != null && !item.book.images.empty}" th:src="${item.book.images[0]}"  class="me-3" style="max-width: 80px;" alt="Sách">
+                            
+                            <div>
+                                <h5 th:text="${item.book.title}">Tên Sách</h5>
+                                <p class="text-muted">
+                                    Số lượng: <span th:text="${item.quantity}">2</span> | 
+                                    Giá: <span th:text="${item.price}">120,000đ</span>
+                                </p>
+                            </div>
+                        </div>
+                         <!-- Thêm thông tin trạng thái, phương thức thanh toán và địa chỉ giao hàng -->
+            
+                    </div>
+                    <div class="col-md-4 card bg-light p-3">
+                    <h5 class="card-title text-primary text-center">Thông tin Đơn Hàng</h5>
+                    <div class="d-grid mt-3">
+                    
+                <p><i class="fas fa-clipboard-list me-2"></i> <strong>Trạng thái:</strong> 
+                <span class="badge bg-info " 
+                 th:text="${order.status}+'-Đã xác nhận'">Đang xử lý</span></p>
+                <p><i class="fas fa-credit-card me-2"></i><strong>Phương thức thanh toán:</strong> <span class="badge bg-danger" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</span></p>
+                <p> <i class="fas fa-phone-alt me-2"></i> <strong>Số Điện Thoại:</strong> <span  th:text="${order.deliveryAddress.phone}"></span></p>
+                <p> <i class="fas fa-map-marker-alt me-2"></i><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.deliveryAddress.street}+', '+${order.deliveryAddress.district}+', '+${order.deliveryAddress.city}"></span></p>
+            </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                    
+                        <div class="card bg-light p-3">
+                            <h5 class="card-title text-success text-center">Chi tiết thanh toán</h5>
+                            <div class="d-flex justify-content-between">
+                                <span>Tổng tiền sách:</span>
+                                <span th:text="${order.totalAmount} +' đ'">335,000đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Khuyến mãi:</span>
+                                <span >-25,000đ</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Tổng cộng:</span>
+                                <span th:text="${order.totalAmount} +' VND'">360,000đ</span>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <button class="btn btn-sm btn-outline-danger" style="color:red;">
+                                    <i class="fas fa-close me-1" > </i >Hủy Đơn Hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(confirmedOrders.content)}" class="alert alert-info text-center">
                 Không có đơn hàng đã xác nhận
             </div>
-        </div>
 
-        <div class="tab-pane fade" id="deliveringOrders">
+        <!-- Phân trang cho đơn hàng mới -->
+        <div class="pagination justify-content-center mt-3">
+            <a th:href="@{/user/purchaseHistory(page=${confirmedOrders.number - 1})}" 
+               th:classappend="${confirmedOrders.hasPrevious() ? '' : 'disabled'}" class="page-link">Trước</a>
+            <span th:text="${confirmedOrders.number + 1}">1</span>
+            <a th:href="@{/user/purchaseHistory(page=${confirmedOrders.number + 1})}" 
+               th:classappend="${confirmedOrders.hasNext() ? '' : 'disabled'}" class="page-link">Tiếp</a>
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    <div class="tab-pane fade" id="deliveringOrders">
+    		<!-- Nội dung đơn hàng đã xác nhận -->
+        <div th:each="order : ${deliveringOrders.content}" class="card mb-3">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <span>Mã Đơn Hàng: <span th:text="${order.id}">UTE-2024-001</span></span>
+                <span th:text="'Ngày đặt: '+${order.createdAt}">15/11/2023</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <!-- Hiển thị các mục trong đơn hàng -->
+                        <div th:each="item : ${order.items}" class="d-flex mb-2 pb-2 border-bottom">
+                            <img th:if="${item.book.images != null && !item.book.images.empty}" th:src="${item.book.images[0]}"  class="me-3" style="max-width: 80px;" alt="Sách">
+                            
+                            <div>
+                                <h5 th:text="${item.book.title}">Tên Sách</h5>
+                                <p class="text-muted">
+                                    Số lượng: <span th:text="${item.quantity}">2</span> | 
+                                    Giá: <span th:text="${item.price}">120,000đ</span>
+                                </p>
+                            </div>
+                        </div>
+                         <!-- Thêm thông tin trạng thái, phương thức thanh toán và địa chỉ giao hàng -->
+            
+                    </div>
+                    <div class="col-md-4 card bg-light p-3">
+                    <h5 class="card-title text-primary text-center">Thông tin Đơn Hàng</h5>
+                    <div class="d-grid mt-3">
+                    
+                <p><i class="fas fa-clipboard-list me-2"></i> <strong>Trạng thái:</strong> 
+                <span class="badge bg-primary " 
+                 th:text="${order.status}+'-Đang giao'">Đang xử lý</span></p>
+                <p><i class="fas fa-credit-card me-2"></i><strong>Phương thức thanh toán:</strong> <span class="badge bg-danger" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</span></p>
+                <p> <i class="fas fa-phone-alt me-2"></i> <strong>Số Điện Thoại:</strong> <span  th:text="${order.deliveryAddress.phone}"></span></p>
+                <p> <i class="fas fa-map-marker-alt me-2"></i><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.deliveryAddress.street}+', '+${order.deliveryAddress.district}+', '+${order.deliveryAddress.city}"></span></p>
+            </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                    
+                        <div class="card bg-light p-3">
+                            <h5 class="card-title text-success text-center">Chi tiết thanh toán</h5>
+                            <div class="d-flex justify-content-between">
+                                <span>Tổng tiền sách:</span>
+                                <span th:text="${order.totalAmount} +' đ'">335,000đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Khuyến mãi:</span>
+                                <span >-25,000đ</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Tổng cộng:</span>
+                                <span th:text="${order.totalAmount} +' VND'">360,000đ</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
             <!-- Nội dung đơn hàng đang giao -->
-            <div th:if="${#lists.isEmpty(deliveringOrders)}" class="alert alert-info text-center">
+            <div th:if="${#lists.isEmpty(deliveringOrders.content)}" class="alert alert-info text-center">
                 Không có đơn hàng đang giao
             </div>
+            
+            <!-- Phân trang cho đơn hàng mới -->
+        <div class="pagination justify-content-center mt-3">
+            <a th:href="@{/user/purchaseHistory(page=${deliveringOrders.number - 1})}" 
+               th:classappend="${deliveringOrders.hasPrevious() ? '' : 'disabled'}" class="page-link">Trước</a>
+            <span th:text="${deliveringOrders.number + 1}">1</span>
+            <a th:href="@{/user/purchaseHistory(page=${deliveringOrders.number + 1})}" 
+               th:classappend="${deliveringOrders.hasNext() ? '' : 'disabled'}" class="page-link">Tiếp</a>
         </div>
+        </div>
+
+
+
+
+
 
         <div class="tab-pane fade" id="deliveredOrders">
+        <!-- Nội dung đơn hàng đã xác nhận -->
+        <div th:each="order : ${deliveredOrders.content}" class="card mb-3">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <span>Mã Đơn Hàng: <span th:text="${order.id}">UTE-2024-001</span></span>
+                <span th:text="'Ngày đặt: '+${order.createdAt}">15/11/2023</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <!-- Hiển thị các mục trong đơn hàng -->
+                        <div th:each="item : ${order.items}" class="d-flex mb-2 pb-2 border-bottom">
+                            <img th:if="${item.book.images != null && !item.book.images.empty}" th:src="${item.book.images[0]}"  class="me-3" style="max-width: 80px;" alt="Sách">
+                            
+                            <div>
+                                <h5 th:text="${item.book.title}">Tên Sách</h5>
+                                <p class="text-muted">
+                                    Số lượng: <span th:text="${item.quantity}">2</span> | 
+                                    Giá: <span th:text="${item.price}">120,000đ</span>
+                                </p>
+                            </div>
+                        </div>
+                         <!-- Thêm thông tin trạng thái, phương thức thanh toán và địa chỉ giao hàng -->
+            
+                    </div>
+                    <div class="col-md-4 card bg-light p-3">
+                    <h5 class="card-title text-primary text-center">Thông tin Đơn Hàng</h5>
+                    <div class="d-grid mt-3">
+                    
+                <p><i class="fas fa-clipboard-list me-2"></i> <strong>Trạng thái:</strong> 
+                <span class="badge bg-success " 
+                 th:text="${order.status}+'-Đã giao'">Đang xử lý</span></p>
+                <p><i class="fas fa-credit-card me-2"></i><strong>Phương thức thanh toán:</strong> <span class="badge bg-danger" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</span></p>
+                <p> <i class="fas fa-phone-alt me-2"></i> <strong>Số Điện Thoại:</strong> <span  th:text="${order.deliveryAddress.phone}"></span></p>
+                <p> <i class="fas fa-map-marker-alt me-2"></i><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.deliveryAddress.street}+', '+${order.deliveryAddress.district}+', '+${order.deliveryAddress.city}"></span></p>
+            </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                    
+                        <div class="card bg-light p-3">
+                            <h5 class="card-title text-success text-center">Chi tiết thanh toán</h5>
+                            <div class="d-flex justify-content-between">
+                                <span>Tổng tiền sách:</span>
+                                <span th:text="${order.totalAmount} +' đ'">335,000đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Khuyến mãi:</span>
+                                <span >-25,000đ</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Tổng cộng:</span>
+                                <span th:text="${order.totalAmount} +' VND'">360,000đ</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
             <!-- Nội dung đơn hàng đã giao -->
-            <div th:if="${#lists.isEmpty(deliveredOrders)}" class="alert alert-info text-center">
+            <div th:if="${#lists.isEmpty(deliveredOrders.content)}" class="alert alert-info text-center">
                 Không có đơn hàng đã giao
             </div>
+            
+             <!-- Phân trang cho đơn hàng mới -->
+        <div class="pagination justify-content-center mt-3">
+            <a th:href="@{/user/purchaseHistory(page=${deliveredOrders.number - 1})}" 
+               th:classappend="${deliveredOrders.hasPrevious() ? '' : 'disabled'}" class="page-link">Trước</a>
+            <span th:text="${deliveredOrders.number + 1}">1</span>
+            <a th:href="@{/user/purchaseHistory(page=${deliveredOrders.number + 1})}" 
+               th:classappend="${deliveredOrders.hasNext() ? '' : 'disabled'}" class="page-link">Tiếp</a>
+        </div>
         </div>
 
+
+
+
         <div class="tab-pane fade" id="canceledOrders">
-            <!-- Nội dung đơn hàng đã hủy -->
-            <div th:if="${#lists.isEmpty(canceledOrders)}" class="alert alert-info text-center">
-                Không có đơn hàng đã hủy
+        <!-- Nội dung đơn hàng đã xác nhận -->
+        <div th:each="order : ${canceledOrders.content}" class="card mb-3">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <span>Mã Đơn Hàng: <span th:text="${order.id}">UTE-2024-001</span></span>
+                <span th:text="'Ngày đặt: '+${order.createdAt}">15/11/2023</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <!-- Hiển thị các mục trong đơn hàng -->
+                        <div th:each="item : ${order.items}" class="d-flex mb-2 pb-2 border-bottom">
+                            <img th:if="${item.book.images != null && !item.book.images.empty}" th:src="${item.book.images[0]}"  class="me-3" style="max-width: 80px;" alt="Sách">
+                            
+                            <div>
+                                <h5 th:text="${item.book.title}">Tên Sách</h5>
+                                <p class="text-muted">
+                                    Số lượng: <span th:text="${item.quantity}">2</span> | 
+                                    Giá: <span th:text="${item.price}">120,000đ</span>
+                                </p>
+                            </div>
+                        </div>
+                         <!-- Thêm thông tin trạng thái, phương thức thanh toán và địa chỉ giao hàng -->
+            
+                    </div>
+                    <div class="col-md-4 card bg-light p-3">
+                    <h5 class="card-title text-primary text-center">Thông tin Đơn Hàng</h5>
+                    <div class="d-grid mt-3">
+                    
+                <p><i class="fas fa-clipboard-list me-2"></i> <strong>Trạng thái:</strong> 
+                <span class="badge bg-danger " 
+                 th:text="${order.status}+'-Đã hủy'">Đang xử lý</span></p>
+                <p><i class="fas fa-credit-card me-2"></i><strong>Phương thức thanh toán:</strong> <span class="badge bg-danger" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</span></p>
+                <p> <i class="fas fa-phone-alt me-2"></i> <strong>Số Điện Thoại:</strong> <span  th:text="${order.deliveryAddress.phone}"></span></p>
+                <p> <i class="fas fa-map-marker-alt me-2"></i><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.deliveryAddress.street}+', '+${order.deliveryAddress.district}+', '+${order.deliveryAddress.city}"></span></p>
+            </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                    
+                        <div class="card bg-light p-3">
+                            <h5 class="card-title text-success text-center">Chi tiết thanh toán</h5>
+                            <div class="d-flex justify-content-between">
+                                <span>Tổng tiền sách:</span>
+                                <span th:text="${order.totalAmount} +' đ'">335,000đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Khuyến mãi:</span>
+                                <span >-25,000đ</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Tổng cộng:</span>
+                                <span th:text="${order.totalAmount} +' VND'">360,000đ</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+               
             </div>
         </div>
+            <!-- Nội dung đơn hàng đã hủy -->
+            <div th:if="${#lists.isEmpty(canceledOrders.content)}" class="alert alert-info text-center">
+                Không có đơn hàng đã hủy
+            </div>
+             <div class="pagination justify-content-center mt-3">
+            <a th:href="@{/user/purchaseHistory(page=${canceledOrders.number - 1})}" 
+               th:classappend="${canceledOrders.hasPrevious() ? '' : 'disabled'}" class="page-link">Trước</a>
+            <span th:text="${canceledOrders.number + 1}">1</span>
+            <a th:href="@{/user/purchaseHistory(page=${canceledOrders.number + 1})}" 
+               th:classappend="${canceledOrders.hasNext() ? '' : 'disabled'}" class="page-link">Tiếp</a>
+        </div>
+        </div>
+
+
+
 
         <div class="tab-pane fade" id="returnOrders">
             <!-- Nội dung đơn hàng trả/hoàn -->
-            <div th:if="${#lists.isEmpty(returnOrders)}" class="alert alert-info text-center">
-                Không có đơn hàng trả hàng/hoàn tiền
+            <!-- Nội dung đơn hàng đã xác nhận -->
+        <div th:each="order : ${returnOrders.content}" class="card mb-3">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <span>Mã Đơn Hàng: <span th:text="${order.id}">UTE-2024-001</span></span>
+                <span th:text="'Ngày đặt: '+${order.createdAt}">15/11/2023</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <!-- Hiển thị các mục trong đơn hàng -->
+                        <div th:each="item : ${order.items}" class="d-flex mb-2 pb-2 border-bottom">
+                            <img th:if="${item.book.images != null && !item.book.images.empty}" th:src="${item.book.images[0]}"  class="me-3" style="max-width: 80px;" alt="Sách">
+                            
+                            <div>
+                                <h5 th:text="${item.book.title}">Tên Sách</h5>
+                                <p class="text-muted">
+                                    Số lượng: <span th:text="${item.quantity}">2</span> | 
+                                    Giá: <span th:text="${item.price}">120,000đ</span>
+                                </p>
+                            </div>
+                        </div>
+                         <!-- Thêm thông tin trạng thái, phương thức thanh toán và địa chỉ giao hàng -->
+            
+                    </div>
+                    <div class="col-md-4 card bg-light p-3">
+                    <h5 class="card-title text-primary text-center">Thông tin Đơn Hàng</h5>
+                    <div class="d-grid mt-3">
+                    
+                <p><i class="fas fa-clipboard-list me-2"></i> <strong>Trạng thái:</strong> 
+                <span class="badge bg-secondary " 
+                 th:text="${order.status}+'-Đã trả hàng/hoàn tiền'">Đang xử lý</span></p>
+                <p><i class="fas fa-credit-card me-2"></i><strong>Phương thức thanh toán:</strong> <span class="badge bg-danger" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</span></p>
+                <p> <i class="fas fa-phone-alt me-2"></i> <strong>Số Điện Thoại:</strong> <span  th:text="${order.deliveryAddress.phone}"></span></p>
+                <p> <i class="fas fa-map-marker-alt me-2"></i><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.deliveryAddress.street}+', '+${order.deliveryAddress.district}+', '+${order.deliveryAddress.city}"></span></p>
+            </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                    
+                        <div class="card bg-light p-3">
+                            <h5 class="card-title text-success text-center">Chi tiết thanh toán</h5>
+                            <div class="d-flex justify-content-between">
+                                <span>Tổng tiền sách:</span>
+                                <span th:text="${order.totalAmount} +' đ'">335,000đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Khuyến mãi:</span>
+                                <span >-25,000đ</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Tổng cộng:</span>
+                                <span th:text="${order.totalAmount} +' VND'">360,000đ</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+               
             </div>
         </div>
-    </div>
-
-    <!-- Phân trang -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <nav aria-label="Phân trang đơn hàng">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Trước</a>
-                    </li>
-                    <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Tiếp</a>
-                    </li>
-                </ul>
-            </nav>
+            <div th:if="${#lists.isEmpty(returnOrders.content)}" class="alert alert-info text-center">
+                Không có đơn hàng trả hàng/hoàn tiền
+            </div>
+             <div class="pagination justify-content-center mt-3">
+            <a th:href="@{/user/purchaseHistory(page=${returnOrders.number - 1})}" 
+               th:classappend="${returnOrders.hasPrevious() ? '' : 'disabled'}" class="page-link">Trước</a>
+            <span th:text="${returnOrders.number + 1}">1</span>
+            <a th:href="@{/user/purchaseHistory(page=${returnOrders.number + 1})}" 
+               th:classappend="${returnOrders.hasNext() ? '' : 'disabled'}" class="page-link">Tiếp</a>
         </div>
-    </div>
+        </div>
+
+
+
+    <!-- Các tab khác theo cách tương tự -->
+     </div>
      </div>
 </main>
     <!-- Sử dụng fragment footer -->

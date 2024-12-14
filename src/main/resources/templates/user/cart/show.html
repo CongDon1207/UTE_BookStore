@@ -174,10 +174,10 @@
                     </tr>
                 </thead>
                             <tbody>
-                                <tr th:each="item : ${items}" th:attr="data-id=${item.book.id}" >
+                                <tr th:each="item : ${items}" th:attr="data-id=${item.book.id}" data-price="${item.quantity * item.book.price}">
                                     <!-- Product Image -->
                                     <td>
-                                        <img th:src="${item.book.images[0]}" alt="Hình ảnh sách" class="rounded" style="width: 70px; height: 70px;">
+                                        <img th:src="${item.book.images[0]}" alt="Hình ảnh sách"  style="width: 70px; height: 70px;" class="book-image">
                                     </td>
 
                                     <!-- Product Name -->
@@ -193,26 +193,31 @@
                                     </td>
 
                                     <!-- Quantity -->
-                                  <td class="text-center">
+                                <td class="text-center">
     <div class="d-flex justify-content-center align-items-center">
         <!-- Biểu tượng giảm -->
         <span class="me-2" style="cursor: pointer;" 
-              th:onclick="'changeQuantity(-1, \'quantityInput\', ' + ${item.book.id} + ')'">
+              th:onclick="'changeQuantity(-1, \'quantityInput-' + ${item.book.id} + '\', ' + ${item.book.id} + ')'">
             <i class="fa fa-minus-circle text-secondary" style="font-size: 20px;"></i>
         </span>
 
         <!-- Ô nhập số lượng -->
-        <input type="number" id="quantityInput" class="form-control text-center" style="width: 70px;" 
+        <input type="number" 
+               th:id="'quantityInput-' + ${item.book.id}" 
+               class="form-control text-center" style="width: 70px;" 
                th:min="1" th:max="${item.book.quantity}" th:value="${item.quantity}" 
-               data-id="${item.book.id}" th:onchange="validateQuantity(event, 'quantityInput')">
+               th:data-id="${item.book.id}" 
+               th:onchange="validateQuantity(event, 'quantityInput-' + ${item.book.id})">
 
         <!-- Biểu tượng tăng -->
         <span class="ms-2" style="cursor: pointer;" 
-              th:onclick="'changeQuantity(1, \'quantityInput\', ' + ${item.book.id} + ')'">
+              th:onclick="'changeQuantity(1, \'quantityInput-' + ${item.book.id} + '\', ' + ${item.book.id} + ')'">
             <i class="fa fa-plus-circle text-secondary" style="font-size: 20px;"></i>
         </span>
     </div>
 </td>
+
+
 
 
 
@@ -228,7 +233,7 @@
 
                                     <td>
     <i class="fa fa-trash text-danger" style="cursor: pointer;" title="Xóa" onclick="deleteItem(this)"></i>
-    <input type="checkbox" name="selectedItems">
+    <input type="checkbox" name="selectedItems" class="selected-item" onchange="calculateTotal()">
 </td>
                                 </tr>
                             </tbody>
@@ -263,7 +268,7 @@
              <!-- Hiển thị tổng tiền -->
             <div class="d-flex justify-content-between mb-3">
                 <span>Tạm tính:</span>
-                <span th:text="${(cart.totalAmount * 100).doubleValue() / 100} + ' đ'"></span>
+                <span id="subtotalAmount">0 đ</span>
             </div>
 
             <hr>
@@ -271,12 +276,12 @@
             <!-- Hiển thị số tiền sau khi khuyến mãi -->
            <div class="d-flex justify-content-between mb-4">
     <strong style="font-size: 1.5rem; font-weight: bold;">Tổng số tiền:</strong>
-    <strong class="text-primary" id="totalAmount" th:text="${(cart.totalAmount * 100).doubleValue() / 100} + ' đ'"  style="font-size: 1.5rem; font-weight: bold;"></strong>
+    <strong class="text-primary" id="totalAmount"   style="font-size: 1.5rem; font-weight: bold;">0  đ</strong>
 </div>
 
 
             <!-- Checkout Button -->
-            <a th:href="@{/user/cart/checkout}" class="btn btn-primary w-100 mb-3">
+            <a href="javascript:void(0);" onclick="proceedToCheckout()" class="btn btn-primary w-100 mb-3">
                 Tiến hành thanh toán
             </a>
 
@@ -315,51 +320,116 @@
     <div th:replace="~{user/layout/footer :: footer}"></div>
 	
 	<script>
+	function proceedToCheckout() {
+	    const selectedItems = [];
+	    const rows = document.querySelectorAll('tr[data-id]');
+
+	    rows.forEach(row => {
+	        const checkbox = row.querySelector('input[name="selectedItems"]');
+	        if (checkbox.checked) {
+	            const id = row.getAttribute('data-id');
+	            const title = row.querySelector('td:nth-child(2) h6').innerText;
+	            const quantity = parseInt(row.querySelector('input[type="number"]').value);
+	            const price = parseFloat(row.querySelector('td:nth-child(4)').innerText.replace('đ', '').trim());
+	            const total = price * quantity;
+	            const image = row.querySelector('.book-image').src; // Lấy hình ảnh của sách
+
+	            selectedItems.push({ id, title, quantity, price, total, image });
+	        }
+	    });
+	    //Nếu không có sản phẩm nào được chọn
+	    if (selectedItems.length === 0) {
+	        alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+	        return;
+	    }
+
+	    const totalAmount = parseFloat(document.getElementById("totalAmount").innerText.replace('đ', '').trim());
+
+	    // Gửi dữ liệu đến server qua fetch API hoặc chuyển hướng với query parameters
+	    fetch('/user/cart/checkouts', {
+	        method: 'POST',
+	        headers: { 'Content-Type': 'application/json' },
+	        body: JSON.stringify({ items: selectedItems, totalAmount })
+	    }).then(response => {
+	        if (response.ok) {
+	            window.location.href = '/user/cart/checkout'; // Chuyển đến trang checkout
+	        }
+	    });
+	}
+
+	function calculateTotal() {
+	    const rows = document.querySelectorAll('tr[data-id]');
+	    let subtotal = 0;
+
+	    rows.forEach(row => {
+	        const checkbox = row.querySelector('input[name="selectedItems"]');
+	        const price = parseFloat(row.querySelector('td:nth-child(5)').innerText.replace('đ', '').trim());
+	        if (checkbox.checked) {
+	            subtotal += price;
+	        }
+	    });
+
+	    // Cập nhật hiển thị
+	    const subtotalElement = document.getElementById("subtotalAmount");
+	    const totalElement = document.getElementById("totalAmount");
+
+	    subtotalElement.innerText = subtotal.toFixed(0) + " đ";
+	    totalElement.innerText = subtotal.toFixed(0) + " đ";
+	}
+
 	function applyPromoCode() {
 	    const promoCode = document.getElementById("promoCode").value;
 	    const totalAmountElement = document.getElementById("totalAmount");
 	    const promoMessage = document.getElementById("promoMessage");
 	    const promoErrorMessage = document.getElementById("promoErrorMessage");
 
-	    // Kiểm tra mã khuyến mãi
+	    let subtotal = parseFloat(document.getElementById("subtotalAmount").innerText.replace('đ', '').trim());
+
 	    if (promoCode === "DISCOUNT10") {
-	        let originalAmount = parseFloat(totalAmountElement.innerText.replace('đ', '').trim());
-	        let discount = originalAmount * 0.1; // Giảm 10%
-	        let newTotal = originalAmount - discount;
+	        let discount = subtotal * 0.1;
+	        let newTotal = subtotal - discount;
 
-	        // Hiển thị tổng số tiền mới
-	        totalAmountElement.innerText = newTotal.toFixed(0) + "đ";
-
-	        // Hiển thị thông báo khuyến mãi thành công
-	        promoMessage.innerText = "Mã giảm giá 10% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + "đ.";
-	        promoErrorMessage.innerText = ""; // Xóa thông báo lỗi
+	        totalAmountElement.innerText = newTotal.toFixed(0) + " đ";
+	        promoMessage.innerText = "Mã giảm giá 10% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + " đ.";
+	        promoErrorMessage.innerText = "";
 
 	    } else if (promoCode === "DISCOUNT20") {
-	        let originalAmount = parseFloat(totalAmountElement.innerText.replace('đ', '').trim());
-	        let discount = originalAmount * 0.2; // Giảm 20%
-	        let newTotal = originalAmount - discount;
+	        let discount = subtotal * 0.2;
+	        let newTotal = subtotal - discount;
 
-	        totalAmountElement.innerText = newTotal.toFixed(0) + "đ";
-
-	        promoMessage.innerText = "Mã giảm giá 20% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + "đ.";
+	        totalAmountElement.innerText = newTotal.toFixed(0) + " đ";
+	        promoMessage.innerText = "Mã giảm giá 20% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + " đ.";
 	        promoErrorMessage.innerText = "";
 
 	    } else if (promoCode === "DISCOUNT30") {
-	        let originalAmount = parseFloat(totalAmountElement.innerText.replace('đ', '').trim());
-	        let discount = originalAmount * 0.3; // Giảm 30%
-	        let newTotal = originalAmount - discount;
+	        let discount = subtotal * 0.3;
+	        let newTotal = subtotal - discount;
 
-	        totalAmountElement.innerText = newTotal.toFixed(0) + "đ";
-
-	        promoMessage.innerText = "Mã giảm giá 30% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + "đ.";
+	        totalAmountElement.innerText = newTotal.toFixed(0) + " đ";
+	        promoMessage.innerText = "Mã giảm giá 30% đã được áp dụng! Bạn tiết kiệm được " + discount.toFixed(0) + " đ.";
 	        promoErrorMessage.innerText = "";
 
 	    } else {
-	        // Nếu không có mã giảm giá được chọn
 	        promoErrorMessage.innerText = "Vui lòng chọn mã giảm giá hợp lệ.";
-	        promoMessage.innerText = ""; // Xóa thông báo thành công
+	        promoMessage.innerText = "";
 	    }
 	}
+
+	// Sự kiện checkbox để tính tổng tiền lại
+	document.querySelectorAll('input[name="selectedItems"]').forEach(checkbox => {
+	    checkbox.addEventListener('change', calculateTotal);
+	});
+	function toggleAll(source) {
+	    const checkboxes = document.querySelectorAll('input[name="selectedItems"]');
+	    checkboxes.forEach(checkbox => {
+	        checkbox.checked = source.checked; // Cập nhật trạng thái chọn/bỏ chọn
+	    });
+
+	    // Gọi lại hàm tính tổng tiền sau khi chọn/bỏ chọn tất cả
+	    calculateTotal();
+	}
+
+
 
 
 	function showCustomMessage(message) {
@@ -440,11 +510,7 @@
 	    };
 	}
 
-	 // Chọn/Bỏ chọn tất cả
-    function toggleAll(source) {
-        const checkboxes = document.querySelectorAll('input[name="selectedItems"]');
-        checkboxes.forEach(checkbox => checkbox.checked = source.checked);
-    }
+	
     function changeQuantity(amount, inputId, bookId) {
         console.log("Book ID: ", bookId); // Kiểm tra giá trị bookId
         const input = document.getElementById(inputId);
@@ -501,14 +567,13 @@
         })
         .then(response => response.text())
         .then(data => {
-        	 window.location.reload(); // Tải lại trang
-            if (data.success) {
+        	 // Tải lại trang
+           
+            	window.location.reload();
                 console.log('Cập nhật thành công');
                 // Cập nhật giao diện nếu cần thiết (tóm tắt giỏ hàng, tổng tiền,...)
                 
-            } else {
-                console.log('Có lỗi xảy ra');
-            }
+           
         })
         .catch(error => {
             console.error('Lỗi khi cập nhật số lượng:', error);
