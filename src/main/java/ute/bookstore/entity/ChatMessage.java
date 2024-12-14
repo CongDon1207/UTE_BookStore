@@ -1,5 +1,6 @@
 package ute.bookstore.entity;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +35,7 @@ public class ChatMessage {
     private String content;
     
     @Column(name = "sent_at")
-    private LocalDate sentAt;
+    private LocalDateTime sentAt;
     
     @Column(name = "is_read")
     private Boolean isRead = false;

@@ -71,7 +71,9 @@
 							<div th:each="msg : ${messages}"
 								th:class="'message-bubble ' + ${msg.sender.id == userId ? 'sent' : 'received'}">
 								<p class="mb-1" th:text="${msg.content}"></p>
-								<small class="text-muted" th:text="${#temporals.format(msg.sentAt, 'HH:mm')}"></small>
+								<small class="text-muted" 
+								       th:text="${#temporals.format(msg.sentAt, 'HH:mm')}">
+								</small>
 							</div>
 						</div>
 

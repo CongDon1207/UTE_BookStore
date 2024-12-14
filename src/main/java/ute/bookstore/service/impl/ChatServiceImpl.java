@@ -10,7 +10,9 @@ import ute.bookstore.repository.ChatRepository;
 import ute.bookstore.service.IChatService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,18 +25,38 @@ public class ChatServiceImpl implements IChatService {
 
     @Override
     public List<ChatMessage> getConversations(User user) {
-       return chatRepository.findByReceiverOrSenderOrderBySentAtDesc(user, user);
+        List<ChatMessage> messages = chatRepository.findDistinctBySenderOrReceiverOrderBySentAtDesc(user, user);
+        
+        // Sử dụng Map để nhóm tin nhắn theo người dùng
+        Map<Long, ChatMessage> latestMessages = new HashMap<>();
+        
+        for (ChatMessage msg : messages) {
+            Long otherUserId;
+            if (msg.getSender().getId().equals(user.getId())) {
+                otherUserId = msg.getReceiver().getId();
+            } else {
+                otherUserId = msg.getSender().getId();
+            }
+            
+            // Chỉ lưu tin nhắn mới nhất cho mỗi người dùng
+            if (!latestMessages.containsKey(otherUserId)) {
+                latestMessages.put(otherUserId, msg);
+            }
+        }
+        
+        return new ArrayList<>(latestMessages.values());
     }
 
     @Override
     public List<ChatMessage> getChatMessages(User sender, User receiver) {
-       return chatRepository.findBySenderAndReceiverOrderBySentAtAsc(sender, receiver);
+        // Lấy tin nhắn 2 chiều và sắp xếp theo thời gian
+        return chatRepository.findBySenderAndReceiverOrReceiverAndSenderOrderBySentAtAsc(sender, receiver, sender, receiver);
     }
 
     @Override
     @Transactional
     public ChatMessage sendMessage(ChatMessage message) {
-       message.setSentAt(LocalDate.now());
+       message.setSentAt(LocalDateTime.now());
        message = chatRepository.save(message);
        messagingTemplate.convertAndSend("/topic/messages/" + message.getReceiver().getId(), message);
        return message;

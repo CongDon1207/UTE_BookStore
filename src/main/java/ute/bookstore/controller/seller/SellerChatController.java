@@ -56,4 +56,5 @@ public class SellerChatController {
        chatService.sendMessage(message);
        return "redirect:/seller/chat/" + userId;
    }
+   
 }
