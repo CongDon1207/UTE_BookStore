@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.RequiredArgsConstructor;
+import ute.bookstore.dto.admin.ShopRevenueStats;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.service.admin.AdminShopService;
 import ute.bookstore.service.admin.impl.IAdminShopService;
@@ -66,19 +67,61 @@ public class ShopManagementController {
 
 	@PostMapping("/{id}/approve")
 	@ResponseBody
-	public ResponseEntity<Shop> approveShop(@PathVariable Long id) {
-		return ResponseEntity.ok(adminShopService.approveShop(id));
+	public ResponseEntity<?> approveShop(@PathVariable Long id) {
+	    try {
+	        Shop shop = adminShopService.approveShop(id);
+	        return ResponseEntity.ok(Map.of(
+	            "success", true,
+	            "message", "Đã phê duyệt shop thành công"
+	        ));
+	    } catch (Exception e) {
+	        return ResponseEntity.ok(Map.of(
+	            "success", false,
+	            "message", e.getMessage()
+	        ));
+	    }
+	}
+	
+	@GetMapping("/rejected")
+	public String getRejectedShops(Model model, 
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "10") int size) {
+	    
+	    Page<Shop> rejectedShops = adminShopService.getRejectedShops(page, size);
+	    model.addAttribute("shops", rejectedShops);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", rejectedShops.getTotalPages());
+	    return "admin/shop/rejected";
 	}
 
 	@PostMapping("/{id}/reject")
 	@ResponseBody
-	public ResponseEntity<Shop> rejectShop(@PathVariable Long id, @RequestParam String reason) {
-		return ResponseEntity.ok(adminShopService.rejectShop(id, reason));
+	public ResponseEntity<?> rejectShop(@PathVariable Long id, @RequestParam String reason) {
+	    try {
+	        Shop shop = adminShopService.rejectShop(id, reason);
+	        return ResponseEntity.ok(Map.of(
+	            "success", true,
+	            "message", "Đã từ chối shop thành công"
+	        ));
+	    } catch (Exception e) {
+	        return ResponseEntity.ok(Map.of(
+	            "success", false,
+	            "message", e.getMessage()
+	        ));
+	    }
 	}
 
 	@PostMapping("/{id}/commission")
 	@ResponseBody
 	public ResponseEntity<Shop> updateCommission(@PathVariable Long id, @RequestParam Double rate) {
 		return ResponseEntity.ok(adminShopService.updateCommissionRate(id, rate));
+	}
+	
+	@GetMapping("/{id}/stats")
+	@ResponseBody
+	public ResponseEntity<ShopRevenueStats> getShopStats(@PathVariable Long id) {
+	    Shop shop = adminShopService.getShopById(id);
+	    ShopRevenueStats stats = adminShopService.getShopStats(id);
+	    return ResponseEntity.ok(stats);
 	}
 }

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="modal">
+    <div class="modal fade" id="revenueModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thống kê doanh thu Shop</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shop-name mb-4">
+                        <h6 class="text-primary" id="statsShopName"></h6>
+                    </div>
+
+                    <!-- Thống kê hôm nay -->
+                    <div class="stats-section mb-4">
+                        <h6 class="border-bottom pb-2">Hôm nay:</h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <small class="text-muted">Doanh thu</small>
+                                <div id="todayRevenue" class="fw-bold"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Tổng đơn</small>
+                                <div id="todayTotalOrders"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã giao</small>
+                                <div id="todayDelivered" class="text-success"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã hủy</small>
+                                <div id="todayCancelled" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Chiết khấu</small>
+                                <div id="todayCommission" class="text-primary"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thống kê tuần này -->
+                    <div class="stats-section mb-4">
+                        <h6 class="border-bottom pb-2">Tuần này:</h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <small class="text-muted">Doanh thu</small>
+                                <div id="weekRevenue" class="fw-bold"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Tổng đơn</small>
+                                <div id="weekTotalOrders"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã giao</small>
+                                <div id="weekDelivered" class="text-success"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã hủy</small>
+                                <div id="weekCancelled" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Chiết khấu</small>
+                                <div id="weekCommission" class="text-primary"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thống kê tháng này -->
+                    <div class="stats-section mb-4">
+                        <h6 class="border-bottom pb-2">Tháng này:</h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <small class="text-muted">Doanh thu</small>
+                                <div id="monthRevenue" class="fw-bold"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Tổng đơn</small>
+                                <div id="monthTotalOrders"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã giao</small>
+                                <div id="monthDelivered" class="text-success"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã hủy</small>
+                                <div id="monthCancelled" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Chiết khấu</small>
+                                <div id="monthCommission" class="text-primary"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tổng thống kê -->
+                    <div class="stats-section">
+                        <h6 class="border-bottom pb-2">Tổng:</h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <small class="text-muted">Doanh thu</small>
+                                <div id="totalRevenue" class="fw-bold"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Tổng đơn</small>
+                                <div id="totalOrders"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã giao</small>
+                                <div id="totalDelivered" class="text-success"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Đã hủy</small>
+                                <div id="totalCancelled" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">Chiết khấu</small>
+                                <div id="totalCommission" class="text-primary"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

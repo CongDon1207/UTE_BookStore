@@ -34,4 +34,12 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     Long countByApprovalStatus(ApprovalStatus status);
     
     List<Shop> findAllByOrderByIdDesc(Pageable pageable);
+
+    Page<Shop> findByApprovalStatusAndNameContainingOrPhoneContainingOrUser_EmailContaining(
+        ApprovalStatus status, 
+        String name, 
+        String phone, 
+        String email, 
+        Pageable pageable
+    );
 }

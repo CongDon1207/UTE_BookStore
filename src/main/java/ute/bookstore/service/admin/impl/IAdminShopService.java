@@ -1,7 +1,11 @@
 package ute.bookstore.service.admin.impl;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 
+import ute.bookstore.dto.admin.ShopRevenueStats;
+import ute.bookstore.dto.admin.ShopRevenueStats.RevenueByTime;
 import ute.bookstore.entity.Shop;
 
 public interface IAdminShopService {
@@ -16,4 +20,7 @@ public interface IAdminShopService {
 	Shop rejectShop(Long shopId, String reason);
 	Shop approveShop(Long shopId);
 	Page<Shop> getPendingShops(int page, int size);
+	Page<Shop> getRejectedShops(int page, int size);
+	ShopRevenueStats getShopStats(Long shopId);
+	RevenueByTime getRevenueStats(Shop shop, LocalDateTime from, LocalDateTime to);
 }

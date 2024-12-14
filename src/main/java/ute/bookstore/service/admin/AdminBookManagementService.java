@@ -79,4 +79,45 @@ public class AdminBookManagementService {
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
     }
+    
+    public Page<Book> getFilteredBooks(Long categoryId, Boolean isAvailable, Double minPrice, Double maxPrice, Pageable pageable) {
+        // Trường hợp có đầy đủ các tiêu chí lọc
+        if (categoryId != null && isAvailable != null && minPrice != null && maxPrice != null) {
+            return bookRepository.findByCategoryIdAndIsAvailableAndPriceBetween(
+                categoryId, isAvailable, minPrice, maxPrice, pageable);
+        }
+        
+        // Trường hợp có category và trạng thái
+        if (categoryId != null && isAvailable != null) {
+            return bookRepository.findByCategoryIdAndIsAvailable(categoryId, isAvailable, pageable);
+        }
+        
+        // Trường hợp có category và khoảng giá
+        if (categoryId != null && minPrice != null && maxPrice != null) {
+            return bookRepository.findByCategoryIdAndPriceBetween(categoryId, minPrice, maxPrice, pageable);
+        }
+        
+        // Trường hợp có trạng thái và khoảng giá
+        if (isAvailable != null && minPrice != null && maxPrice != null) {
+            return bookRepository.findByIsAvailableAndPriceBetween(isAvailable, minPrice, maxPrice, pageable);
+        }
+        
+        // Trường hợp chỉ có category
+        if (categoryId != null) {
+            return bookRepository.findByCategoryId(categoryId, pageable);
+        }
+        
+        // Trường hợp chỉ có trạng thái
+        if (isAvailable != null) {
+            return bookRepository.findByIsAvailable(isAvailable, pageable);
+        }
+        
+        // Trường hợp chỉ có khoảng giá
+        if (minPrice != null && maxPrice != null) {
+            return bookRepository.findByPriceBetween(minPrice, maxPrice, pageable);
+        }
+        
+        // Trường hợp không có tiêu chí lọc nào
+        return getAllBooks(pageable);
+    }
 }

@@ -49,4 +49,89 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("SELECT c.name as category, COUNT(b) as bookCount " + "FROM Book b JOIN b.category c "
 			+ "WHERE :shop MEMBER OF b.shops " + "GROUP BY c.name")
 	List<Object[]> findBookDistributionByCategory(@Param("shop") Shop shop);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// admin
+	// Tìm kiếm theo tên người dùng
+    Page<Order> findByUserFullNameContaining(String fullName, Pageable pageable);
+    
+    // Tìm kiếm theo trạng thái
+    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
+    
+    // Kết hợp các điều kiện tìm kiếm
+    Page<Order> findByUserFullNameContainingAndStatus(String fullName, OrderStatus status, Pageable pageable);
+    
+    Page<Order> findByUserFullNameContainingAndShopId(String fullName, Long shopId, Pageable pageable);
+    
+    Page<Order> findByStatusAndShopId(OrderStatus status, Long shopId, Pageable pageable);
+    
+    Page<Order> findByUserFullNameContainingAndStatusAndShopId(String fullName, OrderStatus status, Long shopId, Pageable pageable);
+    
+    // Thống kê đơn hàng theo trạng thái
+    @Query("SELECT o.status, COUNT(o) FROM Order o GROUP BY o.status")
+    List<Object[]> countByStatus();
+    
+    // Thống kê đơn hàng theo shop
+    @Query("SELECT o.shop.id, o.shop.name, COUNT(o) FROM Order o GROUP BY o.shop.id, o.shop.name")
+    List<Object[]> countByShop();
+    
+    // Tìm đơn hàng trong khoảng thời gian
+    @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate")
+    Page<Order> findOrdersBetweenDates(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate,
+        Pageable pageable
+    );
+    
+    // Tổng doanh thu theo shop
+    @Query("SELECT o.shop.id, o.shop.name, SUM(o.totalAmount) FROM Order o " +
+           "WHERE o.status = 'DELIVERED' GROUP BY o.shop.id, o.shop.name")
+    List<Object[]> calculateRevenueByShop();
+    
+    // Tổng doanh thu trong khoảng thời gian
+    @Query("SELECT SUM(o.totalAmount) FROM Order o " +
+           "WHERE o.status = 'DELIVERED' AND o.createdAt BETWEEN :startDate AND :endDate")
+    Double calculateRevenueBetweenDates(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+    
+    // Đếm số đơn hàng theo trạng thái cho một shop cụ thể
+    @Query("SELECT o.status, COUNT(o) FROM Order o WHERE o.shop.id = :shopId GROUP BY o.status")
+    List<Object[]> countByStatusForShop(@Param("shopId") Long shopId);
+    
+    // Tìm các đơn hàng mới nhất
+    List<Order> findTop10ByOrderByCreatedAtDesc();
+    
+    
+    Long countByStatus(OrderStatus status);
+    
+    @Query("SELECT SUM(o.totalAmount) FROM Order o " +
+            "WHERE o.shop.id = :shopId AND o.status = :status " +
+            "AND (:from IS NULL OR o.createdAt >= :from) " +
+            "AND o.createdAt <= :to")
+     Double calculateRevenue(Long shopId, OrderStatus status, 
+                           LocalDateTime from, LocalDateTime to);
+
+     @Query("SELECT COUNT(o) FROM Order o " +
+            "WHERE o.shop.id = :shopId " +
+            "AND (:from IS NULL OR o.createdAt >= :from) " +
+            "AND o.createdAt <= :to")
+     Long countOrders(Long shopId, LocalDateTime from, LocalDateTime to);
+
+     @Query("SELECT COUNT(o) FROM Order o " +
+            "WHERE o.shop.id = :shopId AND o.status = :status " +  
+            "AND (:from IS NULL OR o.createdAt >= :from) " +
+            "AND o.createdAt <= :to")
+     Long countOrdersByStatus(Long shopId, OrderStatus status,
+                            LocalDateTime from, LocalDateTime to);
+     
+     
 }

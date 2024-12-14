@@ -1,0 +1,384 @@
+<!-- templates/admin/shop/pending.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>UTEBookStore - Shop Chờ Duyệt</title>
+
+	<link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+	<style>
+		.shop-logo {
+			width: 50px;
+			height: 50px;
+			object-fit: cover;
+			border-radius: 50%;
+		}
+
+		.badge-pending {
+			background-color: #ffc107;
+			color: #000;
+		}
+
+		.table th {
+			background-color: #f8f9fa;
+			font-weight: 600;
+		}
+
+		.action-buttons .btn {
+			margin: 0 2px;
+		}
+
+		.shop-details {
+			font-size: 0.9rem;
+		}
+
+		.address-info {
+			color: #6c757d;
+			font-size: 0.85rem;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Header -->
+	<div th:replace="admin/layout/header :: header"></div>
+
+	<div class="content-wrapper">
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Sidebar -->
+				<div th:insert="~{admin/layout/sidebar :: sidebar}"></div>
+
+				<!-- Main Content -->
+				<main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+					<!-- Tiêu đề và breadcrumb -->
+					<div
+						class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+						<div>
+							<h1 class="h2">Shop Chờ Duyệt</h1>
+							<nav aria-label="breadcrumb">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+									<li class="breadcrumb-item"><a href="/admin/shop-management">Quản lý Shop</a></li>
+									<li class="breadcrumb-item active">Shop Chờ Duyệt</li>
+								</ol>
+							</nav>
+						</div>
+						<div class="btn-toolbar mb-2 mb-md-0">
+							<a href="/admin/shop-management" class="btn btn-secondary">
+								<i class="bi bi-arrow-left"></i> Quay lại
+							</a>
+						</div>
+					</div>
+
+					<!-- Thống kê -->
+					<div class="row mb-4">
+						<div class="col-md-4">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">Tổng shop chờ duyệt</h5>
+									<h2 class="card-text" th:text="${pendingCount}">0</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Bảng danh sách -->
+					<div class="card">
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Thông tin Shop</th>
+											<th>Chủ Shop</th>
+											<th>Địa chỉ</th>
+											<th>Ngày đăng ký</th>
+											<th>Thao tác</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="shop : ${shops}">
+											<td th:text="${shop.id}"></td>
+											<td>
+												<div class="d-flex align-items-center">
+													<img th:if="${shop.logo != null and !shop.logo.isEmpty()}"
+														th:src="${shop.logo}" class="shop-logo me-2" alt="Shop logo">
+													<img th:unless="${shop.logo != null and !shop.logo.isEmpty()}"
+														src="/images/default-shop.png" class="shop-logo me-2" alt="">
+													<div class="shop-details">
+														<div class="fw-bold" th:text="${shop.name}"></div>
+														<div class="text-muted" th:text="${shop.phone}"></div>
+													</div>
+												</div>
+											</td>
+											<td>
+												<div th:text="${shop.user.fullName}"></div>
+												<div class="text-muted" th:text="${shop.user.email}"></div>
+											</td>
+											<td>
+												<div class="address-info">
+													<div th:text="${shop.address.street}"></div>
+													<div th:text="|${shop.address.district}, ${shop.address.city}|">
+													</div>
+												</div>
+											</td>
+											<td th:text="${#temporals.format(shop.user.createdAt, 'dd/MM/yyyy HH:mm')}">
+											</td>
+											<td>
+												<div class="action-buttons">
+													<button class="btn btn-sm btn-info"
+														th:onclick="'showShopDetail(' + ${shop.id} + ')'">
+														<i class="bi bi-eye"></i>
+													</button>
+													<button class="btn btn-sm btn-success"
+														th:onclick="'openApprovalModal(' + ${shop.id} + ')'">
+														<i class="bi bi-check-lg"></i>
+													</button>
+													<button class="btn btn-sm btn-danger"
+														th:onclick="'openRejectModal(' + ${shop.id} + ')'">
+														<i class="bi bi-x-lg"></i>
+													</button>
+												</div>
+											</td>
+										</tr>
+										<tr th:if="${shops.empty}">
+											<td colspan="6" class="text-center">Không có shop nào đang chờ duyệt</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<!-- Phân trang -->
+							<div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-4">
+								<nav aria-label="Page navigation">
+									<ul class="pagination">
+										<li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+											<a class="page-link"
+												th:href="@{/admin/shop-management/pending(page=${currentPage-1})}">
+												<i class="bi bi-chevron-left"></i>
+											</a>
+										</li>
+										<li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+											th:classappend="${currentPage == i ? 'active' : ''}">
+											<a class="page-link" th:href="@{/admin/shop-management/pending(page=${i})}"
+												th:text="${i+1}"></a>
+										</li>
+										<li class="page-item"
+											th:classappend="${currentPage == totalPages-1 ? 'disabled' : ''}">
+											<a class="page-link"
+												th:href="@{/admin/shop-management/pending(page=${currentPage+1})}">
+												<i class="bi bi-chevron-right"></i>
+											</a>
+										</li>
+									</ul>
+								</nav>
+							</div>
+						</div>
+					</div>
+				</main>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Chi tiết Shop -->
+	<div class="modal fade" id="shopDetailModal" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Chi tiết Shop</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body" id="shopDetailContent">
+					<!-- Nội dung chi tiết sẽ được load động -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Phê duyệt -->
+	<div class="modal fade" id="approvalModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Xác nhận phê duyệt</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<p>Bạn có chắc chắn muốn phê duyệt shop này?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+					<button type="button" class="btn btn-success" onclick="approveShop()">Phê duyệt</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Từ chối -->
+	<div class="modal fade" id="rejectModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Từ chối Shop</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="rejectReason" class="form-label">Lý do từ chối</label>
+						<textarea class="form-control" id="rejectReason" rows="3" required></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+					<button type="button" class="btn btn-danger" onclick="rejectShop()">Từ chối</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Toast Notification -->
+	<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		<div class="toast" role="alert">
+			<div class="toast-header">
+				<strong class="me-auto">Thông báo</strong>
+				<button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+			</div>
+			<div class="toast-body"></div>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<div th:replace="admin/layout/footer :: footer"></div>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/admin/shop-management.js}"></script>
+
+	<script th:inline="javascript">
+		let currentShopId = null;
+
+		function showToast(message, type = 'success') {
+			const toast = new bootstrap.Toast(document.querySelector('.toast'));
+			const toastBody = document.querySelector('.toast-body');
+			toastBody.textContent = message;
+			toastBody.className = 'toast-body text-' + type;
+			toast.show();
+		}
+
+		function openApprovalModal(shopId) {
+			currentShopId = shopId;
+			const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
+			modal.show();
+		}
+
+		function openRejectModal(shopId) {
+			currentShopId = shopId;
+			document.getElementById('rejectReason').value = '';
+			const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+			modal.show();
+		}
+
+		function approveShop() {
+			fetch(`/admin/shop-management/${currentShopId}/approve`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						showToast(data.message);
+					} else {
+						showToast(data.message, 'danger');
+					}
+					setTimeout(() => window.location.reload(), 1000);
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					// Vẫn reload vì có thể đã approve thành công
+					setTimeout(() => window.location.reload(), 1000);
+				});
+		}
+
+		function rejectShop() {
+			const reason = document.getElementById('rejectReason').value;
+			if (!reason) {
+				showToast('Vui lòng nhập lý do từ chối', 'warning');
+				return;
+			}
+
+			fetch(`/admin/shop-management/${currentShopId}/reject?reason=${encodeURIComponent(reason)}`, {
+				method: 'POST'
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.json();
+				})
+				.then(data => {
+					if (data.success) {
+						showToast(data.message);
+						setTimeout(() => window.location.reload(), 1000);
+					} else {
+						showToast(data.message, 'danger');
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					showToast('Có lỗi xảy ra khi từ chối shop', 'danger');
+				});
+		}
+
+		function showShopDetail(shopId) {
+			fetch(`/admin/shop-management/${shopId}/detail`, {
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.text();
+				})
+				.then(html => {
+					document.getElementById('shopDetailContent').innerHTML = html;
+					const detailModal = new bootstrap.Modal(document.getElementById('shopDetailModal'));
+					detailModal.show();
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					showToast('Có lỗi xảy ra khi tải thông tin shop', 'danger');
+				});
+		}
+
+		// Khởi tạo các components khi trang đã load xong
+		document.addEventListener('DOMContentLoaded', function () {
+			// Khởi tạo tooltips
+			const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+			tooltipTriggerList.map(function (tooltipTriggerEl) {
+				return new bootstrap.Tooltip(tooltipTriggerEl);
+			});
+
+			// Khởi tạo popovers
+			const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+			popoverTriggerList.map(function (popoverTriggerEl) {
+				return new bootstrap.Popover(popoverTriggerEl);
+			});
+		});
+	</script>
+</body>
+
+</html>
