@@ -112,15 +112,21 @@ public class SellerProductController {
 	    return "seller/edit-product";
 	}
 	
-	@PostMapping("/discount/{id}/edit")
-	public String updateDiscount(@PathVariable Long id, 
-	                           @RequestParam Long bookId,
-	                           @ModelAttribute Promotion promotion) {
-	    Book book = bookService.getBookById(bookId);
-	    promotion.setBook(book);
-	    promotionService.updatePromotion(id, promotion);
-	    return "redirect:/seller/promotions/discount"; 
+	@PostMapping("/{id}/edit")
+	public String updateProduct(
+	    @PathVariable Long id,
+	    @ModelAttribute Book updatedBook,
+	    @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles
+	) throws IOException {
+	    // Only pass imageFiles if they're not empty
+	    if (imageFiles != null && imageFiles.length > 0 && !imageFiles[0].isEmpty()) {
+	        bookService.updateBook(id, updatedBook, imageFiles);
+	    } else {
+	        bookService.updateBook(id, updatedBook, null);
+	    }
+	    return "redirect:/seller/products";
 	}
+	
 	
 	@PostMapping("/{id}/delete")
 	public String deleteProduct(@PathVariable Long id) {
