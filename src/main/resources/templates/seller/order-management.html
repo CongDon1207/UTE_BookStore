@@ -109,6 +109,13 @@
 											Giao hàng
 										</button>
 
+										<!-- Nút xác nhận đã giao cho đơn đang giao -->
+										<button th:if="${order.status.name() == 'SHIPPING'}"
+											class="btn btn-sm btn-success"
+											th:onclick="'updateOrderStatus(' + ${order.id} + ', \'DELIVERED\')'">
+											Đã giao
+										</button>
+
 										<!-- Nút hủy chỉ cho đơn mới -->
 										<button th:if="${order.status.name() == 'NEW'}" class="btn btn-sm btn-danger"
 											th:onclick="'updateOrderStatus(' + ${order.id} + ', \'CANCELLED\')'">
