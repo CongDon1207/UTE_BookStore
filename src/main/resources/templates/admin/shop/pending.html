@@ -318,17 +318,22 @@
 				return;
 			}
 
-			fetch(`/admin/shop-management/${currentShopId}/reject`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({reason})
+			fetch(`/admin/shop-management/${currentShopId}/reject?reason=${encodeURIComponent(reason)}`, {
+				method: 'POST'
 			})
-				.then(response => response.json())
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.json();
+				})
 				.then(data => {
-					showToast('Đã từ chối shop thành công');
-					setTimeout(() => window.location.reload(), 1000);
+					if (data.success) {
+						showToast(data.message);
+						setTimeout(() => window.location.reload(), 1000);
+					} else {
+						showToast(data.message, 'danger');
+					}
 				})
 				.catch(error => {
 					console.error('Error:', error);

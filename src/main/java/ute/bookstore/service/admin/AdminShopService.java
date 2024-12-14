@@ -59,12 +59,12 @@ public class AdminShopService implements IAdminShopService {
 
 	@Override
 	public Page<Shop> getAllShopsForAdmin(int page, int size, String search) {
-		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-		if (StringUtils.hasText(search)) {
-			return shopRepository.findByNameContainingOrPhoneContainingOrUser_EmailContaining(search, search, search,
-					pageable);
-		}
-		return shopRepository.findAll(pageable);
+	    Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+	    if (StringUtils.hasText(search)) {
+	        return shopRepository.findByApprovalStatusAndNameContainingOrPhoneContainingOrUser_EmailContaining(
+	            ApprovalStatus.APPROVED, search, search, search, pageable);
+	    }
+	    return shopRepository.findByApprovalStatus(ApprovalStatus.APPROVED, pageable);
 	}
 
 	@Override
@@ -173,5 +173,11 @@ public class AdminShopService implements IAdminShopService {
     
     public List<Shop> getRecentShops(int limit) {
         return shopRepository.findAllByOrderByIdDesc(PageRequest.of(0, limit));
+    }
+    
+    @Override
+    public Page<Shop> getRejectedShops(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return shopRepository.findByApprovalStatus(ApprovalStatus.REJECTED, pageable);
     }
 }

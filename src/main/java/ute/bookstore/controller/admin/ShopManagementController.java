@@ -80,11 +80,34 @@ public class ShopManagementController {
 	        ));
 	    }
 	}
+	
+	@GetMapping("/rejected")
+	public String getRejectedShops(Model model, 
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "10") int size) {
+	    
+	    Page<Shop> rejectedShops = adminShopService.getRejectedShops(page, size);
+	    model.addAttribute("shops", rejectedShops);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", rejectedShops.getTotalPages());
+	    return "admin/shop/rejected";
+	}
 
 	@PostMapping("/{id}/reject")
 	@ResponseBody
-	public ResponseEntity<Shop> rejectShop(@PathVariable Long id, @RequestParam String reason) {
-		return ResponseEntity.ok(adminShopService.rejectShop(id, reason));
+	public ResponseEntity<?> rejectShop(@PathVariable Long id, @RequestParam String reason) {
+	    try {
+	        Shop shop = adminShopService.rejectShop(id, reason);
+	        return ResponseEntity.ok(Map.of(
+	            "success", true,
+	            "message", "Đã từ chối shop thành công"
+	        ));
+	    } catch (Exception e) {
+	        return ResponseEntity.ok(Map.of(
+	            "success", false,
+	            "message", e.getMessage()
+	        ));
+	    }
 	}
 
 	@PostMapping("/{id}/commission")
