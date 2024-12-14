@@ -21,13 +21,7 @@ import ute.bookstore.entity.Shop;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
-	Page<Book> findByShopsInAndTitleContainingAndCategoryAndIsAvailable(
-		       List<Shop> shops,
-		       String title,
-		       Category category,
-		       Boolean isAvailable, 
-		       Pageable pageable
-		   );
+	
 	
 	@Query("SELECT DISTINCT b FROM Book b JOIN b.shops s " +
 		       "WHERE s IN :shops " +

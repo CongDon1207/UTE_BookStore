@@ -15,14 +15,14 @@ import java.util.Map;
 public interface IBookService {
 	// IBookService
 	Book createBook(Book book, MultipartFile[] images, Shop shop) throws IOException;
-	
-    Page<Book> getShopBooks(Long shopId, String searchTerm, Category category, Boolean availability, int page, int size);
     
     Book getBookById(Long id);
 
 	Book updateBook(Long id, Book updatedBook, MultipartFile[] newImages, Shop shop) throws IOException;
 
 	void deleteBook(Long id);
+	
+	Page<Book> searchBooks(Shop shop, String title, Category category, Boolean isAvailable, Pageable pageable);
 	
 	List<Book> getAllBooks();
 	Page<Book> getAllBooks(Pageable pageable); // Thêm tham số Pageable

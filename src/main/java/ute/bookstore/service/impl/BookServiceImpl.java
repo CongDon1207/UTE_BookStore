@@ -66,11 +66,17 @@ public class BookServiceImpl implements IBookService{
         return bookRepository.save(book);
     }
     
-    @Override
-    public Page<Book> getShopBooks(Long shopId, String searchTerm, Category category, Boolean availability, int page, int size) {
-        Shop shop = shopService.getShopById(shopId);
-        return bookRepository.findByShopsInAndTitleContainingAndCategoryAndIsAvailable(
-            List.of(shop), searchTerm, category, availability, PageRequest.of(page, size)
+    public Page<Book> searchBooks(Shop shop, String title, Category category, Boolean isAvailable, Pageable pageable) {
+        // Nếu shop null thì throw exception
+        if (shop == null) {
+            throw new IllegalArgumentException("Shop cannot be null");
+        }
+        return bookRepository.searchBooks(
+            List.of(shop),
+            title.isEmpty() ? null : title,
+            category,
+            isAvailable,
+            pageable
         );
     }
     

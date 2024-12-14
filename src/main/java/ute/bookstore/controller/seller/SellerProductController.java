@@ -38,13 +38,9 @@ public class SellerProductController {
 	private ICategoryService categoryService;
 	
 	@Autowired
-	private IPromotionService promotionService;
-	
-	@Autowired
 	private IShopService shopService;
 	
-	@Autowired
-	private BookRepository bookRepository;
+	
 	
 	private static final String DEFAULT_EMAIL = "vendor@gmail.com";
 
@@ -57,8 +53,6 @@ public class SellerProductController {
 	public String getProductManagement(@RequestParam(defaultValue = "") String search,
 			@RequestParam(required = false) Category category, @RequestParam(required = false) Boolean availability,
 			@RequestParam(defaultValue = "0") int page, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-		// Test shop data
-		
 		// Test book data
 		List<Book> bookList = bookService.getAllBooks();
 
@@ -84,22 +78,16 @@ public class SellerProductController {
 	public String searchProducts(
 	   @RequestParam(defaultValue = "") String title,
 	   @RequestParam(required = false) Long categoryId,
-	   @RequestParam(required = false) Boolean isAvailable,
+	   @RequestParam(required = false) Boolean isAvailable, 
 	   @RequestParam(defaultValue = "0") int page,
 	   Model model) {
 	   
 	   Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
 	   Category category = categoryId != null ? categoryService.getCategoryById(categoryId) : null;
-	   
-	   Page<Book> books = bookRepository.searchBooks(
-	       List.of(shop),
-	       title.isEmpty() ? null : title,
-	       category,
-	       isAvailable,
-	       PageRequest.of(page, 10)
-	   );
 
+	   Page<Book> books = bookService.searchBooks(shop, title, category, isAvailable, PageRequest.of(page, 10));
 	   addModelAttributes(model, books, page);
+	   
 	   return "seller/product-management";
 	}
 
