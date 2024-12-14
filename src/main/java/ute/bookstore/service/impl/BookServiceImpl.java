@@ -80,6 +80,11 @@ public class BookServiceImpl implements IBookService{
         );
     }
     
+    public Page<Book> getBooksByShop(Shop shop, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return bookRepository.findByShopsContaining(shop, pageable);
+    }
+    
     public Book updateBook(Long id, Book updatedBook, MultipartFile[] newImages, Shop shop) throws IOException {
     	   Book book = bookRepository.findById(id)
     	       .orElseThrow(() -> new ResourceNotFoundException("Book not found"));

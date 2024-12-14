@@ -51,27 +51,20 @@ public class SellerProductController {
 
 	@GetMapping
 	public String getProductManagement(@RequestParam(defaultValue = "") String search,
-			@RequestParam(required = false) Category category, @RequestParam(required = false) Boolean availability,
-			@RequestParam(defaultValue = "0") int page, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-		// Test book data
-		List<Book> bookList = bookService.getAllBooks();
+	        @RequestParam(required = false) Category category, 
+	        @RequestParam(required = false) Boolean availability,
+	        @RequestParam(defaultValue = "0") int page, 
+	        Model model, 
+	        @AuthenticationPrincipal UserDetails userDetails) {
 
-		// Create pageable test data
-		int size = 10;
-		Pageable pageable = PageRequest.of(page, size);
-		Page<Book> books = new PageImpl<>(bookList, pageable, bookList.size());
+	    Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+	    Page<Book> books = bookService.getBooksByShop(shop, page, 10);
+	    List<Category> categories = categoryService.getAllCategories();
 
-		// Test categories
-		List<Category> categories = categoryService.getAllCategories();
-
-		model.addAttribute("books", books);
-		model.addAttribute("categories", categories);
-		model.addAttribute("currentPage", page);
-		model.addAttribute("totalPages", books.getTotalPages());
-		model.addAttribute("hasNext", page < books.getTotalPages() - 1);
-		model.addAttribute("hasPrevious", page > 0);
-
-		return "seller/product-management";
+	    addModelAttributes(model, books, page);
+	    model.addAttribute("categories", categories);
+	    
+	    return "seller/product-management";
 	}
 	
 	@GetMapping("/search")

@@ -21,7 +21,7 @@ public interface IBookService {
 	Book updateBook(Long id, Book updatedBook, MultipartFile[] newImages, Shop shop) throws IOException;
 
 	void deleteBook(Long id);
-	
+	Page<Book> getBooksByShop(Shop shop, int page, int size);
 	Page<Book> searchBooks(Shop shop, String title, Category category, Boolean isAvailable, Pageable pageable);
 	
 	List<Book> getAllBooks();
