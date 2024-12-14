@@ -66,8 +66,19 @@ public class ShopManagementController {
 
 	@PostMapping("/{id}/approve")
 	@ResponseBody
-	public ResponseEntity<Shop> approveShop(@PathVariable Long id) {
-		return ResponseEntity.ok(adminShopService.approveShop(id));
+	public ResponseEntity<?> approveShop(@PathVariable Long id) {
+	    try {
+	        Shop shop = adminShopService.approveShop(id);
+	        return ResponseEntity.ok(Map.of(
+	            "success", true,
+	            "message", "Đã phê duyệt shop thành công"
+	        ));
+	    } catch (Exception e) {
+	        return ResponseEntity.ok(Map.of(
+	            "success", false,
+	            "message", e.getMessage()
+	        ));
+	    }
 	}
 
 	@PostMapping("/{id}/reject")
