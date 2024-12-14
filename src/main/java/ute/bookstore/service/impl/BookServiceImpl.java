@@ -43,8 +43,9 @@ public class BookServiceImpl implements IBookService{
     @Autowired
     private ICloudinaryService cloudinaryService;
     
+ // BookServiceImpl
     @Override
-    public Book createBook(Book book, MultipartFile[] images) throws IOException {
+    public Book createBook(Book book, MultipartFile[] images, Shop shop) throws IOException {
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile image : images) {
             String imageUrl = cloudinaryService.uploadImage(image);
@@ -52,6 +53,16 @@ public class BookServiceImpl implements IBookService{
         }
         book.setImages(imageUrls);
         book.setIsAvailable(book.getQuantity() > 0);
+        
+        if(book.getShops() == null) {
+            book.setShops(new ArrayList<>());
+        }
+        book.getShops().add(shop);
+        
+        if(shop.getBooks() == null) {
+            shop.setBooks(new ArrayList<>());
+        }
+        shop.getBooks().add(book);
         return bookRepository.save(book);
     }
     
@@ -63,43 +74,58 @@ public class BookServiceImpl implements IBookService{
         );
     }
     
-    public Book updateBook(Long id, Book updatedBook, MultipartFile[] newImages) throws IOException {
-        Book book = bookRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
-            
-        book.setTitle(updatedBook.getTitle());
-        book.setDescription(updatedBook.getDescription());
-        book.setPrice(updatedBook.getPrice());
-        book.setQuantity(updatedBook.getQuantity());
-        book.setCategory(updatedBook.getCategory());
-        book.setIsAvailable(updatedBook.getQuantity() > 0);
-        
-        if (newImages != null && newImages.length > 0) {
-            for (String oldImageUrl : book.getImages()) {
-                cloudinaryService.deleteImage(oldImageUrl);
-            }
-            
-            List<String> imageUrls = new ArrayList<>();
-            for (MultipartFile image : newImages) {
-                String imageUrl = cloudinaryService.uploadImage(image);
-                imageUrls.add(imageUrl);
-            }
-            book.setImages(imageUrls);
-        }
-        
-        return bookRepository.save(book);
-    }
+    public Book updateBook(Long id, Book updatedBook, MultipartFile[] newImages, Shop shop) throws IOException {
+    	   Book book = bookRepository.findById(id)
+    	       .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+
+    	   // Cập nhật thông tin cơ bản
+    	   book.setTitle(updatedBook.getTitle());
+    	   book.setDescription(updatedBook.getDescription());
+    	   book.setPrice(updatedBook.getPrice());
+    	   book.setQuantity(updatedBook.getQuantity());
+    	   book.setCategory(updatedBook.getCategory());
+    	   book.setIsAvailable(updatedBook.getQuantity() > 0);
+
+    	   // Xử lý ảnh mới nếu có
+    	   if (newImages != null && newImages.length > 0) {
+    	       for (String oldImageUrl : book.getImages()) {
+    	           cloudinaryService.deleteImage(oldImageUrl);
+    	       }
+
+    	       List<String> imageUrls = new ArrayList<>();
+    	       for (MultipartFile image : newImages) {
+    	           String imageUrl = cloudinaryService.uploadImage(image);
+    	           imageUrls.add(imageUrl);
+    	       }
+    	       book.setImages(imageUrls);
+    	   }
+
+    	   // Cập nhật shop nếu chưa có
+    	   if (!book.getShops().contains(shop)) {
+    	       book.getShops().add(shop);
+    	       shop.getBooks().add(book);
+    	   }
+
+    	   return bookRepository.save(book);
+    	}
     
     public void deleteBook(Long id) {
-        Book book = bookRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
-            
-        for (String imageUrl : book.getImages()) {
-            cloudinaryService.deleteImage(imageUrl);
-        }
-        
-        bookRepository.delete(book);
-    }
+    	   Book book = bookRepository.findById(id)
+    	       .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+
+    	   // Xóa ảnh 
+    	   for (String imageUrl : book.getImages()) {
+    	       cloudinaryService.deleteImage(imageUrl);
+    	   }
+
+    	   // Xóa book khỏi tất cả shop
+    	   for (Shop shop : book.getShops()) {
+    	       shop.getBooks().remove(book);
+    	   }
+    	   book.getShops().clear();
+
+    	   bookRepository.delete(book);
+    	}
     
     @Override
     public List<Book> getAllBooks() {

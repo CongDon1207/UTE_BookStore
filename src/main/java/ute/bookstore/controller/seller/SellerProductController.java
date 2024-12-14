@@ -38,6 +38,11 @@ public class SellerProductController {
 	
 	@Autowired
 	private IPromotionService promotionService;
+	
+	@Autowired
+	private IShopService shopService;
+	
+	private static final String DEFAULT_EMAIL = "vendor@gmail.com";
 
 	@ModelAttribute
 	public void addAttributes(Model model, HttpServletRequest request) {
@@ -97,10 +102,13 @@ public class SellerProductController {
 	    book.setPrice(price);
 	    book.setQuantity(quantity);
 	    
+	 // Lấy shop hiện tại
+	    Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+	    
 	    Category category = categoryService.getCategoryById(categoryId);
 	    book.setCategory(category);
 	    
-	    bookService.createBook(book, imageFiles);
+	    bookService.createBook(book, imageFiles, shop);
 	    return "redirect:/seller/products";
 	}
 	
@@ -118,11 +126,11 @@ public class SellerProductController {
 	    @ModelAttribute Book updatedBook,
 	    @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles
 	) throws IOException {
-	    // Only pass imageFiles if they're not empty
+	    Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
 	    if (imageFiles != null && imageFiles.length > 0 && !imageFiles[0].isEmpty()) {
-	        bookService.updateBook(id, updatedBook, imageFiles);
+	        bookService.updateBook(id, updatedBook, imageFiles, shop);
 	    } else {
-	        bookService.updateBook(id, updatedBook, null);
+	        bookService.updateBook(id, updatedBook, null, shop);
 	    }
 	    return "redirect:/seller/products";
 	}

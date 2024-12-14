@@ -5,19 +5,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Category;
+import ute.bookstore.entity.Shop;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 
 public interface IBookService {
-	Book createBook(Book book, MultipartFile[] images) throws IOException;
+	// IBookService
+	Book createBook(Book book, MultipartFile[] images, Shop shop) throws IOException;
 	
     Page<Book> getShopBooks(Long shopId, String searchTerm, Category category, Boolean availability, int page, int size);
     
     Book getBookById(Long id);
 
-	Book updateBook(Long id, Book book, MultipartFile[] images) throws IOException;
+	Book updateBook(Long id, Book updatedBook, MultipartFile[] newImages, Shop shop) throws IOException;
 
 	void deleteBook(Long id);
 	

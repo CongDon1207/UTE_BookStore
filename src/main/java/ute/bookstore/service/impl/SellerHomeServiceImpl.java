@@ -44,9 +44,7 @@ public class SellerHomeServiceImpl implements ISellerHomeService {
 
     @Override
     public Long getTotalProducts(Shop shop) {
-        return (long) shop.getBooks().size(); // Ép kiểu int sang long
-        // Hoặc sử dụng Long.valueOf()
-        // return Long.valueOf(shop.getBooks().size());
+        return (long) shop.getBooks().size(); // Ép kiểu int sang long  	
     }
 
     @Override
