@@ -1,5 +1,6 @@
 package ute.bookstore.service.admin;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,15 @@ import org.springframework.util.StringUtils;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
+import ute.bookstore.dto.admin.ShopRevenueStats;
+import ute.bookstore.dto.admin.ShopRevenueStats.RevenueByTime;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
 import ute.bookstore.enums.ApprovalStatus;
+import ute.bookstore.enums.OrderStatus;
 import ute.bookstore.enums.UserRole;
 import ute.bookstore.exception.ResourceNotFoundException;
+import ute.bookstore.repository.OrderRepository;
 import ute.bookstore.repository.ShopRepository;
 import ute.bookstore.repository.UserRepository;
 import ute.bookstore.service.admin.impl.IAdminShopService;
@@ -29,6 +34,9 @@ public class AdminShopService implements IAdminShopService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private OrderRepository orderRepository;
 	
 	@Override
 	public Shop createShop(Shop shop) {
@@ -179,5 +187,53 @@ public class AdminShopService implements IAdminShopService {
     public Page<Shop> getRejectedShops(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return shopRepository.findByApprovalStatus(ApprovalStatus.REJECTED, pageable);
+    }
+
+    @Override
+	public RevenueByTime getRevenueStats(Shop shop, LocalDateTime from, LocalDateTime to) {
+        RevenueByTime stats = new RevenueByTime();
+        
+        // Tính tổng doanh thu từ đơn hàng DELIVERED
+        Double revenue = orderRepository.calculateRevenue(
+            shop.getId(), OrderStatus.DELIVERED, from, to);
+        stats.setRevenue(revenue != null ? revenue : 0.0);
+        
+        // Tổng số đơn hàng
+        Long total = orderRepository.countOrders(shop.getId(), from, to);
+        stats.setTotalOrders(total != null ? total : 0L);
+        
+        // Đơn đã giao
+        Long delivered = orderRepository.countOrdersByStatus(
+            shop.getId(), OrderStatus.DELIVERED, from, to);
+        stats.setDeliveredOrders(delivered != null ? delivered : 0L);
+        
+        // Đơn đã hủy
+        Long cancelled = orderRepository.countOrdersByStatus(
+            shop.getId(), OrderStatus.CANCELLED, from, to); 
+        stats.setCancelledOrders(cancelled != null ? cancelled : 0L);
+        
+        // Tính chiết khấu
+        stats.setCommission(stats.getRevenue() * shop.getCommissionRate() / 100);
+        
+        return stats;
+    }
+    
+    @Override
+    public ShopRevenueStats getShopStats(Long shopId) {
+        Shop shop = getShopById(shopId);
+        ShopRevenueStats stats = new ShopRevenueStats();
+        stats.setShopName(shop.getName());
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
+        LocalDateTime startOfWeek = now.minusDays(now.getDayOfWeek().getValue() - 1).toLocalDate().atStartOfDay();
+        LocalDateTime startOfMonth = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
+
+        stats.setTodayStats(getRevenueStats(shop, startOfDay, now));
+        stats.setWeekStats(getRevenueStats(shop, startOfWeek, now));
+        stats.setMonthStats(getRevenueStats(shop, startOfMonth, now));
+        stats.setTotalStats(getRevenueStats(shop, null, now));
+
+        return stats;
     }
 }

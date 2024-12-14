@@ -112,4 +112,26 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     
     Long countByStatus(OrderStatus status);
+    
+    @Query("SELECT SUM(o.totalAmount) FROM Order o " +
+            "WHERE o.shop.id = :shopId AND o.status = :status " +
+            "AND (:from IS NULL OR o.createdAt >= :from) " +
+            "AND o.createdAt <= :to")
+     Double calculateRevenue(Long shopId, OrderStatus status, 
+                           LocalDateTime from, LocalDateTime to);
+
+     @Query("SELECT COUNT(o) FROM Order o " +
+            "WHERE o.shop.id = :shopId " +
+            "AND (:from IS NULL OR o.createdAt >= :from) " +
+            "AND o.createdAt <= :to")
+     Long countOrders(Long shopId, LocalDateTime from, LocalDateTime to);
+
+     @Query("SELECT COUNT(o) FROM Order o " +
+            "WHERE o.shop.id = :shopId AND o.status = :status " +  
+            "AND (:from IS NULL OR o.createdAt >= :from) " +
+            "AND o.createdAt <= :to")
+     Long countOrdersByStatus(Long shopId, OrderStatus status,
+                            LocalDateTime from, LocalDateTime to);
+     
+     
 }

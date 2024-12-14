@@ -165,6 +165,12 @@
 														<i class="bi bi-eye"></i>
 													</button>
 
+													<!-- Nút xem doanh thu -->
+													<button type="button" class="btn btn-sm btn-success me-1"
+														th:onclick="'showShopRevenue(' + ${shop.id} + ')'">
+														<i class="bi bi-graph-up"></i>
+													</button>
+
 													<!-- Nút phê duyệt -->
 													<button th:if="${shop.approvalStatus == 'PENDING'}" type="button"
 														class="btn btn-sm btn-success"
@@ -216,6 +222,7 @@
 	<div th:replace="admin/shop/modals/approval-modal :: modal"></div>
 	<div th:replace="admin/shop/modals/commission-modal :: modal"></div>
 	<div th:replace="admin/shop/modals/detail-modal :: modal"></div>
+	<div th:replace="admin/shop/modals/revenue-modal :: modal"></div>
 
 	<!-- Toast Notification -->
 	<div class="toast position-fixed top-0 end-0 p-3" role="alert">
@@ -368,6 +375,66 @@
 				.catch(error => {
 					console.error('Error:', error);
 					showToast('Có lỗi xảy ra khi tải thông tin shop', 'danger');
+				});
+		}
+
+
+		function formatCurrency(amount) {
+			return new Intl.NumberFormat('vi-VN', {
+				style: 'currency',
+				currency: 'VND'
+			}).format(amount);
+		}
+
+		function showShopRevenue(shopId) {
+			fetch(`/admin/shop-management/${shopId}/stats`, {
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.json();
+				})
+				.then(stats => {
+					document.getElementById('statsShopName').textContent = stats.shopName;
+
+					// Today stats
+					document.getElementById('todayRevenue').textContent = formatCurrency(stats.todayStats.revenue);
+					document.getElementById('todayTotalOrders').textContent = stats.todayStats.totalOrders;
+					document.getElementById('todayDelivered').textContent = stats.todayStats.deliveredOrders;
+					document.getElementById('todayCancelled').textContent = stats.todayStats.cancelledOrders;
+					document.getElementById('todayCommission').textContent = formatCurrency(stats.todayStats.commission);
+
+					// Week stats
+					document.getElementById('weekRevenue').textContent = formatCurrency(stats.weekStats.revenue);
+					document.getElementById('weekTotalOrders').textContent = stats.weekStats.totalOrders;
+					document.getElementById('weekDelivered').textContent = stats.weekStats.deliveredOrders;
+					document.getElementById('weekCancelled').textContent = stats.weekStats.cancelledOrders;
+					document.getElementById('weekCommission').textContent = formatCurrency(stats.weekStats.commission);
+
+					// Month stats
+					document.getElementById('monthRevenue').textContent = formatCurrency(stats.monthStats.revenue);
+					document.getElementById('monthTotalOrders').textContent = stats.monthStats.totalOrders;
+					document.getElementById('monthDelivered').textContent = stats.monthStats.deliveredOrders;
+					document.getElementById('monthCancelled').textContent = stats.monthStats.cancelledOrders;
+					document.getElementById('monthCommission').textContent = formatCurrency(stats.monthStats.commission);
+
+					// Total stats
+					document.getElementById('totalRevenue').textContent = formatCurrency(stats.totalStats.revenue);
+					document.getElementById('totalOrders').textContent = stats.totalStats.totalOrders;
+					document.getElementById('totalDelivered').textContent = stats.totalStats.deliveredOrders;
+					document.getElementById('totalCancelled').textContent = stats.totalStats.cancelledOrders;
+					document.getElementById('totalCommission').textContent = formatCurrency(stats.totalStats.commission);
+
+					const modal = new bootstrap.Modal(document.getElementById('revenueModal'));
+					modal.show();
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					showToast('Có lỗi xảy ra khi tải thông tin doanh thu', 'danger');
 				});
 		}
 	</script>
