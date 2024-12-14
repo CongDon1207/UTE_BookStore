@@ -41,11 +41,36 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
 	List<Book> findByShopsIn(Collection<Shop> shops);
 	List<Book> findTop6ByOrderByIdDesc();
 	
-	Page<Book> findByCategoryId(Long categoryId, Pageable pageable);
-	
 	List<Book> findTop20ByOrderByIdDesc();
 	
 	
+	
+	// Tìm theo category
+    Page<Book> findByCategoryId(Long categoryId, Pageable pageable);
+    
+    // Tìm theo trạng thái available
+    Page<Book> findByIsAvailable(Boolean isAvailable, Pageable pageable);
+    
+    // Tìm trong khoảng giá
+    Page<Book> findByPriceBetween(Double minPrice, Double maxPrice, Pageable pageable);
+    
+    // Tìm theo category và trạng thái
+    Page<Book> findByCategoryIdAndIsAvailable(Long categoryId, Boolean isAvailable, Pageable pageable);
+    
+    // Tìm theo category và khoảng giá
+    Page<Book> findByCategoryIdAndPriceBetween(Long categoryId, Double minPrice, Double maxPrice, Pageable pageable);
+    
+    // Tìm theo trạng thái và khoảng giá
+    Page<Book> findByIsAvailableAndPriceBetween(Boolean isAvailable, Double minPrice, Double maxPrice, Pageable pageable);
+    
+    // Tìm theo category, trạng thái và khoảng giá
+    Page<Book> findByCategoryIdAndIsAvailableAndPriceBetween(
+        Long categoryId, 
+        Boolean isAvailable, 
+        Double minPrice, 
+        Double maxPrice, 
+        Pageable pageable
+    );
 	
 	
 	

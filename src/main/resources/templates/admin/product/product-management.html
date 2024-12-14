@@ -1,3 +1,4 @@
+<!-- templates/admin/product/product-management.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
@@ -289,12 +290,16 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body">
-					<form th:action="@{/admin/product-management/books}" method="get">
+					<form th:action="@{/admin/product-management}" method="get">
+						<!-- Giữ lại tham số page nếu có -->
+						<input type="hidden" name="page" th:value="${books.number}">
+
 						<div class="mb-3">
 							<label class="form-label">Danh mục</label>
 							<select class="form-select" name="categoryId">
 								<option value="">Tất cả danh mục</option>
-								<option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">
+								<option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+									th:selected="${cat.id == selectedCategoryId}">
 								</option>
 							</select>
 						</div>
@@ -302,21 +307,21 @@
 							<label class="form-label">Trạng thái</label>
 							<select class="form-select" name="isAvailable">
 								<option value="">Tất cả trạng thái</option>
-								<option value="true">Đang hiển thị</option>
-								<option value="false">Đang ẩn</option>
+								<option value="true" th:selected="${selectedStatus == true}">Đang hiển thị</option>
+								<option value="false" th:selected="${selectedStatus == false}">Đang ẩn</option>
 							</select>
 						</div>
 						<div class="mb-3">
 							<label class="form-label">Giá từ</label>
-							<input type="number" class="form-control" name="minPrice">
+							<input type="number" class="form-control" name="minPrice" th:value="${selectedMinPrice}">
 						</div>
 						<div class="mb-3">
 							<label class="form-label">Giá đến</label>
-							<input type="number" class="form-control" name="maxPrice">
+							<input type="number" class="form-control" name="maxPrice" th:value="${selectedMaxPrice}">
 						</div>
 						<div class="text-end">
 							<button type="submit" class="btn btn-primary">Áp dụng</button>
-							<button type="reset" class="btn btn-secondary">Đặt lại</button>
+							<a href="/admin/product-management" class="btn btn-secondary">Đặt lại</a>
 						</div>
 					</form>
 				</div>
