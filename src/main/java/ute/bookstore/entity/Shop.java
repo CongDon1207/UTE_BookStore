@@ -67,10 +67,7 @@ public class Shop {
     @OneToMany(mappedBy = "shop")
     private List<Promotion> promotions;
     
-    
-    
-    
-    
+
     @Column(name = "commission_rate")
     private Double commissionRate = 0.0;
     
