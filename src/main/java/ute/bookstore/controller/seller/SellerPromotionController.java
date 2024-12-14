@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ute.bookstore.entity.Promotion;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.Book;
@@ -20,6 +21,7 @@ import ute.bookstore.enums.DiscountType;
 import ute.bookstore.service.IBookService;
 import ute.bookstore.service.IPromotionService;
 import ute.bookstore.service.IShopService;
+import ute.bookstore.service.IUserService;
 
 @Controller
 @RequestMapping("/seller/promotions")
@@ -33,8 +35,21 @@ public class SellerPromotionController {
 	@Autowired
 	private IShopService shopService;
 	
+	@Autowired private IUserService userService;
+	
 	private static final String DEFAULT_EMAIL = "vendor@gmail.com";
-
+	
+	private static final Long TEMP_USER_ID = 1L;
+   
+    
+	@ModelAttribute
+	public void addAttributes(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
+		Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+		model.addAttribute("shop", shop != null ? shop : new Shop());
+		model.addAttribute("user", userService.getUserById(TEMP_USER_ID));
+	}
+	
 	@GetMapping("/discount")
 	public String getDiscountPage(Model model) {
 	    Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
