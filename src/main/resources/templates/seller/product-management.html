@@ -73,28 +73,33 @@
 				</div>
 
 				<!-- Search & Filter -->
-				<div class="row mb-4">
-					<div class="col-md-6">
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Tìm kiếm sách...">
-							<button class="btn btn-outline-secondary" type="button">Tìm</button>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<select class="form-select">
-							<option value="">-- Thể loại --</option>
-							<option th:each="category : ${categories}" th:value="${category.id}"
-								th:text="${category.name}">Thể loại</option>
-						</select>
-					</div>
-					<div class="col-md-3">
-						<select class="form-select">
-							<option value="">-- Trạng thái --</option>
-							<option value="true">Còn hàng</option>
-							<option value="false">Hết hàng</option>
-						</select>
-					</div>
-				</div>
+				<form th:action="@{/seller/products/search}" method="get">
+				    <div class="row mb-4">
+				        <div class="col-md-6">
+				            <div class="input-group">
+				                <input type="text" class="form-control" name="title" th:value="${param.title}" placeholder="Tìm kiếm sách...">
+				                <button class="btn btn-outline-secondary" type="submit">Tìm</button>
+				            </div>
+				        </div>
+				        <div class="col-md-3">
+				            <select class="form-select" name="categoryId" onchange="this.form.submit()">
+				                <option value="">-- Thể loại --</option>
+				                <option th:each="cat : ${categories}" 
+				                    th:value="${cat.id}"
+				                    th:text="${cat.name}"
+				                    th:selected="${param.categoryId == cat.id}">
+				                </option>
+				            </select>
+				        </div>
+				        <div class="col-md-3">
+				            <select class="form-select" name="isAvailable" onchange="this.form.submit()">
+				                <option value="">-- Trạng thái --</option>
+				                <option value="true" th:selected="${param.isAvailable == 'true'}">Còn hàng</option>
+				                <option value="false" th:selected="${param.isAvailable == 'false'}">Hết hàng</option>
+				            </select>
+				        </div>
+				    </div>
+				</form>
 
 				<!-- Products Table -->
 				<div class="table-responsive">

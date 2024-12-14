@@ -17,6 +17,7 @@ import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Category;
 import ute.bookstore.entity.Promotion;
 import ute.bookstore.entity.Shop;
+import ute.bookstore.repository.BookRepository;
 import ute.bookstore.service.ICategoryService;
 import ute.bookstore.service.IPromotionService;
 import ute.bookstore.service.IBookService;
@@ -42,6 +43,9 @@ public class SellerProductController {
 	@Autowired
 	private IShopService shopService;
 	
+	@Autowired
+	private BookRepository bookRepository;
+	
 	private static final String DEFAULT_EMAIL = "vendor@gmail.com";
 
 	@ModelAttribute
@@ -54,10 +58,7 @@ public class SellerProductController {
 			@RequestParam(required = false) Category category, @RequestParam(required = false) Boolean availability,
 			@RequestParam(defaultValue = "0") int page, Model model, @AuthenticationPrincipal UserDetails userDetails) {
 		// Test shop data
-		Shop shop = new Shop();
-		shop.setId(1L);
-		shop.setName("Test Book Shop");
-
+		
 		// Test book data
 		List<Book> bookList = bookService.getAllBooks();
 
@@ -78,7 +79,39 @@ public class SellerProductController {
 
 		return "seller/product-management";
 	}
+	
+	@GetMapping("/search")
+	public String searchProducts(
+	   @RequestParam(defaultValue = "") String title,
+	   @RequestParam(required = false) Long categoryId,
+	   @RequestParam(required = false) Boolean isAvailable,
+	   @RequestParam(defaultValue = "0") int page,
+	   Model model) {
+	   
+	   Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+	   Category category = categoryId != null ? categoryService.getCategoryById(categoryId) : null;
+	   
+	   Page<Book> books = bookRepository.searchBooks(
+	       List.of(shop),
+	       title.isEmpty() ? null : title,
+	       category,
+	       isAvailable,
+	       PageRequest.of(page, 10)
+	   );
 
+	   addModelAttributes(model, books, page);
+	   return "seller/product-management";
+	}
+
+	// Helper method để tái sử dụng code
+	private void addModelAttributes(Model model, Page<Book> books, int page) {
+	   model.addAttribute("books", books);
+	   model.addAttribute("categories", categoryService.getAllCategories());
+	   model.addAttribute("currentPage", page);
+	   model.addAttribute("totalPages", books.getTotalPages());
+	   model.addAttribute("hasNext", page < books.getTotalPages() - 1);
+	   model.addAttribute("hasPrevious", page > 0);
+	}
 	
 
 	@GetMapping("/add")
