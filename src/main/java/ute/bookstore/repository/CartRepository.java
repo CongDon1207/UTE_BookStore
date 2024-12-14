@@ -11,5 +11,8 @@ import ute.bookstore.entity.User;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
 	  Optional<Cart> findByUser(User user);
+	  
+
+	   
 
 }

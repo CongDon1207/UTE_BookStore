@@ -31,6 +31,12 @@
 						<i class="fas fa-box me-2"></i> Quản lý Sản phẩm
 					</a>
 				</li>
+				<li class="nav-item">
+				   <a th:href="@{/seller/chat}" class="nav-link"
+				      th:classappend="${#strings.contains(#vars.requestURI ?: '', 'chat')} ? 'active' : 'text-dark'">
+				       <i class="fas fa-comments me-2"></i> Chat với KH
+				   </a>
+				</li>
 			</ul>
 		</div>
 	</nav>

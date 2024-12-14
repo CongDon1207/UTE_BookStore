@@ -53,6 +53,7 @@
 	  <!-- Main Content -->
     <main class="container py-5">
     <div class="row">
+   
         <div class="col-lg-8">
             <!-- Customer Information Section -->
             <div class="card mb-4">
@@ -60,7 +61,10 @@
                     <h4 class="mb-0">Thông tin khách hàng</h4>
                 </div>
                 <div class="card-body">
-                    <form id="customerInfoForm">
+                    <form id="customerInfoForm" >
+                   
+                            
+                            
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="fullName" class="form-label">Họ và tên *</label>
@@ -90,24 +94,23 @@
                 <label class="form-label">Chọn địa chỉ giao hàng</label>
                 <div class="list-group">
                     <th:block th:each="address, iter : ${addresses}">
-                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <input class="form-check-input me-3" 
-                                       type="radio" 
-                                       name="selectedAddress" 
-                                       id="address${iter.index}" 
-                                       th:value="${address.id}"
-                                       th:checked="${address.isDefault}"
-                                >
-                                <label class="form-check-label" th:for="'address' + ${iter.index}">
-                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                    <span th:text="${address.street} + ', ' + ${address.district} + ', ' + ${address.city}"></span>
-                                    <span th:if="${address.isDefault}" class="badge bg-success ms-2">Mặc định</span>
-                                </label>
-                            </div>
-                           
-                        </div>
-                    </th:block>
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <input class="form-check-input me-3" 
+                               type="radio" 
+                               name="selectedAddress" 
+                               id="address${address.id}" 
+                               th:value="${address.id}" 
+                                 onchange="updateAddressId(this.value)">
+                        <label class="form-check-label" th:for="'address' + ${iter.index}">
+                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                            <span th:text="${address.id}+${address.street} + ', ' + ${address.district} + ', ' + ${address.city}"></span>
+                            <span th:if="${address.isDefault}" class="badge bg-success ms-2">Mặc định</span>
+                        </label>
+                    </div>
+                </div>
+            </th:block>
+
                 </div>
             </div>
 
@@ -122,37 +125,7 @@
     
 
                 </div>
-                <div class="card-body">
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="differentAddress">
-                        <label class="form-check-label" for="differentAddress">
-                            Địa chỉ nhận hàng khác với địa chỉ mặc định
-                        </label>
-                    </div>
-                    
-                    <div id="shippingAddressSection" style="display: none;">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="province" class="form-label">Tỉnh/Thành phố *</label>
-                                <select class="form-select" id="province" required>
-                                    <option value="">Chọn Tỉnh/Thành phố</option>
-                                    <!-- Populate with dynamic options -->
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="district" class="form-label">Quận/Huyện *</label>
-                                <select class="form-select" id="district" required>
-                                    <option value="">Chọn Quận/Huyện</option>
-                                    <!-- Populate dynamically based on province selection -->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="specificAddress" class="form-label">Địa chỉ cụ thể *</label>
-                            <input type="text" class="form-control" id="specificAddress" required>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Payment Method Section -->
@@ -190,15 +163,7 @@
                 </div>
             </div>
 
-            <!-- Order Notes Section -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4 class="mb-0">Ghi chú đơn hàng</h4>
-                </div>
-                <div class="card-body">
-                    <textarea class="form-control" id="orderNotes" rows="3" placeholder="Nhập ghi chú (nếu có)"></textarea>
-                </div>
-            </div>
+            
         </div>
 
         <!-- Order Summary Section -->
@@ -208,51 +173,138 @@
                     <h4 class="mb-0">Tóm tắt đơn hàng</h4>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <h5>Sản phẩm</h5>
-                        <ul class="list-group" >
+                    <div class="mb-3" >
+                        <h5 >Sản phẩm</h5>
+                        <ul class="list-group" th:each="item : ${items}" >
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span >Tên sản phẩm</span>
-                                <span >1 x 100,000₫</span>
+                            <img th:src="${item.image}" style="width: 78px; height: 100px;">
+                                <span th:text="${item.title}" >Tên sản phẩm</span>
+                                <span th:text="${item.quantity}+' x '+ ${item.price}+'₫'">1 x 100,000₫</span>
                             </li>
                         </ul>
                     </div>
                     <hr>
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>Tạm tính</span>
-                            <span >200,000₫</span>
-                        </div>
+                        
                        
                     </div>
                     <hr>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between fw-bold">
-                            <span>Tổng cộng</span>
-                            <span>230,000₫</span>
+                            <h3>Tổng cộng</h3>
+                            <h3 style="color:Green;" th:text="${totalAmount} + ' đ'">230,000₫</h3>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-danger w-100">Xác nhận đặt hàng</button>
+                    <!-- Updated Order Form -->
+                        <form id="orderForm" th:action="@{/user/orders/create}" method="POST">
+                        <input type="hidden" name="userId" th:value="${user.id}" />
+    <input type="hidden" name="totalAmount" th:value="${totalAmount}" />
+   <th:block th:each="item : ${items}">
+   <input type="hidden" name="bookIds" th:value="${item.id}">
+           
+            <input type="hidden" name="quantities" th:value="${item.quantity}">
+        </th:block>
+    <input type="hidden" name="shopId" th:value="${shop != null ? shop.id : 3}" />
+    
+   	
+     <!-- Payment Method -->
+        <input type="hidden" name="paymentMethod" th:value="${paymentMethod != null ? paymentMethod : 'COD'}">
+    
+   <!-- Address ID -->
+<input type="hidden" name="addressId" id="addressId" >
+
+
+        <button type="submit" id="confirmOrderButton" class="btn btn-danger w-100">Xác nhận đặt hàng</button>
+        
+    </form>
+
                 </div>
             </div>
         </div>
+     
     </div>
+    
 </main>
 
 
 	
 	<!-- Sử dụng fragment footer -->
     <div th:replace="~{user/layout/footer :: footer}"></div>
+	<script>
+	document.getElementById("confirmOrderButton").addEventListener("click", function (e) {
+	    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+	    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+
+	    // Kiểm tra xem user đã chọn địa chỉ chưa
+	    if (!selectedAddress) {
+	        alert("Vui lòng chọn địa chỉ giao hàng.");
+	        e.preventDefault();
+	        return;
+	    }
+
+	    // Kiểm tra xem user đã chọn phương thức thanh toán chưa
+	    if (!paymentMethod) {
+	        alert("Vui lòng chọn phương thức thanh toán.");
+	        e.preventDefault();
+	        return;
+	    }
+
+	    // Hiển thị xác nhận lại với người dùng
+	    const confirmation = confirm("Bạn có chắc chắn muốn xác nhận đơn hàng này không?");
+	    if (!confirmation) {
+	        // Hủy gửi form nếu người dùng không đồng ý
+	        e.preventDefault();
+	        return;
+	    }
+
+	    // Nếu qua hết các bước kiểm tra, gửi form
+	    document.getElementById("orderForm").submit();
+	});
+
+</script>
+	
+	<script>
+	function updateAddressId(selectedId) {
+        document.getElementById("addressId").value = selectedId;
+    }
+    // Lấy tất cả radio button có name="selectedAddress"
+    const addressRadios = document.querySelectorAll('input[name="selectedAddress"]');
+    const hiddenInput = document.querySelector('#addressId');
+
+    // Lắng nghe sự kiện 'change' trên các radio button
+    addressRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            hiddenInput.value = this.value; // Cập nhật giá trị vào input hidden
+        });
+    });
+
+    // Thiết lập giá trị ban đầu nếu radio đã được chọn trước
+    const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
+    if (selectedRadio) {
+        hiddenInput.value = selectedRadio.value;
+    }
+</script>
 	
 	<script th:inline="javascript">
-document.addEventListener('DOMContentLoaded', function() {
-    const differentAddressCheckbox = document.getElementById('differentAddress');
-    const shippingAddressSection = document.getElementById('shippingAddressSection');
+	 document.addEventListener('DOMContentLoaded', function() {
+	        // Existing address checkbox logic
+	        const differentAddressCheckbox = document.getElementById('differentAddress');
+	        const shippingAddressSection = document.getElementById('shippingAddressSection');
 
-    differentAddressCheckbox.addEventListener('change', function() {
-        shippingAddressSection.style.display = this.checked ? 'block' : 'none';
-    });
-});
+	        differentAddressCheckbox.addEventListener('change', function() {
+	            shippingAddressSection.style.display = this.checked ? 'block' : 'none';
+	        });
+
+	        // Payment method selection logic
+	        const paymentMethodInputs = document.querySelectorAll('input[name="paymentMethod"]');
+	        const hiddenPaymentMethod = document.querySelector('#orderForm input[name="paymentMethod"]');
+
+	        paymentMethodInputs.forEach(input => {
+	            input.addEventListener('change', function() {
+	                hiddenPaymentMethod.value = this.value;
+	            });
+	        });
+	    });
 </script>
 <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
