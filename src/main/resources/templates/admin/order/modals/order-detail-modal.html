@@ -1,0 +1,77 @@
+<!-- templates/admin/order/modals/order-detail-modal.html -->
+<div th:fragment="modal">
+    <div class="modal fade" id="orderDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="orderDetailContent" th:fragment="orderDetailContent">
+                        <!-- Kiểm tra null -->
+                        <div th:if="${order != null}" class="row g-4">
+                            <!-- Thông tin đơn hàng -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-3">Thông tin đơn hàng</h6>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Mã đơn hàng:</small>
+                                            <div class="fw-bold" th:if="${order.id != null}">
+                                                <span>#</span><span th:text="${order.id}"></span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Ngày đặt:</small>
+                                            <div th:if="${order.createdAt != null}" 
+                                                 th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Trạng thái:</small>
+                                            <div th:if="${order.status != null}">
+                                                <select class="form-select form-select-sm"
+                                                        th:disabled="${order.status.name() == 'CANCELLED' || order.status.name() == 'REFUNDED'}"
+                                                        th:data-order-id="${order.id}"
+                                                        onchange="updateOrderStatus(this.dataset.orderId, this.value)">
+                                                    <option th:each="status : ${T(ute.bookstore.enums.OrderStatus).values()}"
+                                                            th:value="${status.name()}" 
+                                                            th:text="${status.getStatus()}"
+                                                            th:selected="${status == order.status}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted">Phương thức thanh toán:</small>
+                                            <div th:if="${order.paymentMethod != null}"
+                                                 th:text="${order.paymentMethod.name() == 'COD' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản ngân hàng'}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Rest of your modal content remains the same -->
+                        </div>
+                        
+                        <!-- Hiển thị thông báo lỗi nếu order null -->
+                        <div th:if="${order == null}" class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Không tìm thấy thông tin đơn hàng
+                        </div>
+                        
+                        <!-- Hiển thị thông báo lỗi từ controller -->
+                        <div th:if="${error != null}" class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span th:text="${error}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

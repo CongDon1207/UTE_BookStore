@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>UTEBookStore - Shop Bị Từ Chối</title>
+
+   <link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+   <style>
+       .table thead th {
+           background-color: #f8f9fa;
+           border-bottom: 2px solid #dee2e6;
+           padding: 12px;
+       }
+
+       .table tbody td {
+           padding: 12px;
+           vertical-align: middle;
+       }
+
+       .rejection-reason {
+           color: #dc3545;
+           font-size: 0.9rem;
+           max-width: 300px;
+           white-space: normal;
+           word-break: break-word;
+       }
+
+       .user-info {
+           font-size: 0.9rem;
+       }
+
+       .user-email {
+           color: #6c757d;
+           font-size: 0.85rem;
+       }
+   </style>
+</head>
+
+<body>
+   <!-- Header -->
+   <div th:replace="admin/layout/header :: header"></div>
+
+   <div class="content-wrapper">
+       <div class="container-fluid">
+           <div class="row">
+               <!-- Sidebar -->
+               <div th:insert="~{'admin/layout/sidebar' :: sidebar}"></div>
+
+               <!-- Main Content -->
+               <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+                   <!-- Breadcrumb -->
+                   <nav aria-label="breadcrumb" class="mb-4">
+                       <ol class="breadcrumb">
+                           <li class="breadcrumb-item"><a th:href="@{/admin}">Trang chủ</a></li>
+                           <li class="breadcrumb-item"><a th:href="@{/admin/shop-management}">Quản lý Shop</a></li>
+                           <li class="breadcrumb-item active">Shop bị từ chối</li>
+                       </ol>
+                   </nav>
+
+                   <!-- Page Title -->
+                   <div class="d-flex justify-content-between align-items-center mb-4">
+                       <h1 class="h2">Danh Sách Shop Bị Từ Chối</h1>
+                       <div class="btn-group">
+                           <a th:href="@{/admin/shop-management}" class="btn btn-secondary">
+                               <i class="bi bi-arrow-left me-1"></i>Quay lại
+                           </a>
+                       </div>
+                   </div>
+
+                   <!-- Shop List -->
+                   <div class="card">
+                       <div class="card-body">
+                           <div class="table-responsive">
+                               <table class="table table-hover">
+                                   <thead>
+                                       <tr>
+                                           <th>ID</th>
+                                           <th>Tên Shop</th>
+                                           <th>Chủ Shop</th>
+                                           <th>Số điện thoại</th>
+                                           <th>Lý do từ chối</th>
+                                           <th>Thao tác</th>
+                                       </tr>
+                                   </thead>
+                                   <tbody>
+                                       <tr th:each="shop : ${shops}">
+                                           <td th:text="${shop.id}"></td>
+                                           <td>
+                                               <div class="d-flex align-items-center">
+                                                   <img th:if="${shop.logo != null and !shop.logo.isEmpty()}"
+                                                       th:src="@{${shop.logo}}" class="rounded-circle me-2" width="40"
+                                                       height="40" alt="Shop logo">
+                                                   <img th:unless="${shop.logo != null and !shop.logo.isEmpty()}"
+                                                       th:src="@{/images/default-shop.png}" class="rounded-circle me-2"
+                                                       width="40" height="40" alt="Default shop logo">
+                                                   <span th:text="${shop.name}"></span>
+                                               </div>
+                                           </td>
+                                           <td>
+                                               <div class="user-info">
+                                                   <div th:text="${shop.user.fullName}"></div>
+                                                   <div class="user-email" th:text="${shop.user.email}"></div>
+                                               </div>
+                                           </td>
+                                           <td th:text="${shop.phone}"></td>
+                                           <td>
+                                               <div class="rejection-reason" th:text="${shop.rejectionReason}"></div>
+                                           </td>
+                                           <td>
+                                               <div class="btn-group">
+                                                   <button type="button" class="btn btn-sm btn-info me-1"
+                                                       th:onclick="'showShopDetail(' + ${shop.id} + ')'">
+                                                       <i class="bi bi-eye"></i>
+                                                   </button>
+                                               </div>
+                                           </td>
+                                       </tr>
+                                       <tr th:if="${shops.empty}">
+                                           <td colspan="6" class="text-center py-4">
+                                               <div class="text-muted">Không có shop nào bị từ chối</div>
+                                           </td>
+                                       </tr>
+                                   </tbody>
+                               </table>
+                           </div>
+
+                           <!-- Pagination -->
+                           <nav th:if="${totalPages > 1}" class="mt-4">
+                               <ul class="pagination justify-content-center">
+                                   <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                       <a class="page-link"
+                                           th:href="@{/admin/shop-management/rejected(page=${currentPage-1})}">
+                                           <i class="bi bi-chevron-left"></i>
+                                       </a>
+                                   </li>
+                                   <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                                       th:classappend="${currentPage == i ? 'active' : ''}">
+                                       <a class="page-link" th:href="@{/admin/shop-management/rejected(page=${i})}"
+                                           th:text="${i+1}"></a>
+                                   </li>
+                                   <li class="page-item"
+                                       th:classappend="${currentPage == totalPages-1 ? 'disabled' : ''}">
+                                       <a class="page-link"
+                                           th:href="@{/admin/shop-management/rejected(page=${currentPage+1})}">
+                                           <i class="bi bi-chevron-right"></i>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </nav>
+                       </div>
+                   </div>
+               </main>
+           </div>
+       </div>
+   </div>
+
+   <!-- Shop Detail Modal -->
+   <div th:replace="admin/shop/modals/detail-modal :: modal"></div>
+
+   <!-- Scripts -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script>
+       function showShopDetail(shopId) {
+           fetch(`/admin/shop-management/${shopId}/detail`, {
+               headers: {
+                   'X-Requested-With': 'XMLHttpRequest'
+               }
+           })
+           .then(response => {
+               if (!response.ok) {
+                   throw new Error('Network response was not ok');
+               }
+               return response.text();
+           })
+           .then(html => {
+               document.getElementById('shopDetailContent').innerHTML = html;
+               const detailModal = new bootstrap.Modal(document.getElementById('shopDetailModal'));
+               detailModal.show();
+           })
+           .catch(error => {
+               console.error('Error:', error);
+               alert('Có lỗi xảy ra khi tải thông tin shop');
+           });
+       }
+   </script>
+</body>
+
+</html>

@@ -1,5 +1,7 @@
 package ute.bookstore.service.admin;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,9 +13,12 @@ import org.springframework.util.StringUtils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import ute.bookstore.entity.Shop;
+import ute.bookstore.entity.User;
 import ute.bookstore.enums.ApprovalStatus;
+import ute.bookstore.enums.UserRole;
 import ute.bookstore.exception.ResourceNotFoundException;
 import ute.bookstore.repository.ShopRepository;
+import ute.bookstore.repository.UserRepository;
 import ute.bookstore.service.admin.impl.IAdminShopService;
 
 @Service
@@ -21,7 +26,10 @@ public class AdminShopService implements IAdminShopService {
 
 	@Autowired
 	private ShopRepository shopRepository;
-
+	
+	@Autowired
+	private UserRepository userRepository;
+	
 	@Override
 	public Shop createShop(Shop shop) {
 		// Validate
@@ -51,12 +59,12 @@ public class AdminShopService implements IAdminShopService {
 
 	@Override
 	public Page<Shop> getAllShopsForAdmin(int page, int size, String search) {
-		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-		if (StringUtils.hasText(search)) {
-			return shopRepository.findByNameContainingOrPhoneContainingOrUser_EmailContaining(search, search, search,
-					pageable);
-		}
-		return shopRepository.findAll(pageable);
+	    Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+	    if (StringUtils.hasText(search)) {
+	        return shopRepository.findByApprovalStatusAndNameContainingOrPhoneContainingOrUser_EmailContaining(
+	            ApprovalStatus.APPROVED, search, search, search, pageable);
+	    }
+	    return shopRepository.findByApprovalStatus(ApprovalStatus.APPROVED, pageable);
 	}
 
 	@Override
@@ -107,10 +115,30 @@ public class AdminShopService implements IAdminShopService {
     // Duyệt shop
     
     @Override
-	public Shop approveShop(Long shopId) {
+    @Transactional
+    public Shop approveShop(Long shopId) {
+        // Tìm shop và validate
         Shop shop = shopRepository.findById(shopId)
-            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop"));
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop với ID: " + shopId));
+            
+        // Kiểm tra trạng thái hiện tại
+        if (shop.getApprovalStatus() != ApprovalStatus.PENDING) {
+            throw new ValidationException("Chỉ có thể duyệt shop đang ở trạng thái chờ duyệt");
+        }
+
+        // Cập nhật trạng thái shop
         shop.setApprovalStatus(ApprovalStatus.APPROVED);
+        shop.setIsActive(true);
+        shop.setRejectionReason(null); // Xóa lý do từ chối nếu có
+
+        // Lấy và cập nhật role của user thành VENDOR
+        User user = shop.getUser();
+        if (user != null) {
+            user.setRole(UserRole.VENDOR);  // Đổi thành VENDOR
+            userRepository.save(user);
+        }
+
+        // Lưu shop
         return shopRepository.save(shop);
     }
     
@@ -141,5 +169,15 @@ public class AdminShopService implements IAdminShopService {
         return shopRepository.findById(shopId)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy shop"));
     }
-
+    
+    
+    public List<Shop> getRecentShops(int limit) {
+        return shopRepository.findAllByOrderByIdDesc(PageRequest.of(0, limit));
+    }
+    
+    @Override
+    public Page<Shop> getRejectedShops(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return shopRepository.findByApprovalStatus(ApprovalStatus.REJECTED, pageable);
+    }
 }

@@ -3,6 +3,8 @@ package ute.bookstore.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,12 +50,14 @@ public class User {
     private Boolean isActive = true;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Address> addresses;
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
     
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Order> orders;
     
     @OneToMany(mappedBy = "user")
