@@ -9,9 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.io.IOException;
+import java.util.List;
+
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User; 
-import ute.bookstore.entity.Address; 
+import ute.bookstore.entity.Address;
+import ute.bookstore.entity.Book;
+import ute.bookstore.entity.Review;
 import ute.bookstore.exception.ResourceNotFoundException;
 
 import ute.bookstore.repository.ShopRepository;
@@ -104,6 +108,34 @@ public class ShopServiceImpl implements IShopService {
         }
     }
 	
-
+    public Double calculateShopRating(Shop shop) {
+        if (shop.getBooks() == null || shop.getBooks().isEmpty()) {
+            return 0.0;
+        }
+        
+        double totalRating = 0;
+        int totalReviews = 0;
+        
+        for (Book book : shop.getBooks()) {
+            List<Review> reviews = book.getReviews();
+            if (reviews != null && !reviews.isEmpty()) {
+                for (Review review : reviews) {
+                    if (review.getRating() != null) {
+                        totalRating += review.getRating();
+                        totalReviews++;
+                    }
+                }
+            }
+        }
+        
+        return totalReviews > 0 ? totalRating / totalReviews : 0.0;
+    }
+    
+    @Override
+    public void updateShopRating(Shop shop) {
+        shop.setRating(calculateShopRating(shop));
+        shopRepository.save(shop);
+    }
+    
     
 }

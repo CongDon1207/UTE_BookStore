@@ -11,4 +11,7 @@ public interface IShopService {
     Shop createShop(Shop shop, Long userId);
     boolean isShopOwner(String userId, Long shopId);
     Shop save(Shop shop);
+    
+    Double calculateShopRating(Shop shop);
+    void updateShopRating(Shop shop);
 }

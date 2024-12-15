@@ -35,6 +35,7 @@ import ute.bookstore.service.IUserService;
 @Controller
 @RequestMapping("/user/orders")
 public class UserOrderController {
+	private long userID = 3L;
 	@Autowired
     private IOrderService orderService;
 	
@@ -141,7 +142,7 @@ public class UserOrderController {
 	        // Lấy người dùng hiện tại
 	) {
 		  try {
-			  User user = userService.getUserById(2L);
+			  User user = userService.getUserById(userID);
 	            // Tìm sách theo ID
 	            Book book = bookService.getBookById(bookId);
 	            if (book == null) {

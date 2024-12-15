@@ -41,6 +41,7 @@ public class SellerShopController {
    public String showShopManagement(Model model) {
        try {
            Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+           shopService.updateShopRating(shop);
            model.addAttribute("shop", shop);
            return "seller/shop-management";
        } catch (Exception e) {

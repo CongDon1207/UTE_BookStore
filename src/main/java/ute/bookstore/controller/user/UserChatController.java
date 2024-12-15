@@ -28,7 +28,7 @@ public class UserChatController {
    @Autowired private IChatService chatService;
    @Autowired private UserRepository userRepository;
    @Autowired private ShopRepository shopRepository;
-   private static final Long TEMP_USER_ID = 2L;
+   private static final Long TEMP_USER_ID = 3L;
 
    @GetMapping("/{shopId}") 
    public String chatPage(@PathVariable Long shopId, Model model) {

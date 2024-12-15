@@ -36,7 +36,7 @@ import ute.bookstore.service.IUserService;
 @Controller
 @RequestMapping("/user")
 public class UserHomeController {
-	private long userID = 2L;
+	private long userID = 3L;
 	@Autowired
 	private INotificationService notificationService;
 	@Autowired

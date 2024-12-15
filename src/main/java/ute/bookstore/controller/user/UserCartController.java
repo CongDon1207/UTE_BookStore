@@ -38,6 +38,8 @@ public class UserCartController {
 	  @Autowired
 	    private ICartService cartService;
 	    
+	  	private long userID = 3L;
+	  
 	    @Autowired
 	    private IUserService userService;
 	    
@@ -49,7 +51,7 @@ public class UserCartController {
 	            
 
 	            // Tìm người dùng hiện tại
-	            User currentUser = userService.getUserById(2L);
+	            User currentUser = userService.getUserById(userID);
 	            if (currentUser == null) {
 	                throw new IllegalArgumentException("Người dùng không tồn tại.");
 	            }
@@ -91,7 +93,7 @@ public class UserCartController {
 
 	    try {
 	        // Lấy thông tin người dùng
-	        User currentUser = userService.getUserById(2L); // Giả định ID người dùng tạm thời
+	        User currentUser = userService.getUserById(userID); // Giả định ID người dùng tạm thời
 
 	        // Thêm sản phẩm vào giỏ
 	        cartService.addToCart(currentUser, id, 1);
@@ -112,7 +114,7 @@ public class UserCartController {
 	@ResponseBody
 	public ResponseEntity<?> addToCart(@RequestParam Long bookId, @RequestParam Integer quantity) {
 	    try {
-	        User currentUser = userService.getUserById(2L);
+	        User currentUser = userService.getUserById(userID);
 	        cartService.addToCart(currentUser, bookId, quantity);
 	        return ResponseEntity.ok("Sản phẩm đã được thêm vào giỏ hàng.");
 	    } catch (Exception e) {
@@ -127,7 +129,7 @@ public class UserCartController {
 	@PostMapping("/remove/{bookId}")
 	public String removeFromCart(@PathVariable Long bookId, RedirectAttributes redirectAttributes) {
 	    try {
-	        User currentUser = userService.getUserById(2L); // Thay thế cách lấy userId cho bảo mật hơn
+	        User currentUser = userService.getUserById(userID); // Thay thế cách lấy userId cho bảo mật hơn
 	        cartService.removeFromCart(currentUser, bookId);
 	        redirectAttributes.addFlashAttribute("message", "Sản phẩm đã được xóa khỏi giỏ hàng.");
 	        return "redirect:/user/cart"; // Chuyển hướng tới trang giỏ hàng sau khi xóa
@@ -147,7 +149,7 @@ public class UserCartController {
 	        RedirectAttributes redirectAttributes) {
 	    try {
 	        // Lấy người dùng hiện tại (có thể lấy userId từ session hoặc frontend)
-	        User currentUser = userService.getUserById(2L);  // Thay thế cách lấy userId cho bảo mật hơn
+	        User currentUser = userService.getUserById(userID);  // Thay thế cách lấy userId cho bảo mật hơn
 	        
 	        // Cập nhật số lượng sản phẩm trong giỏ hàng
 	        cartService.updateCartItemQuantity(currentUser, bookId, quantity);
@@ -169,7 +171,7 @@ public class UserCartController {
 
     @GetMapping("/count")
     public ResponseEntity<Integer> getCartItemCount() {
-        User currentUser = userService.getUserById(2L);
+        User currentUser = userService.getUserById(userID);
         Cart cart = cartService.getCartByUser(currentUser);
         return ResponseEntity.ok(cart.getItems().size());
     }
@@ -201,7 +203,7 @@ public class UserCartController {
         model.addAttribute("totalAmount", totalAmount);
         model.addAttribute("bookss", books); // Bổ sung danh sách sách 
 
-        User currentUser = userService.getUserById(2L);
+        User currentUser = userService.getUserById(userID);
         List<Address> addresses = currentUser.getAddresses();
         model.addAttribute("user", currentUser);
         model.addAttribute("addresses", addresses);
