@@ -1,0 +1,40 @@
+<!-- templates/admin/product/modals/add-category-modal.html -->
+<div th:fragment="modal" class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/admin/product-management/categories/create}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm danh mục</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên danh mục</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cấp độ</label>
+                        <input type="number" class="form-control" name="level" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Danh mục cha</label>
+                        <select class="form-select" name="parent.id">
+                            <option value="">Không có danh mục cha</option>
+                            <option th:each="cat : ${categories}" 
+                                    th:value="${cat.id}" 
+                                    th:text="${cat.name}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

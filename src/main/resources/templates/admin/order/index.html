@@ -1,0 +1,258 @@
+<!-- templates/admin/order/index.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>UTEBookStore - Quản lý đơn hàng</title>
+
+	<link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+	<style>
+		.order-status {
+			padding: 5px 10px;
+			border-radius: 15px;
+			font-size: 0.875rem;
+			font-weight: 500;
+			text-align: center;
+		}
+
+		.status-new {
+			background-color: #e3f2fd;
+			color: #0d47a1;
+		}
+
+		.status-confirmed {
+			background-color: #fff3e0;
+			color: #e65100;
+		}
+
+		.status-shipping {
+			background-color: #e8f5e9;
+			color: #2e7d32;
+		}
+
+		.status-delivered {
+			background-color: #c8e6c9;
+			color: #1b5e20;
+		}
+
+		.status-cancelled {
+			background-color: #ffebee;
+			color: #b71c1c;
+		}
+
+		.status-refunded {
+			background-color: #f3e5f5;
+			color: #4a148c;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Header -->
+	<div th:replace="~{admin/layout/header :: header}"></div>
+
+	<div class="content-wrapper">
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Sidebar -->
+				<div th:insert="~{admin/layout/sidebar :: sidebar}"></div>
+
+				<!-- Main Content -->
+				<main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+					<!-- Page Title -->
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<h1 class="h2">Quản lý Đơn hàng</h1>
+					</div>
+
+					<!-- Stats Cards -->
+					<div class="row mb-4">
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h6 class="card-title">Đơn hàng mới</h6>
+									<h2 class="mb-0 text-primary" th:text="${stats.newOrders}">0</h2>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h6 class="card-title">Đã xác nhận</h6>
+									<h2 class="mb-0 text-warning" th:text="${stats.confirmedOrders}">0</h2>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h6 class="card-title">Đang giao</h6>
+									<h2 class="mb-0 text-info" th:text="${stats.shippingOrders}">0</h2>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h6 class="card-title">Đã giao</h6>
+									<h2 class="mb-0 text-success" th:text="${stats.deliveredOrders}">0</h2>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h6 class="card-title">Đã hủy</h6>
+									<h2 class="mb-0 text-danger" th:text="${stats.cancelledOrders}">0</h2>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h6 class="card-title">Đã hoàn tiền</h6>
+									<h2 class="mb-0 text-secondary" th:text="${stats.refundedOrders}">0</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Filters -->
+					<div class="card mb-4">
+						<div class="card-body">
+							<form th:action="@{/admin/orders}" method="get" class="row g-3">
+								<div class="col-md-4">
+									<input type="text" class="form-control" name="search" th:value="${search}"
+										placeholder="Tìm kiếm theo tên khách hàng...">
+								</div>
+								<div class="col-md-3">
+									<select class="form-select" name="status">
+										<option value="">Tất cả trạng thái</option>
+										<option th:each="status : ${statuses}" th:value="${status}"
+											th:text="${status.status}" th:selected="${status == currentStatus}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-3">
+									<select class="form-select" name="shopId">
+										<option value="">Tất cả shop</option>
+										<option th:each="shop : ${shops}" th:value="${shop.id}" th:text="${shop.name}"
+											th:selected="${shop.id == currentShop}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-2">
+									<button type="submit" class="btn btn-primary w-100">
+										<i class="bi bi-search me-2"></i>Tìm kiếm
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<!-- Orders Table -->
+					<div class="card">
+						<div class="table-responsive">
+							<table class="table table-hover align-middle">
+								<thead>
+									<tr>
+										<th>Mã đơn</th>
+										<th>Khách hàng</th>
+										<th>Shop</th>
+										<th>Tổng tiền</th>
+										<th>Trạng thái</th>
+										<th>Ngày đặt</th>
+										<th>Thao tác</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="order : ${orders}">
+										<td th:text="${'#' + order.id}"></td>
+										<td>
+											<div th:text="${order.user.fullName}"></div>
+											<small class="text-muted" th:text="${order.user.phone}"></small>
+										</td>
+										<td th:text="${order.shop.name}"></td>
+										<td class="fw-bold"
+											th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">
+										</td>
+										<td>
+											<span class="order-status"
+												th:classappend="'status-' + ${#strings.toLowerCase(order.status)}"
+												th:text="${order.status.status}">
+											</span>
+										</td>
+										<td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+										<td>
+											<div class="btn-group">
+												<button class="btn btn-sm btn-outline-primary me-1"
+													th:onclick="'viewOrderDetail(' + ${order.id} + ')'">
+													<i class="bi bi-eye"></i>
+												</button>
+												<button th:if="${order.status.name() == 'NEW'}"
+													class="btn btn-sm btn-outline-danger"
+													th:onclick="'cancelOrder(' + ${order.id} + ')'">
+													<i class="bi bi-x-circle"></i>
+												</button>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<!-- Pagination -->
+						<div th:if="${orders.totalPages > 1}" class="card-footer">
+							<nav>
+								<ul class="pagination justify-content-center mb-0">
+									<li class="page-item" th:classappend="${orders.first ? 'disabled' : ''}">
+										<a class="page-link"
+											th:href="@{/admin/orders(page=${orders.number - 1}, search=${search}, status=${currentStatus}, shopId=${currentShop})}">
+											<i class="bi bi-chevron-left"></i>
+										</a>
+									</li>
+									<li class="page-item" th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}"
+										th:classappend="${i == orders.number ? 'active' : ''}">
+										<a class="page-link"
+											th:href="@{/admin/orders(page=${i}, search=${search}, status=${currentStatus}, shopId=${currentShop})}"
+											th:text="${i + 1}"></a>
+									</li>
+									<li class="page-item" th:classappend="${orders.last ? 'disabled' : ''}">
+										<a class="page-link"
+											th:href="@{/admin/orders(page=${orders.number + 1}, search=${search}, status=${currentStatus}, shopId=${currentShop})}">
+											<i class="bi bi-chevron-right"></i>
+										</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</main>
+			</div>
+		</div>
+	</div>
+
+	<!-- Order Detail Modal -->
+	<div th:replace="~{admin/order/modals/order-detail-modal :: modal}"></div>
+
+	<!-- Toast Notification -->
+	<div class="toast position-fixed top-0 end-0 p-3" role="alert">
+		<div class="toast-header">
+			<strong class="me-auto">Thông báo</strong>
+			<button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+		</div>
+		<div class="toast-body"></div>
+	</div>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/admin/order-management.js}"></script>
+</body>
+
+</html>

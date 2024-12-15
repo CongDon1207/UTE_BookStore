@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -59,12 +58,14 @@ public class User {
     private LocalDateTime otpExpiry;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Address> addresses;
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
     
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Order> orders;
     
     @OneToMany(mappedBy = "user")

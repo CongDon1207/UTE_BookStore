@@ -1,19 +1,18 @@
 package ute.bookstore.controller.user;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,11 +21,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.Address;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Cart;
-import ute.bookstore.entity.Notification;
+
 import ute.bookstore.entity.User;
+import ute.bookstore.enums.CheckoutRequest;
 import ute.bookstore.service.IBookService;
 import ute.bookstore.service.ICartService;
 import ute.bookstore.service.IUserService;
@@ -37,6 +38,8 @@ public class UserCartController {
 	  @Autowired
 	    private ICartService cartService;
 	    
+	  	private long userID = 3L;
+	  
 	    @Autowired
 	    private IUserService userService;
 	    
@@ -48,7 +51,7 @@ public class UserCartController {
 	            
 
 	            // Tìm người dùng hiện tại
-	            User currentUser = userService.getUserById(1L);
+	            User currentUser = userService.getUserById(userID);
 	            if (currentUser == null) {
 	                throw new IllegalArgumentException("Người dùng không tồn tại.");
 	            }
@@ -90,7 +93,7 @@ public class UserCartController {
 
 	    try {
 	        // Lấy thông tin người dùng
-	        User currentUser = userService.getUserById(1L); // Giả định ID người dùng tạm thời
+	        User currentUser = userService.getUserById(userID); // Giả định ID người dùng tạm thời
 
 	        // Thêm sản phẩm vào giỏ
 	        cartService.addToCart(currentUser, id, 1);
@@ -111,7 +114,7 @@ public class UserCartController {
 	@ResponseBody
 	public ResponseEntity<?> addToCart(@RequestParam Long bookId, @RequestParam Integer quantity) {
 	    try {
-	        User currentUser = userService.getUserById(1L);
+	        User currentUser = userService.getUserById(userID);
 	        cartService.addToCart(currentUser, bookId, quantity);
 	        return ResponseEntity.ok("Sản phẩm đã được thêm vào giỏ hàng.");
 	    } catch (Exception e) {
@@ -126,7 +129,7 @@ public class UserCartController {
 	@PostMapping("/remove/{bookId}")
 	public String removeFromCart(@PathVariable Long bookId, RedirectAttributes redirectAttributes) {
 	    try {
-	        User currentUser = userService.getUserById(1L); // Thay thế cách lấy userId cho bảo mật hơn
+	        User currentUser = userService.getUserById(userID); // Thay thế cách lấy userId cho bảo mật hơn
 	        cartService.removeFromCart(currentUser, bookId);
 	        redirectAttributes.addFlashAttribute("message", "Sản phẩm đã được xóa khỏi giỏ hàng.");
 	        return "redirect:/user/cart"; // Chuyển hướng tới trang giỏ hàng sau khi xóa
@@ -146,7 +149,7 @@ public class UserCartController {
 	        RedirectAttributes redirectAttributes) {
 	    try {
 	        // Lấy người dùng hiện tại (có thể lấy userId từ session hoặc frontend)
-	        User currentUser = userService.getUserById(1L);  // Thay thế cách lấy userId cho bảo mật hơn
+	        User currentUser = userService.getUserById(userID);  // Thay thế cách lấy userId cho bảo mật hơn
 	        
 	        // Cập nhật số lượng sản phẩm trong giỏ hàng
 	        cartService.updateCartItemQuantity(currentUser, bookId, quantity);
@@ -168,19 +171,46 @@ public class UserCartController {
 
     @GetMapping("/count")
     public ResponseEntity<Integer> getCartItemCount() {
-        User currentUser = userService.getUserById(1L);
+        User currentUser = userService.getUserById(userID);
         Cart cart = cartService.getCartByUser(currentUser);
         return ResponseEntity.ok(cart.getItems().size());
     }
     
-    @GetMapping("/checkout")
-    public String getCheckoutCartPage(Model model) {
-    	 User currentUser = userService.getUserById(1L);
-    	 List<Address> addresses = currentUser.getAddresses();
-    	 model.addAttribute("user", currentUser);
-    	 model.addAttribute("addresses", addresses);
-    	return "user/cart/checkout" ;
+    @PostMapping("/checkouts")
+    public String handleCheckout(@RequestBody CheckoutRequest checkoutRequest, HttpSession session) {
+        session.setAttribute("checkoutItems", checkoutRequest.getItems());
+        session.setAttribute("totalAmount", checkoutRequest.getTotalAmount());
+        return "redirect:/user/cart/checkout";
     }
+
+    
+    @GetMapping("/checkout")
+    public String getCheckoutCartPage(Model model, HttpSession session) {
+        @SuppressWarnings("unchecked")
+        List<CheckoutRequest.CheckoutItem> items = (List<CheckoutRequest.CheckoutItem>) session.getAttribute("checkoutItems");
+        Double totalAmount = (Double) session.getAttribute("totalAmount");
+
+        // Thêm danh sách sách được chọn
+        List<Book> books = new ArrayList<>();
+        if (items != null) {
+            for (CheckoutRequest.CheckoutItem item : items) {
+                Book book = bookService.getBookById(item.getId()); // Lấy sách từ BookService
+                books.add(book);
+            }
+        }
+
+        model.addAttribute("items", items);
+        model.addAttribute("totalAmount", totalAmount);
+        model.addAttribute("bookss", books); // Bổ sung danh sách sách 
+
+        User currentUser = userService.getUserById(userID);
+        List<Address> addresses = currentUser.getAddresses();
+        model.addAttribute("user", currentUser);
+        model.addAttribute("addresses", addresses);
+
+        return "user/cart/checkout";
+    }
+
 
 	
 }

@@ -1,0 +1,259 @@
+<!-- templates/admin/promotion/create.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>UTEBookStore - Tạo khuyến mãi mới</title>
+
+	<link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+	<style>
+		.error-message {
+			color: red;
+			font-size: 0.875em;
+			margin-top: 0.25rem;
+		}
+
+		.form-control:focus {
+			border-color: #80bdff;
+			box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Header -->
+	<div th:replace="admin/layout/header :: header"></div>
+
+	<div class="content-wrapper">
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Sidebar -->
+				<div th:insert="~{'admin/layout/sidebar' :: sidebar}"></div>
+
+				<!-- Main Content -->
+				<main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+					<!-- Breadcrumb -->
+					<nav aria-label="breadcrumb" class="mb-4">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a th:href="@{/admin}">Trang chủ</a></li>
+							<li class="breadcrumb-item"><a th:href="@{/admin/promotions}">Khuyến mãi</a></li>
+							<li class="breadcrumb-item active">Tạo mới</li>
+						</ol>
+					</nav>
+
+					<!-- Alert Messages -->
+					<div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+						<i class="bi bi-check-circle me-2"></i>
+						<span th:text="${successMessage}"></span>
+						<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+					</div>
+
+					<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+						<i class="bi bi-exclamation-circle me-2"></i>
+						<span th:text="${errorMessage}"></span>
+						<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+					</div>
+
+					<div class="card">
+						<div class="card-header bg-white py-3">
+							<h5 class="card-title mb-0">
+								<i class="bi bi-plus-circle me-2"></i>Tạo khuyến mãi mới
+							</h5>
+						</div>
+						<div class="card-body">
+							<form th:action="@{/admin/promotions/create}" th:object="${promotion}" method="post"
+								class="needs-validation" novalidate>
+
+								<!-- Mã và Loại -->
+								<div class="row g-3 mb-3">
+									<div class="col-md-6">
+										<label class="form-label">
+											Mã khuyến mãi <span class="text-danger">*</span>
+										</label>
+										<input type="text" class="form-control" th:field="*{code}" required
+											pattern="[A-Za-z0-9]+" placeholder="Ví dụ: SUMMER2024">
+										<div class="error-message" th:if="${#fields.hasErrors('code')}"
+											th:errors="*{code}"></div>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">
+											Loại giảm giá <span class="text-danger">*</span>
+										</label>
+										<select class="form-select" th:field="*{discountType}" required>
+											<option value="">-- Chọn loại giảm giá --</option>
+											<option th:each="type : ${discountTypes}" th:value="${type}"
+												th:text="${type.description}">
+											</option>
+										</select>
+										<div class="error-message" th:if="${#fields.hasErrors('discountType')}"
+											th:errors="*{discountType}"></div>
+									</div>
+								</div>
+
+								<!-- Giá trị giảm và đơn hàng tối thiểu -->
+								<div class="row g-3 mb-3">
+									<div class="col-md-6">
+										<label class="form-label">
+											Giá trị giảm <span class="text-danger">*</span>
+										</label>
+										<div class="input-group">
+											<input type="number" class="form-control" th:field="*{discount}" required
+												min="0" step="0.01" id="discountInput">
+											<span class="input-group-text" id="discountUnit">đ</span>
+										</div>
+										<div class="error-message" th:if="${#fields.hasErrors('discount')}"
+											th:errors="*{discount}"></div>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">Giá trị đơn hàng tối thiểu</label>
+										<div class="input-group">
+											<input type="number" class="form-control" th:field="*{minOrderAmount}"
+												min="0" placeholder="Để trống nếu không yêu cầu">
+											<span class="input-group-text">đ</span>
+										</div>
+										<div class="error-message" th:if="${#fields.hasErrors('minOrderAmount')}"
+											th:errors="*{minOrderAmount}"></div>
+									</div>
+								</div>
+
+								<!-- Thời gian -->
+								<div class="row g-3 mb-3">
+									<div class="col-md-6">
+										<label class="form-label">
+											Thời gian bắt đầu <span class="text-danger">*</span>
+										</label>
+										<input type="datetime-local" class="form-control" th:field="*{startDate}"
+											id="startDate" required>
+										<div class="error-message" th:if="${#fields.hasErrors('startDate')}"
+											th:errors="*{startDate}"></div>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">
+											Thời gian kết thúc <span class="text-danger">*</span>
+										</label>
+										<input type="datetime-local" class="form-control" th:field="*{endDate}"
+											id="endDate" required>
+										<div class="error-message" th:if="${#fields.hasErrors('endDate')}"
+											th:errors="*{endDate}"></div>
+									</div>
+								</div>
+
+								<!-- Số lượt sử dụng -->
+								<div class="mb-3">
+									<label class="form-label">Số lần sử dụng tối đa</label>
+									<input type="number" class="form-control" style="max-width: 200px"
+										th:field="*{maxUses}" min="1" placeholder="Không giới hạn">
+									<div class="error-message" th:if="${#fields.hasErrors('maxUses')}"
+										th:errors="*{maxUses}"></div>
+								</div>
+
+								<!-- Trạng thái -->
+								<div class="mb-4">
+									<div class="form-check form-switch">
+										<input class="form-check-input" type="checkbox" th:field="*{isActive}"
+											id="isActive">
+										<label class="form-check-label">Kích hoạt khuyến mãi ngay</label>
+									</div>
+									<div id="expiredMessage" class="text-danger mt-1 d-none">
+										<i class="bi bi-exclamation-circle me-1"></i>
+										Khuyến mãi đã hết hạn, không thể kích hoạt
+									</div>
+								</div>
+
+								<!-- Buttons -->
+								<div class="text-end">
+									<a th:href="@{/admin/promotions}" class="btn btn-secondary me-2">
+										<i class="bi bi-x-circle me-1"></i>Hủy
+									</a>
+									<button type="submit" class="btn btn-primary">
+										<i class="bi bi-plus-circle me-1"></i>Tạo khuyến mãi
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</main>
+			</div>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+		// Form validation
+		(() => {
+			const forms = document.querySelectorAll('.needs-validation');
+			Array.from(forms).forEach(form => {
+				form.addEventListener('submit', event => {
+					if (!form.checkValidity()) {
+						event.preventDefault();
+						event.stopPropagation();
+					}
+					form.classList.add('was-validated');
+				}, false);
+			});
+		})();
+
+		// Update discount unit & validation based on type
+		const discountTypeSelect = document.querySelector('select[name="discountType"]');
+		const discountInput = document.getElementById('discountInput');
+
+		discountTypeSelect.addEventListener('change', function () {
+			const unit = this.value === 'PERCENT' ? '%' : 'đ';
+			document.getElementById('discountUnit').textContent = unit;
+
+			if (this.value === 'PERCENT') {
+				discountInput.max = "100";
+				discountInput.step = "0.1";
+			} else {
+				discountInput.max = "";
+				discountInput.step = "1000";
+			}
+		});
+
+		// Date validation and expiration check
+		function validateDates() {
+			const startDate = new Date(document.getElementById('startDate').value);
+			const endDate = new Date(document.getElementById('endDate').value);
+			const now = new Date();
+
+			if (endDate <= startDate) {
+				document.getElementById('endDate').setCustomValidity('Thời gian kết thúc phải sau thời gian bắt đầu');
+			} else {
+				document.getElementById('endDate').setCustomValidity('');
+			}
+
+			const isExpired = endDate < now;
+			const activeSwitch = document.getElementById('isActive');
+			const expiredMessage = document.getElementById('expiredMessage');
+
+			if (isExpired) {
+				activeSwitch.checked = false;
+				activeSwitch.disabled = true;
+				expiredMessage.classList.remove('d-none');
+			} else {
+				activeSwitch.disabled = false;
+				expiredMessage.classList.add('d-none');
+			}
+		}
+
+		document.getElementById('startDate').addEventListener('change', validateDates);
+		document.getElementById('endDate').addEventListener('change', validateDates);
+		document.addEventListener('DOMContentLoaded', validateDates);
+
+		// Auto uppercase promotion code
+		document.querySelector('input[name="code"]').addEventListener('input', function () {
+			this.value = this.value.toUpperCase();
+		});
+	</script>
+</body>
+
+</html>

@@ -44,17 +44,12 @@ public class SellerHomeServiceImpl implements ISellerHomeService {
 
     @Override
     public Long getTotalProducts(Shop shop) {
-        return (long) shop.getBooks().size(); // Ép kiểu int sang long
-        // Hoặc sử dụng Long.valueOf()
-        // return Long.valueOf(shop.getBooks().size());
+        return (long) shop.getBooks().size(); // Ép kiểu int sang long  	
     }
 
     @Override
     public Double getAverageRating(Shop shop) {
-        // Implement logic to calculate average rating based on reviews 
-        // (assuming you have a Review entity and relationships)
-        // ...
-        return 5.0; // Placeholder
+        return shop.getRating(); // Placeholder
     }
 
     @Override

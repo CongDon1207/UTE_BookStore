@@ -23,7 +23,7 @@ import ute.bookstore.service.IUserService;
 @RequestMapping("/user/favoriteBooks")
 public class UserBookController {
 	
-	private long userID = 1L;
+	private long userID = 3L;
 	
 	 @Autowired
 	  private IFavoriteBookService favoriteBookService;
