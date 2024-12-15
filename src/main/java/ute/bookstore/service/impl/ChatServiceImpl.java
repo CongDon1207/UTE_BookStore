@@ -25,9 +25,7 @@ public class ChatServiceImpl implements IChatService {
 
     @Override
     public List<ChatMessage> getConversations(User user) {
-        List<ChatMessage> messages = chatRepository.findDistinctBySenderOrReceiverOrderBySentAtDesc(user, user);
-        
-        // Sử dụng Map để nhóm tin nhắn theo người dùng
+        List<ChatMessage> messages = chatRepository.findDistinctBySenderOrReceiverOrderBySentAtDesc(user);
         Map<Long, ChatMessage> latestMessages = new HashMap<>();
         
         for (ChatMessage msg : messages) {
@@ -38,8 +36,8 @@ public class ChatServiceImpl implements IChatService {
                 otherUserId = msg.getSender().getId();
             }
             
-            // Chỉ lưu tin nhắn mới nhất cho mỗi người dùng
-            if (!latestMessages.containsKey(otherUserId)) {
+            if (!latestMessages.containsKey(otherUserId) || 
+                msg.getSentAt().isAfter(latestMessages.get(otherUserId).getSentAt())) {
                 latestMessages.put(otherUserId, msg);
             }
         }
