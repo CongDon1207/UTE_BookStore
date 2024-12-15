@@ -8,7 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final UserDetails principal;
+	private static final long serialVersionUID = 1L;
+	private final UserDetails principal;
     private final Object credentials;
 
     public JwtAuthenticationToken(UserDetails principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {

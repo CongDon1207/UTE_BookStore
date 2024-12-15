@@ -12,7 +12,7 @@ public class CustomUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 	private final User user;
-
+	
     public CustomUserDetails(User user) {
         this.user = user;
     }
@@ -20,7 +20,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Trả về quyền của người dùng từ enum UserRole
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+    	Collection<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        System.out.println("User authorities: " + authorities); // Debug thông tin quyền
+        return authorities;
     }
 
     @Override

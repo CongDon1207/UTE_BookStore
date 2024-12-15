@@ -35,6 +35,7 @@ public class ShopServiceImpl implements IShopService {
 
     @Override
     public Shop getShopByUserEmail(String email) {
+    	 System.out.println("shopRepository: " + shopRepository);
         return shopRepository.findByUserEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("Shop not found"));
     }

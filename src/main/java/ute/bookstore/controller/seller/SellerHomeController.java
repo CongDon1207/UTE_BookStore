@@ -52,7 +52,6 @@ public class SellerHomeController {
         
         return "seller/dashboard";
     }
-    
     public static void main(String args[]) {
     	try {
     		ISellerHomeService sellerHomeService = new SellerHomeServiceImpl();
@@ -64,4 +63,5 @@ public class SellerHomeController {
     		e.printStackTrace();
     	}
     }
+    
 }
