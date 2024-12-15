@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.Address;
 import ute.bookstore.entity.User;
 import ute.bookstore.service.IAddressService;
@@ -20,7 +21,6 @@ import ute.bookstore.service.IUserService;
 @RequestMapping("/user/addresses")
 public class UserAddressController {
 	
-	private long userID = 3L;
 	
 	 @Autowired
 	 private IUserService userService;
@@ -28,10 +28,11 @@ public class UserAddressController {
 	   private IAddressService addressService;
 	@PostMapping("/add")
 	public String addAddress(@ModelAttribute("newAddress") Address address,
-			/* Principal principal, */ RedirectAttributes redirectAttributes) {
+			/* Principal principal, */ RedirectAttributes redirectAttributes, HttpSession session) {
         // Lấy user hiện tại
         //User user = userService.findByUsername(principal.getName());
-	 User user = userService.getUserById(userID);
+		User user = (User) session.getAttribute("currentUser");
+
 
         // Gán user cho địa chỉ
         address.setUser(user);

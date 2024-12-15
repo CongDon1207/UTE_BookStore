@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.FavoriteBook;
 
 import ute.bookstore.entity.User;
@@ -23,25 +24,33 @@ import ute.bookstore.service.IUserService;
 @RequestMapping("/user/favoriteBooks")
 public class UserBookController {
 	
-	private long userID = 3L;
-	
 	 @Autowired
 	  private IFavoriteBookService favoriteBookService;
+	 
 	 @Autowired
-	 private IUserService userService;
+	  private IUserService userService;
+	 
 	
-	@GetMapping("")
-	public String getFavouriteBookPage(Model model) {
-		User user = userService.getUserById(userID);
-	    List<FavoriteBook> favoriteBooks = user.getFavoriteBooks();
-	    model.addAttribute("favoriteBooks", favoriteBooks);
-		return "user/favourite-books";
-	}
+	 @GetMapping("")
+	 public String getFavouriteBookPage(Model model, HttpSession session) {
+	     // Lấy currentUser từ session
+	     User currentUser = (User) session.getAttribute("currentUser");
+	     User user = userService.getUserById(currentUser.getId());
+	     // Kiểm tra nếu currentUser là null
+	    
+	     // Lấy danh sách sách yêu thích
+	     List<FavoriteBook> favoriteBooks = user.getFavoriteBooks();
+	     model.addAttribute("favoriteBooks", favoriteBooks);
+	     
+	     return "user/favourite-books"; // Trả về trang danh sách yêu thích
+	 }
+
 	
 	 @PostMapping("/add/{bookId}")
 	    @ResponseBody
-	    public ResponseEntity<String> addToFavorite(@PathVariable Long bookId) {
-	        boolean success = favoriteBookService.addBookToFavorites(bookId);
+	    public ResponseEntity<String> addToFavorite(@PathVariable Long bookId,HttpSession session) {
+		 User currentUser = (User) session.getAttribute("currentUser");
+	        boolean success = favoriteBookService.addBookToFavorites(bookId, currentUser);
 	        if (success) {
 	            return ResponseEntity.ok("Đã thêm vào danh sách yêu thích!");
 	        } else {
@@ -51,8 +60,9 @@ public class UserBookController {
 
 	    @PostMapping("/remove/{bookId}")
 	    @ResponseBody
-	    public ResponseEntity<String> removeFromFavorite(@PathVariable Long bookId) {
-	        boolean success = favoriteBookService.removeBookFromFavorites(bookId);
+	    public ResponseEntity<String> removeFromFavorite(@PathVariable Long bookId,HttpSession session) {
+	    	User currentUser = (User) session.getAttribute("currentUser");
+	        boolean success = favoriteBookService.removeBookFromFavorites(bookId,currentUser);
 	        if (success) {
 	            return ResponseEntity.ok("Đã xóa khỏi danh sách yêu thích!");
 	        } else {
