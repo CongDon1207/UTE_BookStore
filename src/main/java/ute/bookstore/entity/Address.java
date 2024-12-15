@@ -43,4 +43,14 @@ public class Address {
     
     @OneToMany(mappedBy = "deliveryAddress")
     private List<Order> orders;
+    
+    @Override
+    public String toString() {
+        return "Address(id=" + id + ", street=" + street + ", district=" + district + 
+               ", city=" + city + ", phone=" + phone + ", isDefault=" + isDefault + ")";
+    }
+    public String getFullAddress() {
+        return street + ", " + district + ", " + city;
+    }
+
 }

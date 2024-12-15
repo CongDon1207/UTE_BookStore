@@ -20,7 +20,7 @@ import ute.bookstore.service.IUserService;
 @RequestMapping("/user/addresses")
 public class UserAddressController {
 	
-	private long userID = 1L;
+	private long userID = 3L;
 	
 	 @Autowired
 	 private IUserService userService;
