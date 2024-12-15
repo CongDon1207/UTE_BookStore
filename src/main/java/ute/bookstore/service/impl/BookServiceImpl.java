@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -235,6 +236,13 @@ public class BookServiceImpl implements IBookService{
         return book.getQuantity() >= requestedQuantity;
     }
 
+    public List<Map<String, Object>> getTop10BestSellingBooks() {
+        List<Map<String, Object>> top20Books = getTop20BestSellingBooksWithImages();
+        
+        return top20Books.stream()
+                         .limit(10) // Lấy 10 phần tử đầu tiên
+                         .collect(Collectors.toList());
+    }
 
 
     

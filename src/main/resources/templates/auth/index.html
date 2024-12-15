@@ -72,17 +72,17 @@
 							</div>
 						</div>
 					</div>
-						<div class="float-right">
-							<div class="make_appo"> <a class="btn white_btn" href="/login">
-									Login</a> </div>
-						</div>
-						<div class="float-right">
-							<div class="make_appo"> <a class="btn white_btn" href="/auth/register">
-									Register</a> </div>
-						</div>
+					<div class="float-right">
+						<div class="make_appo"> <a class="btn white_btn" href="/login">
+								Login</a> </div>
+					</div>
+					<div class="float-right">
+						<div class="make_appo"> <a class="btn white_btn" href="/auth/register">
+								Register</a> </div>
 					</div>
 				</div>
 			</div>
+		</div>
 		</div>
 		<!-- end header top -->
 		<!-- header bottom -->
@@ -91,7 +91,7 @@
 				<div class="row">
 					<div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
 						<!-- logo start -->
-						<div class="logo"><a href="/user/home"><img th:src="@{/images/logos/bookstore3.png}"
+						<div class="logo"><a href="/home"><img th:src="@{/images/logos/bookstore3.png}"
 									alt="logo" /></a></div>
 						<!-- logo end -->
 					</div>
@@ -148,7 +148,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="row">
+			<!--<div class="row">
 				<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 margin_bottom_30_all">
 					<div class="product_list">
 						<div class="product_img"> <img class="img-responsive" src="images/it_service/1.jpg" alt="">
@@ -389,7 +389,27 @@
 						</div>
 					</div>
 				</div>
+			</div>-->
+			<div class="row">
+				<th:block th:each="book : ${topBooks}">
+					<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-3">
+						<div class="product_list">
+							<div class="product_img">
+								<img class="img-fluid" th:src="@{/images?fname=${book.images[0]}}" alt="${book.title}">
+							</div>
+							<div class="product_detail_btm text-center">
+								<!-- Thêm th:href để tạo liên kết đến chi tiết sách -->
+								<h5>
+									<a th:href="@{/books/detail/{id}(id=${book.id})}" th:text="${book.title}"></a>
+								</h5>
+							</div>
+						</div>
+					</div>
+				</th:block>
 			</div>
+
+
+
 		</div>
 	</div>
 	<!-- end section -->

@@ -2,6 +2,8 @@ package ute.bookstore.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,10 +18,18 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 
 import ute.bookstore.dto.RegisterRequest;
+import ute.bookstore.entity.Author;
+import ute.bookstore.entity.Book;
+import ute.bookstore.entity.BookAuthor;
 import ute.bookstore.entity.User;
 import ute.bookstore.enums.UserRole;
+import ute.bookstore.repository.AuthorRepository;
+import ute.bookstore.repository.BookAuthorRepository;
+import ute.bookstore.repository.BookRepository;
 import ute.bookstore.service.AuthService;
+import ute.bookstore.service.AuthorService;
 import ute.bookstore.service.EmailService;
+import ute.bookstore.service.IBookService;
 import ute.bookstore.service.IUserService;
 import ute.bookstore.service.OtpService;
 
@@ -34,11 +44,20 @@ public class AuthController {
 
 	@Autowired
     private IUserService userService;
+	@Autowired
+    private AuthorRepository authorRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private BookAuthorRepository bookAuthorRepository;
 
-  
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private AuthorService authorService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private IBookService bookService;
     @GetMapping("/login")
     public String login() {
         return "/auth/login" ;
@@ -169,5 +188,32 @@ public class AuthController {
         model.addAttribute("message", "Mật khẩu đã được đặt lại thành công.");
         return "/auth/login"; // Quay lại trang đăng nhập
     }
-    
+
+    @GetMapping("/authors")
+    public String getAllAuthors(Model model) {
+        List<Author> authors = authorService.findAll();
+        model.addAttribute("authors", authors); // Thêm danh sách tác giả vào model
+        return "/auth/authors"; // Trả về tên view (authors.html)
+    }
+    @GetMapping("/authors/{authorId}/books")
+    public String getBooksByAuthor(@PathVariable Long authorId, Model model) {
+        // Lấy thông tin tác giả
+        Author author = authorRepository.findById(authorId).orElse(null);
+        if (author == null) {
+            model.addAttribute("error", "Tác giả không tồn tại.");
+            return "error";
+        }
+
+        // Lấy danh sách sách của tác giả này
+        List<BookAuthor> bookAuthors = bookAuthorRepository.findByAuthorId(authorId);
+        List<Book> books = bookAuthors.stream()
+                                      .map(BookAuthor::getBook)
+                                      .toList();
+
+        model.addAttribute("author", author);
+        model.addAttribute("books", books);
+
+        return "/auth/author-books";  // View để hiển thị các sách của tác giả
+    }
+
 }
