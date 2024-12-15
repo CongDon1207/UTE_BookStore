@@ -1,3 +1,4 @@
+<!-- templates/admin/layout/header.html -->
 <header id="admin_header" class="admin_header">
     <div class="container-fluid">
         <div class="row align-items-center">
@@ -7,56 +8,32 @@
                     <img th:src="@{/images/logos/it_logo_white.png}" alt="Admin Logo" class="logo">
                 </a>
             </div>
-            <!-- End Logo -->
-
+            
             <!-- Empty column to create space between logo and icons -->
             <div class="col"></div>
-
-            <!-- Navigation Menu with Icons aligned to the right -->
-            <div class="col-auto admin_nav">
-                <nav class="admin_nav">
-                    <ul class="admin_menu list-inline mb-0 text-end">
-                        <!-- Icon 1: Hòm thư -->
-                        <li class="list-inline-item">
-                            <a href="inbox.html" class="nav-link">
-                                <i class="fa fa-envelope"></i> <!-- Biểu tượng hòm thư -->
-                            </a>
-                        </li>
-                        
-                        <!-- Icon 2: Thông báo -->
-                        <li class="list-inline-item">
-                            <a href="notifications.html" class="nav-link">
-                                <i class="fa fa-bell"></i> <!-- Biểu tượng thông báo -->
-                            </a>
-                        </li>
-
-                        <!-- Icon 3: Quản lý người dùng -->
-                        <li class="list-inline-item">
-                            <a href="manage_users.html" class="nav-link">
-                                <i class="fa fa-users"></i> <!-- Biểu tượng người dùng -->
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <!-- End Navigation Menu -->
 
             <!-- User Section -->
             <div class="col-auto admin_user_section">
                 <div class="dropdown">
                     <a href="#" class="dropdown-toggle user_toggle" data-bs-toggle="dropdown">
                         <img th:src="@{/images/it_service/team-member-1.jpg}" alt="Admin Avatar" class="user_avatar">
-                        <span class="user_name">Admin</span>
+                        <span class="user_name" th:text="${session.currentUser != null ? session.currentUser.fullName : 'Admin'}">Admin</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="admin_profile.html"><i class="fa fa-user"></i> Profile</a></li>
-                        <li><a class="dropdown-item" href="admin_settings.html"><i class="fa fa-cogs"></i> Settings</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/profile}">
+                            <i class="fa fa-user"></i> Profile</a>
+                        </li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="logout.html"><i class="fa fa-sign-out"></i> Logout</a></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" id="logoutForm">
+                                <a class="dropdown-item text-danger" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
+                                    <i class="fa fa-sign-out"></i> Logout
+                                </a>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>
-            <!-- End User Section -->
         </div>
     </div>
 </header>
