@@ -1,8 +1,10 @@
 package ute.bookstore.service;
 
+import ute.bookstore.entity.User;
+
 public interface IFavoriteBookService {
 	
-	boolean addBookToFavorites(Long bookId);
-	boolean removeBookFromFavorites(Long bookId) ;
+	boolean addBookToFavorites(Long bookId, User user);
+	boolean removeBookFromFavorites(Long bookId, User user) ;
 
 }

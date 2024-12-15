@@ -1,6 +1,6 @@
 package ute.bookstore.controller.user;
 
-import java.nio.file.attribute.UserPrincipal;
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.Address;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Category;
@@ -36,7 +37,7 @@ import ute.bookstore.service.IUserService;
 @Controller
 @RequestMapping("/user")
 public class UserHomeController {
-	private long userID = 3L;
+	
 	@Autowired
 	private INotificationService notificationService;
 	@Autowired
@@ -60,8 +61,9 @@ public class UserHomeController {
 	}
 
 	@GetMapping("/notifications")
-	public String getNotificationPage(Model model) {
-		User user = userService.getUserById(userID);
+	public String getNotificationPage(Model model, HttpSession session) {
+		User iuser = (User) session.getAttribute("currentUser");
+		User user = userService.getUserById(iuser.getId());
 		List<Notification> notifications = user.getNotifications();
 
 		// Đảm bảo danh sách không null và sắp xếp thông báo từ mới đến cũ
@@ -75,7 +77,7 @@ public class UserHomeController {
 	}
 
 	@RequestMapping("/notification/read/{id}")
-	public String getReadNotificationPage(@PathVariable("id") Long id, Model model) {
+	public String getReadNotificationPage(@PathVariable("id") Long id, Model model,HttpSession session) {
 		Notification notification = notificationService.findById(id);
 		if (notification != null) {
 			notification.setIsRead(true);
@@ -84,7 +86,8 @@ public class UserHomeController {
 		} else {
 
 		}
-		User user = userService.getUserById(userID);
+		User iuser = (User) session.getAttribute("currentUser");
+		User user = userService.getUserById(iuser.getId());
 		List<Notification> notifications = user.getNotifications();
 
 		// Đảm bảo danh sách không null và sắp xếp thông báo từ mới đến cũ
@@ -120,13 +123,8 @@ public class UserHomeController {
 
 	// Lấy trang cập nhật thông tin
 	@GetMapping("/updateInfo")
-	public String getUpdateInfoPage(@RequestParam(value = "id", required = false) Long id, Model model) {
-		// Sử dụng ID từ request hoặc mặc định là người dùng đang đăng nhập
-		if (id == null) {
-			id = 1L; // ID mặc định cho mục đích thử nghiệm, thay bằng logic lấy ID người dùng đang
-						// đăng nhập
-		}
-		User user = userService.getUserById(userID);
+	public String getUpdateInfoPage(@RequestParam(value = "id", required = false) Long id, Model model,HttpSession session) {
+		User user = (User) session.getAttribute("currentUser");
 		model.addAttribute("user", user);
 		return "user/user-edit"; // Thymeleaf tự động thêm .html
 	}
@@ -144,10 +142,9 @@ public class UserHomeController {
 	}
 
 	@GetMapping("/manageDeliveryAddresses")
-	public String getDeliveryAddressesPage(Model model/* , Principal principal */) {
+	public String getDeliveryAddressesPage(Model model, HttpSession session ) {
 		// Lấy thông tin user hiện tại
-		// User user = userService.findByUsername(principal.getName());
-		User user = userService.getUserById(userID);
+		User user = (User) session.getAttribute("currentUser");
 		// Lấy danh sách địa chỉ của user
 		List<Address> addresses = addressService.getAddressesByUserId(user.getId());
 
@@ -172,10 +169,9 @@ public class UserHomeController {
 	@PostMapping("/updatePassword")
 	public String updatePassword(@RequestParam("current-password") String currentPassword,
 			@RequestParam("new-password") String newPassword, @RequestParam("confirm-password") String confirmPassword,
-			RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes,HttpSession session) {
 		try {
-			// Lấy người dùng từ session (hoặc security context)
-			User currentUser = userService.getUserById(userID);
+			User currentUser = (User) session.getAttribute("currentUser");
 
 			// Gọi service để đổi mật khẩu
 			userService.changePassword(currentUser, currentPassword, newPassword, confirmPassword);
@@ -188,9 +184,9 @@ public class UserHomeController {
 
 	@GetMapping("/purchaseHistory")
 	public String getPurchaseHistoryPage(Model model,
-			@RequestParam(defaultValue = "0") int page) {
-		
-
+			@RequestParam(defaultValue = "0") int page,HttpSession session) {
+		User user = (User) session.getAttribute("currentUser");
+        Long userID = user.getId();
 // Tạo Pageable cho phân trang (mỗi trang 5 đơn hàng)
 		Pageable pageable = PageRequest.of(page, 3, Sort.by("createdAt").descending());
 

@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.FavoriteBook;
 import ute.bookstore.entity.User;
@@ -26,9 +27,8 @@ public class FavoriteBookServiceImpl implements IFavoriteBookService  {
     @Autowired
     private BookRepository bookRepository;
 
-    public boolean addBookToFavorites(Long bookId) {
-        // Lấy thông tin user hiện tại (giả định có hàm getCurrentUser())
-        User user = getCurrentUser();
+    public boolean addBookToFavorites(Long bookId, User user) {
+       
 
         // Kiểm tra sách
         Optional<Book> bookOptional = bookRepository.findById(bookId);
@@ -52,7 +52,7 @@ public class FavoriteBookServiceImpl implements IFavoriteBookService  {
         return true;
     }
 
-    public boolean removeBookFromFavorites(Long bookId) {
+    public boolean removeBookFromFavorites(Long bookId,User user) {
     	 FavoriteBook favoriteBook = favoriteBookRepository.findById(bookId).orElse(null);
     	    if (favoriteBook == null) {
     	        return false; // Không tìm thấy sách
@@ -62,10 +62,6 @@ public class FavoriteBookServiceImpl implements IFavoriteBookService  {
     	    return true;
     }
 
-    private User getCurrentUser() {
-        // Giả lập user hiện tại, cần tích hợp với hệ thống authentication thực tế
-        return userRepository.findById(1L).orElseThrow(() -> new RuntimeException("User không tồn tại"));
-    }
-
+    
 	
 }

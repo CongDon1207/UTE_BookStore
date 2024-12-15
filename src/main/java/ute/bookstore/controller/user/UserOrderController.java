@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Order;
 import ute.bookstore.entity.User;
@@ -35,7 +35,7 @@ import ute.bookstore.service.IUserService;
 @Controller
 @RequestMapping("/user/orders")
 public class UserOrderController {
-	private long userID = 3L;
+	
 	@Autowired
     private IOrderService orderService;
 	
@@ -56,16 +56,17 @@ public class UserOrderController {
 
 	@PostMapping("/create")
 	public String createOrder(
-	    @RequestParam Long userId,
+	    
 	    @RequestParam Long shopId,
 	    @RequestParam Long addressId,
 	    @RequestParam String bookIds, // Nhận danh sách ID dưới dạng chuỗi
 	    @RequestParam List<Integer> quantities,
 	    @RequestParam String paymentMethod,
 	    @RequestParam Double totalAmount,
-	    RedirectAttributes redirectAttributes
+	    RedirectAttributes redirectAttributes,HttpSession session
 	) {
 	    try {
+	    	User user = (User) session.getAttribute("currentUser");
 	        // Chuyển đổi chuỗi bookIds thành List<Long>
 	        List<Long> bookIdList = Arrays.stream(bookIds.split(","))
 	                                      .map(Long::valueOf)
@@ -78,7 +79,7 @@ public class UserOrderController {
 
 	        // Tạo đơn hàng
 	        Order createdOrder = orderService.createOrder(
-	            userService.getUserById(userId), 
+	            userService.getUserById(user.getId()), 
 	            shopService.getShopById(shopId), 
 	            addressService.getAddressById(addressId), 
 	            books, 
@@ -138,11 +139,11 @@ public class UserOrderController {
 	        @PathVariable Long orderId,
 	        @RequestParam Long bookId,
 	        @RequestParam int rating,
-	        @RequestParam(required = false) String comment
+	        @RequestParam(required = false) String comment, HttpSession session
 	        // Lấy người dùng hiện tại
 	) {
 		  try {
-			  User user = userService.getUserById(userID);
+			  User user = (User) session.getAttribute("currentUser");
 	            // Tìm sách theo ID
 	            Book book = bookService.getBookById(bookId);
 	            if (book == null) {
