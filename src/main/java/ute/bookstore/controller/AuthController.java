@@ -22,6 +22,7 @@ import ute.bookstore.entity.Author;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.BookAuthor;
 import ute.bookstore.entity.User;
+import ute.bookstore.entity.Shop;
 import ute.bookstore.enums.UserRole;
 import ute.bookstore.repository.AuthorRepository;
 import ute.bookstore.repository.BookAuthorRepository;
@@ -30,8 +31,10 @@ import ute.bookstore.service.AuthService;
 import ute.bookstore.service.AuthorService;
 import ute.bookstore.service.EmailService;
 import ute.bookstore.service.IBookService;
+import ute.bookstore.service.IShopService;
 import ute.bookstore.service.IUserService;
 import ute.bookstore.service.OtpService;
+import ute.bookstore.service.bookAuthorService;
 
 @Controller
 @RequestMapping("/auth")
@@ -48,8 +51,9 @@ public class AuthController {
     private AuthorRepository authorRepository;
 
     @Autowired
-    private BookAuthorRepository bookAuthorRepository;
-
+    private bookAuthorService bookAuthorService;
+    @Autowired
+    private IShopService shopService;
     @Autowired
     private BookRepository bookRepository;
     @Autowired
@@ -198,14 +202,14 @@ public class AuthController {
     @GetMapping("/authors/{authorId}/books")
     public String getBooksByAuthor(@PathVariable Long authorId, Model model) {
         // Lấy thông tin tác giả
-        Author author = authorRepository.findById(authorId).orElse(null);
+        Author author = authorService.findById(authorId);
         if (author == null) {
             model.addAttribute("error", "Tác giả không tồn tại.");
             return "error";
         }
 
         // Lấy danh sách sách của tác giả này
-        List<BookAuthor> bookAuthors = bookAuthorRepository.findByAuthorId(authorId);
+        List<BookAuthor> bookAuthors = bookAuthorService.findByAuthorId(authorId);
         List<Book> books = bookAuthors.stream()
                                       .map(BookAuthor::getBook)
                                       .toList();
@@ -215,5 +219,25 @@ public class AuthController {
 
         return "/auth/author-books";  // View để hiển thị các sách của tác giả
     }
+    @GetMapping("/shops")
+    public String getAllShops(Model model) {
+        List<Shop> shops = shopService.findAll();
+        model.addAttribute("shops", shops); // Thêm danh sách tác giả vào model
+        return "auth/shop-list"; // Trả về tên view (authors.html)
+    }
+    @GetMapping("/shop/{id}/details")
+    public String getShopDetails(@PathVariable("id") Long shopId, Model model) {
+        // Retrieve shop by id
+        Shop shop = shopService.getShopById(shopId);
 
+        if (shop == null) {
+            model.addAttribute("errorMessage", "Không tìm thấy shop này.");
+            return "error"; // Redirect to an error page if the shop doesn't exist
+        }
+
+        // Pass shop and its books to the view
+        model.addAttribute("shop", shop);
+        model.addAttribute("books", shop.getBooks());
+        return "/auth/shop-details"; // Name of the Thymeleaf template for shop details
+    }
 }

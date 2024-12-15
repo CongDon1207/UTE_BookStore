@@ -8,4 +8,6 @@ public interface AuthorService {
 
 	List<Author> findAll();
 
+	Author findById(Long authorId);
+
 }
