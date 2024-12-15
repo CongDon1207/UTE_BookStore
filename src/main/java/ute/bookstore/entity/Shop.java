@@ -77,4 +77,9 @@ public class Shop {
     
     @Column(name = "rejection_reason")
     private String rejectionReason;
+    
+    @Override
+    public String toString() {
+      return "Shop(id=" + id + ", name=" + name + ")"; // Không gọi address.toString()
+    }
 }
