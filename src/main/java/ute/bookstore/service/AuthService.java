@@ -3,20 +3,15 @@ package ute.bookstore.service;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
 
-import ute.bookstore.dto.LoginRequest;
 import ute.bookstore.dto.RegisterRequest;
 import ute.bookstore.entity.User;
 import ute.bookstore.enums.UserRole;
@@ -30,8 +25,6 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final EmailService emailService;
 	private final OtpService otpService; // Thêm OtpService để lưu và kiểm tra OTP
-	private final AuthenticationManager authenticationManager;
-	private final JwtService jwtService;
 
 	public ResponseEntity<String> register(RegisterRequest registerRequest) {
 		// Kiểm tra email có tồn tại trong hệ thống không
@@ -66,31 +59,6 @@ public class AuthService {
 	public boolean isEmailExist(String email) {
 		return userRepository.existsByEmail(email);
 	}
-
-	public String authenticateAndGenerateToken(LoginRequest loginRequest) throws Exception {
-	    // Kiểm tra người dùng có tồn tại không
-	    User user = userRepository.findByEmail(loginRequest.getEmail())
-	            .orElseThrow(() -> new Exception("Email không tồn tại"));
-
-	    // Kiểm tra mật khẩu của người dùng
-	    if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-	        throw new Exception("Mật khẩu không chính xác");
-	    }
-
-	    // Xác thực người dùng
-	    Authentication authentication = authenticationManager.authenticate(
-	            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-
-	    // Đặt thông tin người dùng vào SecurityContext
-	    SecurityContextHolder.getContext().setAuthentication(authentication);
-
-	    // Lấy danh sách roles từ user (có thể là một danh sách nếu có nhiều quyền)
-	    List<String> roles = Collections.singletonList(user.getRole().name());
-
-	    // Tạo JWT từ email hoặc username và danh sách quyền
-	    return jwtService.generateToken(user.getEmail(), roles);
-	}
-
 
 	// Cập nhật mật khẩu của người dùng
 	public void updatePassword(String email, String newPassword) {
