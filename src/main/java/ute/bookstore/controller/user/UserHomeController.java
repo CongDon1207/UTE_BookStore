@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,6 +51,9 @@ public class UserHomeController {
 	
 	@Autowired
 	private IOrderService orderService;
+	
+	@Autowired
+    private PasswordEncoder passwordEncoder;
 
 	@GetMapping({ "", "/home" })
 	public String homePage(Model model) {
@@ -124,7 +127,9 @@ public class UserHomeController {
 	// Lấy trang cập nhật thông tin
 	@GetMapping("/updateInfo")
 	public String getUpdateInfoPage(@RequestParam(value = "id", required = false) Long id, Model model,HttpSession session) {
-		User user = (User) session.getAttribute("currentUser");
+		
+		User iuser = (User) session.getAttribute("currentUser");
+		User user = userService.getUserById(iuser.getId());
 		model.addAttribute("user", user);
 		return "user/user-edit"; // Thymeleaf tự động thêm .html
 	}
@@ -173,13 +178,29 @@ public class UserHomeController {
 		try {
 			User currentUser = (User) session.getAttribute("currentUser");
 
-			// Gọi service để đổi mật khẩu
-			userService.changePassword(currentUser, currentPassword, newPassword, confirmPassword);
-			redirectAttributes.addFlashAttribute("success", "Đổi mật khẩu thành công!");
-		} catch (Exception e) {
-			redirectAttributes.addFlashAttribute("error", e.getMessage());
-		}
-		return "redirect:/user/updatePassword";
+			// Kiểm tra mật khẩu cũ có đúng không
+	        if (!passwordEncoder.matches(currentPassword, currentUser.getPassword())) {
+	            redirectAttributes.addFlashAttribute("error", "Mật khẩu cũ không đúng.");
+	            return "redirect:/user/updatePassword";
+	        }
+
+	        // Kiểm tra mật khẩu mới và xác nhận mật khẩu trùng nhau
+	        if (!newPassword.equals(confirmPassword)) {
+	            redirectAttributes.addFlashAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không khớp.");
+	            return "redirect:/user/updatePassword";
+	        }
+
+	        // Mã hóa mật khẩu mới trước khi lưu
+	        String encodedNewPassword = passwordEncoder.encode(newPassword);
+
+	        // Cập nhật mật khẩu cho người dùng
+	        userService.changePassword(currentUser, encodedNewPassword);
+	        
+	        redirectAttributes.addFlashAttribute("success", "Đổi mật khẩu thành công!");
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("error", e.getMessage());
+	    }
+	    return "redirect:/user/updatePassword";
 	}
 
 	@GetMapping("/purchaseHistory")

@@ -46,6 +46,12 @@ public class UserServiceImpl implements IUserService {
 	    return userRepository.findByEmail(email)
 	        .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 	}
+	
+	public void changePassword(User user, String newPassword) {
+	    // Cập nhật mật khẩu mới đã mã hóa
+	    user.setPassword(newPassword);
+	    userRepository.save(user);
+	}
 
 	@Override
 	public void updateUserInfo(User updatedUser) {

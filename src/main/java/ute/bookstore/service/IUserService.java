@@ -23,4 +23,5 @@ public interface IUserService {
     void updateUser(Long id, User userDetails);
 	void changePassword(String email, String currentPassword, String newPassword);
 	void updateProfile(String email, String fullName, String phone);
+	void changePassword(User user, String newPassword);
 }
