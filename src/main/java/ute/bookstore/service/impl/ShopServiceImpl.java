@@ -14,6 +14,7 @@ import java.util.List;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User; 
 import ute.bookstore.entity.Address;
+import ute.bookstore.entity.Author;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Review;
 import ute.bookstore.exception.ResourceNotFoundException;
@@ -39,6 +40,7 @@ public class ShopServiceImpl implements IShopService {
 
     @Override
     public Shop getShopByUserEmail(String email) {
+    	 System.out.println("shopRepository: " + shopRepository);
         return shopRepository.findByUserEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("Shop not found"));
     }
@@ -136,6 +138,12 @@ public class ShopServiceImpl implements IShopService {
         shop.setRating(calculateShopRating(shop));
         shopRepository.save(shop);
     }
+
+	@Override
+	public List<Shop> findAll() {
+		// TODO Auto-generated method stub
+		return shopRepository.findAll();
+	}
     
     
 }

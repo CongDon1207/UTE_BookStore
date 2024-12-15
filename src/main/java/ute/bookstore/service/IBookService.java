@@ -31,7 +31,8 @@ public interface IBookService {
 	 
 	List<Book> getTop20NewBooks();
 	
-	
+	List<Map<String, Object>> getTop10BestSellingBooks();
+
 	List<Map<String, Object>> getTop20BestSellingBooksWithImages();
 	List<Map<String, Object>> getTop20BooksWithRatings();
 	 List<Map<String, Object>> getTop20MostFavoritedBooks() ;

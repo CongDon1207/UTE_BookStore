@@ -1,7 +1,10 @@
 package ute.bookstore.service;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
+import ute.bookstore.entity.Author;
 import ute.bookstore.entity.Shop;
 
 public interface IShopService {
@@ -14,4 +17,5 @@ public interface IShopService {
     
     Double calculateShopRating(Shop shop);
     void updateShopRating(Shop shop);
+	List<Shop> findAll();
 }
