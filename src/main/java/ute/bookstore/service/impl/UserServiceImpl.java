@@ -207,5 +207,62 @@ public class UserServiceImpl implements IUserService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return activityLogRepository.findByUserId(userId, pageable).getContent();
     }
+    
+    
+    @Override
+    @Transactional
+    public void updateProfile(String email, String fullName, String phone) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        
+        // Validate phone format
+        if (phone != null && !phone.isEmpty() && !Pattern.matches(PHONE_REGEX, phone)) {
+            throw new ValidationException("Số điện thoại không hợp lệ");
+        }
+        
+        // Update info
+        user.setFullName(fullName);
+        user.setPhone(phone);
+        
+        // Save user
+        userRepository.save(user);
+        
+        // Log activity
+        UserActivityLog log = new UserActivityLog();
+        log.setUser(user);
+        log.setActivity("UPDATE_PROFILE");
+        log.setDescription("Cập nhật thông tin cá nhân");
+        activityLogRepository.save(log);
+    }
+
+    @Override
+    @Transactional  
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        
+        // Check current password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new ValidationException("Mật khẩu hiện tại không đúng");
+        }
+        
+        // Validate new password
+        if (newPassword.length() < 6) {
+            throw new ValidationException("Mật khẩu mới phải có ít nhất 6 ký tự");
+        }
+        
+        // Update password  
+        user.setPassword(passwordEncoder.encode(newPassword));
+        
+        // Save user
+        userRepository.save(user);
+        
+        // Log activity
+        UserActivityLog log = new UserActivityLog();
+        log.setUser(user);
+        log.setActivity("CHANGE_PASSWORD");
+        log.setDescription("Đổi mật khẩu");
+        activityLogRepository.save(log);
+    }
 
 }

@@ -21,6 +21,7 @@ import ute.bookstore.dto.RegisterRequest;
 import ute.bookstore.entity.Author;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.BookAuthor;
+import ute.bookstore.entity.Category;
 import ute.bookstore.entity.User;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.enums.UserRole;
@@ -31,6 +32,7 @@ import ute.bookstore.service.AuthService;
 import ute.bookstore.service.AuthorService;
 import ute.bookstore.service.EmailService;
 import ute.bookstore.service.IBookService;
+import ute.bookstore.service.ICategoryService;
 import ute.bookstore.service.IShopService;
 import ute.bookstore.service.IUserService;
 import ute.bookstore.service.OtpService;
@@ -54,6 +56,8 @@ public class AuthController {
     private bookAuthorService bookAuthorService;
     @Autowired
     private IShopService shopService;
+    @Autowired
+    private ICategoryService categoryService;
     @Autowired
     private BookRepository bookRepository;
     @Autowired
@@ -225,8 +229,8 @@ public class AuthController {
         model.addAttribute("shops", shops); // Thêm danh sách tác giả vào model
         return "auth/shop-list"; // Trả về tên view (authors.html)
     }
-    @GetMapping("/shop/{id}/details")
-    public String getShopDetails(@PathVariable("id") Long shopId, Model model) {
+    @GetMapping("/shop/{shopid}/details")
+    public String getShopDetails(@PathVariable("shopid") Long shopId, Model model) {
         // Retrieve shop by id
         Shop shop = shopService.getShopById(shopId);
 
@@ -239,5 +243,26 @@ public class AuthController {
         model.addAttribute("shop", shop);
         model.addAttribute("books", shop.getBooks());
         return "/auth/shop-details"; // Name of the Thymeleaf template for shop details
+    }
+    @GetMapping("/categories")
+    public String getAllCategories(Model model) {
+        List<Category> cates = categoryService.getAllCategories();
+        model.addAttribute("cates", cates); // Thêm danh sách tác giả vào model
+        return "/auth/category-list"; // Trả về tên view (authors.html)
+    }
+    @GetMapping("/category/{cateid}/details")
+    public String getCategoryDetails(@PathVariable("cateid") Long cateId, Model model) {
+        // Retrieve shop by id
+        Category cate = categoryService.getCategoryById(cateId);
+        
+        if (cate == null) {
+            model.addAttribute("errorMessage", "Không tìm thấy shop này.");
+            return "error"; // Redirect to an error page if the shop doesn't exist
+        }
+
+        // Pass shop and its books to the view
+        model.addAttribute("cate", cate);
+        model.addAttribute("books", cate.getBooks());
+        return "/auth/category-details"; // Name of the Thymeleaf template for shop details
     }
 }
