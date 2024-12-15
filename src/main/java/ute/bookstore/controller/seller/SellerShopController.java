@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
-import ute.bookstore.service.ICloudinaryService;
 import ute.bookstore.service.IShopService;
-import ute.bookstore.service.IUserService;
 
 
 
@@ -21,26 +20,29 @@ import ute.bookstore.service.IUserService;
 @RequestMapping("/seller/shop")
 public class SellerShopController {
    @Autowired private IShopService shopService;
-   @Autowired private IUserService userService;
-   private static final String DEFAULT_EMAIL = "vendor@gmail.com";
    private static final String REDIRECT_SUCCESS = "redirect:/seller/shop?success";
    private static final String REDIRECT_ERROR = "redirect:/seller/shop?error=";
-   
-   private static final Long TEMP_USER_ID = 1L;
-   
-   
+
    @ModelAttribute
-	public void addAttributes(Model model, HttpServletRequest request) {
-		model.addAttribute("requestURI", request.getRequestURI());
-		Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
-		model.addAttribute("shop", shop != null ? shop : new Shop());
-		model.addAttribute("user", userService.getUserById(TEMP_USER_ID));
-	}
-   
+   public void addAttributes(Model model, HttpServletRequest request, HttpSession session) {
+       User currentUser = (User) session.getAttribute("currentUser");
+       if (currentUser != null) {
+           Shop shop = shopService.getShopByUserEmail(currentUser.getEmail());
+           model.addAttribute("shop", shop != null ? shop : new Shop());
+           model.addAttribute("user", currentUser);
+       }
+       model.addAttribute("requestURI", request.getRequestURI());
+   }
+
    @GetMapping
-   public String showShopManagement(Model model) {
+   public String showShopManagement(Model model, HttpSession session) {
+       User currentUser = (User) session.getAttribute("currentUser");
+       if (currentUser == null) {
+           return "redirect:/auth/login";
+       }
+
        try {
-           Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+           Shop shop = shopService.getShopByUserEmail(currentUser.getEmail());
            shopService.updateShopRating(shop);
            model.addAttribute("shop", shop);
            return "seller/shop-management";
@@ -51,12 +53,15 @@ public class SellerShopController {
 
    @PostMapping
    public String updateShopInfo(@ModelAttribute Shop shopUpdate,
-                              @RequestParam(required = false) MultipartFile logoFile) {
+                               @RequestParam(required = false) MultipartFile logoFile,
+                               HttpSession session) {
+       User currentUser = (User) session.getAttribute("currentUser");
+       if (currentUser == null) {
+           return "redirect:/auth/login";
+       }
+
        try {
-           System.out.println("Update shop: " + shopUpdate);
-           System.out.println("Logo: " + (logoFile != null ? logoFile.getOriginalFilename() : "No file"));
-           
-           shopService.updateShop(shopUpdate, logoFile, DEFAULT_EMAIL);
+           shopService.updateShop(shopUpdate, logoFile, currentUser.getEmail());
            return REDIRECT_SUCCESS;
        } catch (Exception e) {
            e.printStackTrace();
