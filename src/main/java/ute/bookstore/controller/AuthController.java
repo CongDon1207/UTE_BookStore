@@ -169,4 +169,5 @@ public class AuthController {
         model.addAttribute("message", "Mật khẩu đã được đặt lại thành công.");
         return "/auth/login"; // Quay lại trang đăng nhập
     }
+    
 }

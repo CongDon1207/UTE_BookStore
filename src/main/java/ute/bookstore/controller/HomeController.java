@@ -12,11 +12,11 @@ public class HomeController {
 
     @GetMapping("/home")
     public String Home() {
-        return "index" ;
+        return "/auth/index" ;
     }
     @GetMapping("/login")
     public String login() {
-        return "login" ;
+        return "/auth/login" ;
     }
     
 }
