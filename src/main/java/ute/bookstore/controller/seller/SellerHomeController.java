@@ -53,6 +53,7 @@ public class SellerHomeController {
     @GetMapping({"","/home"})
     public String home(Model model, HttpServletRequest request) {
         Shop shop = shopService.getShopByUserEmail(DEFAULT_EMAIL);
+        shopService.updateShopRating(shop);
         
         model.addAttribute("totalOrders", sellerHomeService.getTotalOrders(shop));
         model.addAttribute("monthlyRevenue", sellerHomeService.getMonthlyRevenue(shop));
