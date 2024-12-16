@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.ChatMessage;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
@@ -25,30 +26,61 @@ import ute.bookstore.service.IChatService;
 @Controller
 @RequestMapping("/user/chat")
 public class UserChatController {
-   @Autowired private IChatService chatService;
-   @Autowired private UserRepository userRepository;
-   @Autowired private ShopRepository shopRepository;
-   private static final Long TEMP_USER_ID = 3L;
+    @Autowired 
+    private IChatService chatService;
+    
+    @Autowired 
+    private UserRepository userRepository;
+    
+    @Autowired 
+    private ShopRepository shopRepository;
 
-   @GetMapping("/{shopId}") 
-   public String chatPage(@PathVariable Long shopId, Model model) {
-       User user = userRepository.findById(TEMP_USER_ID).orElseThrow();
-       Shop shop = shopRepository.findById(shopId).orElseThrow();
-       model.addAttribute("messages", chatService.getChatMessages(user, shop.getUser()));
-       model.addAttribute("userId", TEMP_USER_ID);
-       model.addAttribute("shopId", shopId);
-       return "user/chat-messages";
-   }
+    @GetMapping("/{shopId}") 
+    public String chatPage(@PathVariable Long shopId, Model model, HttpSession session) {
+        // Lấy user từ session
+        User currentUser = (User) session.getAttribute("currentUser");
+        
+        // Kiểm tra user đã đăng nhập chưa
+        if (currentUser == null) {
+            return "redirect:/auth/login";
+        }
+        
+        Shop shop = shopRepository.findById(shopId)
+            .orElseThrow(() -> new RuntimeException("Shop not found"));
 
-   @PostMapping("/send")
-   public String sendMessage(@RequestParam String content, @RequestParam Long shopId) {
-       ChatMessage message = new ChatMessage();
-       message.setContent(content);
-       message.setSender(userRepository.findById(TEMP_USER_ID).orElseThrow());
-       Shop shop = shopRepository.findById(shopId).orElseThrow();
-       message.setReceiver(shop.getUser());
-       chatService.sendMessage(message);
-       return "redirect:/user/chat/" + shopId;
-   }
+        // Lấy tin nhắn chat
+        List<ChatMessage> messages = chatService.getChatMessages(currentUser, shop.getUser());
+        
+        model.addAttribute("messages", messages);
+        model.addAttribute("userId", currentUser.getId());
+        model.addAttribute("shopId", shopId);
+        
+        return "user/chat-messages";
+    }
+
+    @PostMapping("/send")
+    public String sendMessage(
+        @RequestParam String content, 
+        @RequestParam Long shopId,
+        HttpSession session
+    ) {
+        // Lấy thông tin user từ session 
+        User currentUser = (User) session.getAttribute("currentUser");
+        
+        if (currentUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        Shop shop = shopRepository.findById(shopId)
+            .orElseThrow(() -> new RuntimeException("Shop not found"));
+
+        ChatMessage message = new ChatMessage();
+        message.setContent(content);
+        message.setSender(currentUser);
+        message.setReceiver(shop.getUser());
+        
+        chatService.sendMessage(message);
+
+        return "redirect:/user/chat/" + shopId;
+    }
 }
-

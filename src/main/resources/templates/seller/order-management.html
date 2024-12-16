@@ -51,6 +51,10 @@
 						<a class="nav-link" th:classappend="${selectedStatus == 'CANCELLED'} ? 'active'"
 							th:href="@{/seller/orders(status='CANCELLED')}">Đã hủy</a>
 					</li>
+					<li class="nav-item">
+					    <a class="nav-link" th:classappend="${selectedStatus == 'REFUNDED'} ? 'active'"
+					        th:href="@{/seller/orders(status='REFUNDED')}">Trả hàng/Hoàn tiền</a>
+					</li>
 				</ul>
 
 				<!-- Orders Table -->
@@ -79,13 +83,15 @@
 									   'CONFIRMED': 'bg-info',
 									   'SHIPPING': 'bg-warning',  
 									   'DELIVERED': 'bg-success',
-									   'CANCELLED': 'bg-danger'
+									   'CANCELLED': 'bg-danger',
+									   'REFUNDED': 'bg-secondary'
 									}[order.status.name()]}" th:text="${{
 									   'NEW': 'Đơn mới',
 									   'CONFIRMED': 'Đã xác nhận', 
 									   'SHIPPING': 'Đang giao hàng',
-									   'DELIVERED': 'Đã giao hàng',
-									   'CANCELLED': 'Đã hủy'
+									   'DELIVERED': 'Đã giao hàng', 
+									   'CANCELLED': 'Đã hủy',
+									   'REFUNDED': 'Trả hàng/Hoàn tiền'
 									}[order.status.name()]}"></span>
 								</td>
 								<td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
