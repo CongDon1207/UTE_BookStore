@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import ute.bookstore.entity.Book;
 import ute.bookstore.entity.Category;
-import ute.bookstore.entity.Promotion;
 import ute.bookstore.entity.Shop;
 import ute.bookstore.entity.User;
 import ute.bookstore.repository.BookRepository;

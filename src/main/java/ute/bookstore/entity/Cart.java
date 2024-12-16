@@ -2,6 +2,8 @@ package ute.bookstore.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +31,7 @@ public class Cart {
 
 	@OneToOne
 	@JoinColumn(name = "user_id")
+	@JsonBackReference
 	private User user;
 
 	@Column(name = "session_id")

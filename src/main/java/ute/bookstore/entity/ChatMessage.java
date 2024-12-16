@@ -2,6 +2,11 @@ package ute.bookstore.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,10 +30,14 @@ public class ChatMessage {
     
     @ManyToOne
     @JoinColumn(name = "sender_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private User sender;
     
     @ManyToOne
     @JoinColumn(name = "receiver_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private User receiver;
     
     @Column(columnDefinition = "TEXT")
@@ -40,5 +49,16 @@ public class ChatMessage {
     @Column(name = "is_read")
     private Boolean isRead = false;
     
-    private Long shopId; // Thêm getter/setter
+    private Long shopId;
+
+    // Thêm các getter để lấy thông tin bổ sung khi serialize
+    @JsonProperty("senderName")
+    public String getSenderName() {
+        return sender != null ? sender.getFullName() : null;
+    }
+
+    @JsonProperty("receiverName")
+    public String getReceiverName() {
+        return receiver != null ? receiver.getFullName() : null;
+    }
 }
