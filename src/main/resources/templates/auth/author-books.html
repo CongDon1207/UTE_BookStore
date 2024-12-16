@@ -118,18 +118,39 @@
 		<!-- header bottom end -->
 	</header>
 	<!-- end header -->
-	<div class="container">
-		<h1 class="text-center" th:text="'Sách của ' + ${author.name}"></h1>
+	<div class="container py-5">
+		<!-- Tiêu đề -->
+		<h1 class="text-center mb-4" th:text="'Danh sách sách của ' + ${author.name}"></h1>
 
 		<!-- Hiển thị các sách của tác giả -->
-		<ul class="list-group">
-			<li th:each="book : ${books}" class="list-group-item">
-				<span th:text="${book.title}"></span> <!-- Hiển thị tên sách -->
-			</li>
-		</ul>
+		<div class="row">
+			<div th:each="book : ${books}" class="col-md-6 col-lg-4 mb-4">
+				<div class="card h-100 shadow-sm">
+					<!-- Hình ảnh của sách -->
+					<div class="card-img-top p-3 text-center">
+						<div class="book-images">
+							<img th:each="image : ${book.images}" th:src="${image}" alt="${book.title}" style="max-height: 200px; object-fit: cover;">
+						</div>
+					</div>
+					<!-- Nội dung sách -->
+					<div class="card-body">
+						<h5 class="card-title" th:text="${book.title}"></h5>
+						<p class="card-text text-muted" th:text="'Giá: ' + ${book.price} + ' VND'"></p>
+					</div>
+					<!-- Footer card với nút -->
+					<div class="card-footer bg-transparent border-top-0">
+						<a th:href="'/books/detail/' + ${book.id}" class="btn btn-primary w-100">Xem chi tiết</a>
+					</div>
+				</div>
+			</div>
+		</div>
 
-		<a href="/auth/authors" class="btn btn-secondary mt-4">Quay lại danh sách tác giả</a>
+		<!-- Nút quay lại -->
+		<div class="text-center mt-5">
+			<a href="/auth/authors" class="btn btn-secondary">Quay lại danh sách tác giả</a>
+		</div>
 	</div>
+
 	<!-- footer -->
 	<footer class="footer-modern">
 		<div class="container">
