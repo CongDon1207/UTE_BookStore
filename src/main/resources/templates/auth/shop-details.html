@@ -50,6 +50,19 @@
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 	<!-- Link tới Font Awesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<style>
+		.book-images img {
+			width: 500px;
+			/* Chiều rộng full của container */
+			height: 400px;
+			/* Đặt chiều cao cố định */
+			object-fit: cover;
+			/* Cắt ảnh để phù hợp với khung mà không bị méo */
+			border-radius: 8px;
+			/* Tùy chọn: Bo góc cho đẹp */
+		}
+	</style>
+
 </head>
 
 <body>
@@ -144,11 +157,15 @@
 			<!-- Loop through books -->
 			<div class="col" th:each="book : ${books}">
 				<div class="card h-100">
-					<img th:src="${book.coverImage != null ? book.coverImage : '/images/default-book.png'}"
-						class="card-img-top" alt="Bìa sách">
+					<div class="product_img">
+						<!-- Hiển thị ảnh từ URL của Cloudinary -->
+						<div class="book-images">
+							<img th:each="image : ${book.images}" th:src="${image}" alt="${book.title}" />
+						</div>
+					</div>
 					<div class="card-body">
 						<h5 class="card-title" th:text="${book.title}"></h5>
-						<p class="card-text text-muted" th:text="${book.author}"></p>
+						<!--<p class="card-text text-muted" th:text="${book.author}"></p>-->
 						<p><strong>Giá:</strong> <span th:text="${book.price}"></span> VND</p>
 					</div>
 				</div>

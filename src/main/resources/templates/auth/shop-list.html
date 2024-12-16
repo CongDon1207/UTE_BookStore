@@ -151,9 +151,6 @@
 			<!-- Duyệt qua danh sách shop -->
 			<div class="col-md-4" th:each="shop : ${shops}">
 				<div class="card shop-card">
-					<!-- Logo của shop -->
-					<img th:src="${shop.logo != null ? shop.logo : '/images/default-logo.png'}" class="card-img-top"
-						alt="Logo của shop">
 
 					<div class="card-body">
 						<!-- Tên shop -->

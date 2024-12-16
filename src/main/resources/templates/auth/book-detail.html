@@ -165,10 +165,9 @@
 
 		<!-- Hiển thị hình ảnh sách -->
 		<div class="book-images">
-			<th:block th:each="image : ${book.images}">
-				<img th:src="@{/images?fname=${image}}" alt="Book Image" class="book-image">
-			</th:block>
+			<img th:each="image : ${book.images}" th:src="${image}" alt="${book.title}" />
 		</div>
+
 
 		<!-- Mô tả sách -->
 		<div class="book-description">
@@ -180,7 +179,7 @@
 			<p><strong>Price:</strong> <span th:text="${book.price}">Price</span> USD</p>
 		</div>
 
-		
+
 
 		<!-- Số lượng sách có sẵn -->
 		<div class="book-quantity">
